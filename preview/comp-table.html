@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+  .head{display:grid;grid-template-columns:90px 1fr 110px 100px 90px;padding:12px 20px;background:var(--paper-2);font-size:11px;font-weight:500;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.06em}
+  .row{display:grid;grid-template-columns:90px 1fr 110px 100px 90px;padding:14px 20px;align-items:center;border-top:1px solid var(--line);font-size:14px}
+  .row:hover{background:var(--paper)}
+  .id{font-family:var(--font-mono);color:var(--ink-2);font-size:13px}
+  .amt{font-family:var(--font-mono);font-feature-settings:"tnum";text-align:right;font-weight:500}
+  .av{width:28px;height:28px;border-radius:50%;background:#D9CDB0;color:var(--ink);font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;margin-right:10px;vertical-align:middle}
+  .av.b{background:#C5DCC1}.av.c{background:#E8C9C0}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:500}
+  .dot{width:6px;height:6px;border-radius:50%}
+</style></head>
+<body style="padding:24px;background:var(--paper)">
+  <div class="card">
+    <div class="head"><div>Invoice</div><div>Client</div><div>Amount</div><div>Status</div><div>Due</div></div>
+    <div class="row"><div class="id">INV-0312</div><div><span class="av">N</span>Nordkraft AB</div><div class="amt">€ 4,820.00</div><div><span class="chip" style="background:var(--neg-bg);color:var(--neg)"><span class="dot" style="background:var(--neg)"></span>Overdue</span></div><div style="color:var(--ink-2)">12 d ago</div></div>
+    <div class="row"><div class="id">INV-0311</div><div><span class="av b">L</span>Lyko Studio</div><div class="amt">€ 1,250.00</div><div><span class="chip" style="background:var(--warn-bg);color:var(--warn)"><span class="dot" style="background:var(--warn)"></span>Pending</span></div><div style="color:var(--ink-2)">May 28</div></div>
+    <div class="row"><div class="id">INV-0310</div><div><span class="av c">A</span>Aksel Møller</div><div class="amt">€ 980.00</div><div><span class="chip" style="background:var(--pos-bg);color:var(--pos)"><span class="dot" style="background:var(--pos)"></span>Paid</span></div><div style="color:var(--ink-2)">May 14</div></div>
+  </div>
+</body></html>

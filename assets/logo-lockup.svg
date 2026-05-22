@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#EC5A2A"></rect>
+  <path d="M40 18.5C40 18.5 36.5 16.5 32.5 17.2C28 18 26 21 25.5 25L24.2 32M24.2 32H17M24.2 32L22.5 41.5C21.6 46.5 19.5 49 17 49.5" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+  <circle cx="44" cy="44" r="3" fill="#FFFFFF"></circle>
+  <text x="80" y="42" font-family="Hanken Grotesk, sans-serif" font-size="26" font-weight="700" fill="#14110D" letter-spacing="-0.025em">faqtura</text>
+</svg>

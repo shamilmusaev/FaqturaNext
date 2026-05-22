@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  .row{display:flex;gap:16px}
+  .av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px;color:var(--ink)}
+  .av.s{width:32px;height:32px;font-size:13px}
+  .av.l{width:64px;height:64px;font-size:22px}
+  .stack{display:flex}
+  .stack .av{margin-left:-10px;border:2px solid var(--paper)}
+  .stack .av:first-child{margin-left:0}
+  .lbl{font-family:var(--font-mono);font-size:11px;color:var(--ink-3);margin-top:14px}
+</style></head>
+<body style="padding:24px;background:var(--paper)">
+  <div class="row" style="align-items:center">
+    <div class="av s" style="background:#D9CDB0">N</div>
+    <div class="av" style="background:#C5DCC1">L</div>
+    <div class="av l" style="background:#E8C9C0">A</div>
+    <div class="av" style="background:#C0CFE0">EM</div>
+    <div class="av" style="background:var(--accent)">FK</div>
+    <div class="stack" style="margin-left:auto">
+      <div class="av s" style="background:#D9CDB0">N</div>
+      <div class="av s" style="background:#C5DCC1">L</div>
+      <div class="av s" style="background:#E8C9C0">A</div>
+      <div class="av s" style="background:var(--ink);color:#F4F1E8;font-size:11px">+4</div>
+    </div>
+  </div>
+  <div class="lbl">Initial-circle avatars — deterministic warm tints from the brand neutrals; never gradients</div>
+</body></html>
