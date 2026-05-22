@@ -1,10 +1,11 @@
 import 'server-only'
 import { createServerClient as supaCreateServer } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import type { Database } from './database.types'
 
 export async function createServerClient() {
   const cookieStore = await cookies()
-  return supaCreateServer(
+  return supaCreateServer<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
