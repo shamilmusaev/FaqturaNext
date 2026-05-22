@@ -15,8 +15,8 @@ This design system is a complete kit for building product UI, marketing material
 | `README.md` | This file — start here |
 | `SKILL.md` | Agent skill manifest |
 | `colors_and_type.css` | Tokenized CSS variables (color, type, radius, shadow, spacing) |
-| `preview/*.html` | Design system preview cards |
-| `ui_kits/web_app/` | The Faqtura web app UI kit — components + interactive prototype |
+| `docs/design-system/preview/*.html` | Design system preview cards |
+| `docs/legacy-prototype/` | The Faqtura web app UI kit — components + interactive prototype |
 | `fonts/` | (none — uses Google Fonts: Hanken Grotesk, IBM Plex Mono) |
 | `assets/` | Logos and brand marks |
 

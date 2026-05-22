@@ -7,8 +7,8 @@ user-invocable: true
 Read `README.md` first — it covers product context, voice, visual foundations, and iconography. Then explore:
 
 - `colors_and_type.css` — CSS variables: color, type, radii, shadows, spacing. Import this from any HTML you build.
-- `preview/` — small specimen cards for each token category.
-- `ui_kits/web_app/` — interactive web app prototype. `README.md` inside lists screens and components. Copy components (Avatar, Chip, Button, Card, Money, Field, Input, Toast, Sidebar, TopBar) verbatim — they're the canonical implementations.
+- `docs/design-system/preview/` — small specimen cards for each token category.
+- `docs/legacy-prototype/` — interactive web app prototype. `README.md` inside lists screens and components. Copy components (Avatar, Chip, Button, Card, Money, Field, Input, Toast, Sidebar, TopBar) verbatim — they're the canonical implementations.
 - `assets/` — logo mark and lockup.
 
 If creating visual artifacts (slides, mocks, throwaway prototypes), copy assets and tokens out and produce static HTML. Match the voice rules in README's "Content fundamentals" — sentence case, second person, plain English, occasional Swedish status terms (faktura skickad, betald, förfallen, ROT/RUT), never emoji or exclamation marks.
