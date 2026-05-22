@@ -33,7 +33,8 @@
     "react-dom": "^19.2.6",
     "server-only": "^0.0.1",
     "sonner": "^2.0.7",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
