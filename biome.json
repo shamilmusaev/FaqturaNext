@@ -27,7 +27,13 @@
       "recommended": true,
       "style": { "noNonNullAssertion": "warn" },
       "suspicious": { "noExplicitAny": "error" },
-      "a11y": { "recommended": true }
+      "a11y": {
+        "recommended": true,
+        "noLabelWithoutControl": {
+          "level": "error",
+          "options": { "inputComponents": ["Input", "MoneyInput"] }
+        }
+      }
     }
   }
 }
