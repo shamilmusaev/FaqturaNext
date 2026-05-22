@@ -3,8 +3,6 @@
    Used across all UI kits, slides, and preview cards.
    ============================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
-
 :root {
   /* -------- Color: base -------- */
   --ink: #14110d; /* primary text, primary button bg */

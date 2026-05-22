@@ -13,8 +13,8 @@
   --color-line-1: var(--line-1, #E2DED4);
   --color-line-2: var(--line-2, #D6D1C5);
 
-  --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-sans: var(--font-sans-loaded), 'Hanken Grotesk', system-ui, sans-serif;
+  --font-mono: var(--font-mono-loaded), 'IBM Plex Mono', ui-monospace, monospace;
 
   --radius-card: 24px;
   --radius-control: 12px;
