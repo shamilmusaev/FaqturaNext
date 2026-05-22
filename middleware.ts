@@ -1,0 +1,34 @@
+import { NextResponse, type NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
+
+export async function middleware(request: NextRequest) {
+  const { response, user } = await updateSession(request)
+  const url = request.nextUrl
+
+  const isApp = url.pathname.startsWith('/overview')
+    || url.pathname.startsWith('/invoices')
+    || url.pathname.startsWith('/clients')
+    || url.pathname.startsWith('/settings')
+  const isOnboarding = url.pathname.startsWith('/onboarding')
+  const isAuthPage = url.pathname === '/login' || url.pathname === '/signup'
+
+  if (isApp && !user) {
+    const redirect = new URL('/login', request.url)
+    redirect.searchParams.set('next', url.pathname)
+    return NextResponse.redirect(redirect)
+  }
+
+  if (isOnboarding && !user) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  if (isAuthPage && user) {
+    return NextResponse.redirect(new URL('/overview', request.url))
+  }
+
+  return response
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+}
