@@ -1,0 +1,39 @@
+{
+  "common": {
+    "appName": "Faqtura",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "signUp": "Create account",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading"
+  },
+  "nav": {
+    "overview": "Overview",
+    "invoices": "Invoices",
+    "clients": "Clients",
+    "settings": "Settings"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "signupTitle": "Create your account",
+    "email": "Email",
+    "password": "Password",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?"
+  },
+  "onboarding": {
+    "title": "Set up your company",
+    "companyName": "Company name",
+    "orgNumber": "Organization number",
+    "vatNumber": "VAT number",
+    "create": "Create company"
+  },
+  "invoiceStatus": {
+    "draft": "Utkast",
+    "sent": "Faktura skickad",
+    "paid": "Betald",
+    "overdue": "Förfallen",
+    "cancelled": "Avbruten"
+  }
+}
