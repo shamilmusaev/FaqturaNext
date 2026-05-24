@@ -37,8 +37,50 @@
     "cancelled": "Avbruten"
   },
   "overview": {
-    "title": "Översikt",
-    "placeholder": "Platshållare för fas 0. Autentisering och data kopplas in i fas 1."
+    "goodMorning": "God morgon",
+    "goodAfternoon": "God eftermiddag",
+    "goodEvening": "God kväll",
+    "subtitleUnpaid": "Du har {count} obetald faktura — {amount} utestående",
+    "subtitleUnpaidPlural": "Du har {count} obetalda fakturor — {amount} utestående",
+    "subtitleNoUnpaid": "Allt klart — inga obetalda fakturor.",
+    "newInvoice": "Ny faktura",
+    "export": "Exportera",
+    "metrics": {
+      "outstanding": "Utestående",
+      "paidThisMonth": "Betalt denna månad",
+      "avgDaysToPay": "Snittdagar till betalning",
+      "sentThisWeek": "Skickade denna vecka",
+      "live": "Live",
+      "sendReminders": "Skicka påminnelser",
+      "vsLastMonth": "mot förra månaden",
+      "days": "d",
+      "overdueShort": "förfallen",
+      "invoiced": "fakturerat"
+    },
+    "cashflow": {
+      "title": "Kassaflöde",
+      "subtitle": "senaste {months} månaderna",
+      "paid": "Betalt",
+      "outstanding": "Utestående"
+    },
+    "dueThisWeek": {
+      "title": "Förfaller denna vecka",
+      "all": "Alla",
+      "empty": "Inget förfaller denna vecka.",
+      "count": "{count} faktura",
+      "countPlural": "{count} fakturor"
+    },
+    "activity": {
+      "title": "Senaste aktivitet",
+      "filter": "Filter",
+      "empty": "Ingen aktivitet ännu."
+    },
+    "quickSend": {
+      "label": "Snabbskicka",
+      "title": "Fakturera en kund på under 30 sekunder",
+      "subtitle": "Välj kund, lägg till rader, skicka. Vi sköter moms, ROT/RUT, e-fakturadirigering.",
+      "cta": "Ny faktura"
+    }
   },
   "invoices": {
     "title": "Fakturor",

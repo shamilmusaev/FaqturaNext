@@ -37,8 +37,50 @@
     "cancelled": "Avbruten"
   },
   "overview": {
-    "title": "Overview",
-    "placeholder": "Phase 0 placeholder. Auth and data wire up in Phase 1."
+    "goodMorning": "Good morning",
+    "goodAfternoon": "Good afternoon",
+    "goodEvening": "Good evening",
+    "subtitleUnpaid": "You have {count} unpaid invoice — {amount} outstanding",
+    "subtitleUnpaidPlural": "You have {count} unpaid invoices — {amount} outstanding",
+    "subtitleNoUnpaid": "All clear — no unpaid invoices.",
+    "newInvoice": "New invoice",
+    "export": "Export",
+    "metrics": {
+      "outstanding": "Outstanding",
+      "paidThisMonth": "Paid this month",
+      "avgDaysToPay": "Avg days to pay",
+      "sentThisWeek": "Sent this week",
+      "live": "Live",
+      "sendReminders": "Send reminders",
+      "vsLastMonth": "vs last month",
+      "days": "d",
+      "overdueShort": "overdue",
+      "invoiced": "invoiced"
+    },
+    "cashflow": {
+      "title": "Cashflow",
+      "subtitle": "last {months} months",
+      "paid": "Paid",
+      "outstanding": "Outstanding"
+    },
+    "dueThisWeek": {
+      "title": "Due this week",
+      "all": "All",
+      "empty": "Nothing due this week.",
+      "count": "{count} invoice",
+      "countPlural": "{count} invoices"
+    },
+    "activity": {
+      "title": "Recent activity",
+      "filter": "Filter",
+      "empty": "No activity yet."
+    },
+    "quickSend": {
+      "label": "Quick send",
+      "title": "Bill a client in under 30 seconds",
+      "subtitle": "Pick a client, add lines, send. We'll handle VAT, ROT/RUT, e-invoice routing.",
+      "cta": "New invoice"
+    }
   },
   "invoices": {
     "title": "Invoices",
