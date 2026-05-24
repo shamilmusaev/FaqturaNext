@@ -59,6 +59,44 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['memberships']['Insert']>
         Relationships: []
       }
+      clients: {
+        Row: {
+          id: string
+          organization_id: string
+          name: string
+          email: string | null
+          org_number: string | null
+          vat_number: string | null
+          address: { street?: string; postal?: string; city?: string; country?: string } | null
+          notes: string | null
+          archived_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          name: string
+          email?: string | null
+          org_number?: string | null
+          vat_number?: string | null
+          address?: { street?: string; postal?: string; city?: string; country?: string } | null
+          notes?: string | null
+          archived_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['clients']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'clients_organization_id_fkey'
+            columns: ['organization_id']
+            isOneToOne: false
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {
