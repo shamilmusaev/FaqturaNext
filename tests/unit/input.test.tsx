@@ -14,8 +14,8 @@ describe('Input', () => {
 })
 
 describe('MoneyInput', () => {
-  it('emits cents via onChange', async () => {
-    let cents = 0
+  it('emits bigint cents via onChange', async () => {
+    let cents = 0n
     render(
       <MoneyInput
         aria-label="amount"
@@ -26,6 +26,6 @@ describe('MoneyInput', () => {
     )
     const el = screen.getByLabelText('amount')
     await userEvent.type(el, '1234,50')
-    expect(cents).toBe(123450)
+    expect(cents).toBe(123450n)
   })
 })

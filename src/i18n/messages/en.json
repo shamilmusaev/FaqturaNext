@@ -35,5 +35,9 @@
     "paid": "Betald",
     "overdue": "Förfallen",
     "cancelled": "Avbruten"
+  },
+  "overview": {
+    "title": "Overview",
+    "placeholder": "Phase 0 placeholder. Auth and data wire up in Phase 1."
   }
 }

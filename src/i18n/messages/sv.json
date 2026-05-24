@@ -35,5 +35,9 @@
     "paid": "Betald",
     "overdue": "Förfallen",
     "cancelled": "Avbruten"
+  },
+  "overview": {
+    "title": "Översikt",
+    "placeholder": "Platshållare för fas 0. Autentisering och data kopplas in i fas 1."
   }
 }

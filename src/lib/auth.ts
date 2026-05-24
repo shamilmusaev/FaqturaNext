@@ -13,6 +13,24 @@ export type AuthContext = {
 
 const ACTIVE_ORG_COOKIE = 'active_org_id'
 
+export type AuthenticatedUser = {
+  userId: string
+  email: string
+}
+
+/**
+ * Ensures the request has a Supabase session. Use in actions that run before
+ * membership exists (onboarding) — does NOT redirect to /onboarding.
+ */
+export async function requireAuthenticatedUser(): Promise<AuthenticatedUser> {
+  const supabase = await createServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) redirect('/login' as Route)
+  return { userId: user.id, email: user.email ?? '' }
+}
+
 export async function requireUser(): Promise<AuthContext> {
   const supabase = await createServerClient()
   const {

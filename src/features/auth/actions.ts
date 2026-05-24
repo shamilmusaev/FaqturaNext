@@ -1,5 +1,6 @@
 'use server'
 
+import { requireAuthenticatedUser } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase/server'
 import type { Route } from 'next'
 import { redirect } from 'next/navigation'
@@ -49,6 +50,8 @@ const OrgSchema = z.object({
 })
 
 export async function createOrganizationAction(formData: FormData): Promise<AuthActionResult> {
+  await requireAuthenticatedUser()
+
   const parsed = OrgSchema.safeParse({
     name: formData.get('name'),
     org_number: formData.get('org_number') || undefined,
