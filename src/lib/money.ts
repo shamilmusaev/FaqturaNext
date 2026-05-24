@@ -42,6 +42,9 @@ export function parseMoney(input: string, locale = 'sv-SE'): bigint {
     throw new Error(`Cannot parse money: ${input}`)
   }
   const [whole, fraction = ''] = normalised.split('.')
+  if (fraction.length > 2) {
+    throw new Error(`Cannot parse money: too many decimal places in "${input}"`)
+  }
   const padded = `${fraction}00`.slice(0, 2)
   const sign = whole?.startsWith('-') ? -1n : 1n
   const wholeDigits = whole?.replace('-', '') ?? '0'
