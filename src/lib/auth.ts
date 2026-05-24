@@ -43,8 +43,9 @@ export async function requireUser(): Promise<AuthContext> {
 
   const { data: memberships } = await supabase
     .from('memberships')
-    .select('organization_id, role')
+    .select('organization_id, role, created_at')
     .eq('user_id', user.id)
+    .order('created_at', { ascending: true })
 
   if (!memberships || memberships.length === 0) redirect('/onboarding' as Route)
 
