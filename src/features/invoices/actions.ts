@@ -30,13 +30,14 @@ export async function createInvoiceAction(
     p_org: organizationId,
     p_client_id: parsed.data.clientId,
     p_due_at: parsed.data.dueAt,
+    p_issued_at: parsed.data.issuedAt ?? null,
     p_currency: parsed.data.currency,
     p_notes: parsed.data.notes ?? null,
     p_line_items: parsed.data.lineItems.map((li) => ({
       description: li.description,
       quantity: li.quantity,
       unit: li.unit ?? null,
-      unit_price_cents: Number(li.unitPriceCents),
+      unit_price_cents: li.unitPriceCents.toString(),
       vat_rate: li.vatRate,
     })),
   })
