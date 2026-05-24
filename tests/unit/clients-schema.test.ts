@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { ClientInputSchema } from '@/features/clients/schema'
+import { describe, expect, it } from 'vitest'
 
 describe('ClientInputSchema', () => {
   it('requires name', () => {

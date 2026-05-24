@@ -1,12 +1,9 @@
-import {
-  type ClientActionResult,
-  updateClientAction,
-} from '@/features/clients/actions'
+import { type ClientActionResult, updateClientAction } from '@/features/clients/actions'
 import { ClientForm } from '@/features/clients/components/client-form'
 import { getClient } from '@/features/clients/queries'
 import type { Route } from 'next'
-import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { notFound } from 'next/navigation'
 
 interface Props {
   params: Promise<{ id: string }>

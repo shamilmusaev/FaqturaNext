@@ -1,9 +1,9 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
 import { SearchIcon } from '@/components/ui/icons'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { Input } from '@/components/ui/input'
 import { useTranslations } from 'next-intl'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useState, useTransition } from 'react'
 
 export function ClientsToolbar() {

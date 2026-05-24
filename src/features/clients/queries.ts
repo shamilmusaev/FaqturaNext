@@ -1,7 +1,7 @@
 import 'server-only'
 import { requireUser } from '@/lib/auth'
-import { createServerClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/database.types'
+import { createServerClient } from '@/lib/supabase/server'
 
 export type ClientRow = Database['public']['Tables']['clients']['Row']
 

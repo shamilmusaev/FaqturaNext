@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { PlusIcon } from '@/components/ui/icons'
 import { ClientList } from '@/features/clients/components/client-list'
-import { ClientsEmpty } from '@/features/clients/components/empty-state'
 import { ClientsToolbar } from '@/features/clients/components/clients-toolbar'
+import { ClientsEmpty } from '@/features/clients/components/empty-state'
 import { listClients } from '@/features/clients/queries'
-import Link from 'next/link'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 
 interface PageProps {
   searchParams: Promise<{ q?: string; archived?: string }>

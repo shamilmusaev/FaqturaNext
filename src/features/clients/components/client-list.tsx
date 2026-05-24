@@ -1,7 +1,7 @@
 import { Chip } from '@/components/ui/chip'
-import Link from 'next/link'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 import type { ClientRow } from '../queries'
 
 export async function ClientList({ clients }: { clients: ClientRow[] }) {

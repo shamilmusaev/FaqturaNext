@@ -2,10 +2,10 @@ import { Button } from '@/components/ui/button'
 import { Chip } from '@/components/ui/chip'
 import { ClientArchiveButton } from '@/features/clients/components/client-archive-button'
 import { getClient } from '@/features/clients/queries'
-import Link from 'next/link'
 import type { Route } from 'next'
-import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
 interface Props {
   params: Promise<{ id: string }>
