@@ -94,6 +94,8 @@
     "cancel": "Avbryt faktura",
     "edit": "Redigera",
     "back": "Tillbaka till fakturor",
+    "editPlaceholder": "Radvis redigering av fakturarader kommer i ett kommande släpp. Avbryt utkastet och skapa en ny faktura om du behöver göra ändringar.",
+    "lineItems": "Rader",
     "filters": {
       "all": "Alla",
       "draft": "Utkast",

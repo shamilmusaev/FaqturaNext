@@ -168,7 +168,7 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
 
       <section className="flex flex-col gap-3">
         <header className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">Line items</h2>
+          <h2 className="text-lg font-semibold tracking-tight">{t('lineItems')}</h2>
           <Button
             type="button"
             variant="secondary"
