@@ -41,7 +41,60 @@
     "placeholder": "Phase 0 placeholder. Auth and data wire up in Phase 1."
   },
   "invoices": {
-    "title": "Invoices"
+    "title": "Invoices",
+    "newInvoice": "New invoice",
+    "search": "Search by number",
+    "empty": "No invoices yet.",
+    "emptyHint": "Create your first invoice to get started.",
+    "createCta": "Create invoice",
+    "send": "Send invoice",
+    "markPaid": "Mark as paid",
+    "cancel": "Cancel invoice",
+    "edit": "Edit",
+    "back": "Back to invoices",
+    "filters": {
+      "all": "All",
+      "draft": "Drafts",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue"
+    },
+    "fields": {
+      "client": "Client",
+      "issuedAt": "Issued",
+      "dueAt": "Due",
+      "number": "Number",
+      "currency": "Currency",
+      "notes": "Notes",
+      "description": "Description",
+      "quantity": "Qty",
+      "unit": "Unit",
+      "unitPrice": "Unit price",
+      "vat": "VAT %",
+      "amount": "Amount",
+      "subtotal": "Subtotal",
+      "vatTotal": "VAT",
+      "total": "Total"
+    },
+    "actions": {
+      "addLine": "Add line",
+      "removeLine": "Remove",
+      "save": "Save draft",
+      "create": "Create invoice",
+      "confirmSend": "Send this invoice to the client?",
+      "confirmPaid": "Mark this invoice as paid?",
+      "confirmCancel": "Cancel this invoice?"
+    },
+    "timeline": {
+      "title": "Activity",
+      "created": "Created",
+      "sent": "Sent",
+      "viewed": "Viewed by client",
+      "reminder_sent": "Reminder sent",
+      "marked_paid": "Marked as paid",
+      "cancelled": "Cancelled",
+      "note_added": "Note added"
+    }
   },
   "settings": {
     "title": "Settings",

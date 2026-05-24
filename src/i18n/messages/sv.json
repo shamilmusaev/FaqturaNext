@@ -41,7 +41,60 @@
     "placeholder": "Platshållare för fas 0. Autentisering och data kopplas in i fas 1."
   },
   "invoices": {
-    "title": "Fakturor"
+    "title": "Fakturor",
+    "newInvoice": "Ny faktura",
+    "search": "Sök efter nummer",
+    "empty": "Inga fakturor ännu.",
+    "emptyHint": "Skapa din första faktura för att komma igång.",
+    "createCta": "Skapa faktura",
+    "send": "Skicka faktura",
+    "markPaid": "Markera som betald",
+    "cancel": "Avbryt faktura",
+    "edit": "Redigera",
+    "back": "Tillbaka till fakturor",
+    "filters": {
+      "all": "Alla",
+      "draft": "Utkast",
+      "sent": "Skickade",
+      "paid": "Betalda",
+      "overdue": "Förfallna"
+    },
+    "fields": {
+      "client": "Kund",
+      "issuedAt": "Utfärdad",
+      "dueAt": "Förfaller",
+      "number": "Nummer",
+      "currency": "Valuta",
+      "notes": "Anteckningar",
+      "description": "Beskrivning",
+      "quantity": "Antal",
+      "unit": "Enhet",
+      "unitPrice": "À-pris",
+      "vat": "Moms %",
+      "amount": "Belopp",
+      "subtotal": "Delsumma",
+      "vatTotal": "Moms",
+      "total": "Summa"
+    },
+    "actions": {
+      "addLine": "Lägg till rad",
+      "removeLine": "Ta bort",
+      "save": "Spara utkast",
+      "create": "Skapa faktura",
+      "confirmSend": "Skicka den här fakturan till kunden?",
+      "confirmPaid": "Markera den här fakturan som betald?",
+      "confirmCancel": "Avbryt den här fakturan?"
+    },
+    "timeline": {
+      "title": "Aktivitet",
+      "created": "Skapad",
+      "sent": "Skickad",
+      "viewed": "Visad av kund",
+      "reminder_sent": "Påminnelse skickad",
+      "marked_paid": "Markerad som betald",
+      "cancelled": "Avbruten",
+      "note_added": "Anteckning tillagd"
+    }
   },
   "settings": {
     "title": "Inställningar",
