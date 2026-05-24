@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { formatMoney, parseMoney, addCents } from '@/lib/money'
+import { addCents, formatMoney, parseMoney } from '@/lib/money'
+import { describe, expect, it } from 'vitest'
 
 describe('formatMoney', () => {
   it('formats SEK with non-breaking thousand separator and comma decimal', () => {

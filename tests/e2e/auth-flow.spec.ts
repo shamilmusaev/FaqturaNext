@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test('signup → onboarding → overview, then logout and login again', async ({ page }) => {
   const email = `e2e-${Date.now()}@faqtura.local`

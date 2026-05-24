@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import '../src/styles/tokens.css';
+@import "tailwindcss";
+@import "../src/styles/tokens.css";
 
 @theme {
   --color-ink: var(--ink);
@@ -10,20 +10,29 @@
   --color-pos: var(--pos);
   --color-warn: var(--warn);
   --color-neg: var(--neg);
-  --color-line-1: var(--line-1, #E2DED4);
-  --color-line-2: var(--line-2, #D6D1C5);
+  --color-line-1: var(--line-1, #e2ded4);
+  --color-line-2: var(--line-2, #d6d1c5);
 
-  --font-sans: var(--font-sans-loaded), 'Hanken Grotesk', system-ui, sans-serif;
-  --font-mono: var(--font-mono-loaded), 'IBM Plex Mono', ui-monospace, monospace;
+  --font-sans: var(--font-sans-loaded), "Hanken Grotesk", system-ui, sans-serif;
+  --font-mono: var(--font-mono-loaded), "IBM Plex Mono", ui-monospace, monospace;
 
   --radius-card: 24px;
   --radius-control: 12px;
 
-  --shadow-card: 0 1px 2px rgba(20,17,13,0.04), 0 8px 24px -8px rgba(20,17,13,0.08);
+  --shadow-card: 0 1px 2px rgba(20, 17, 13, 0.04), 0 8px 24px -8px rgba(20, 17, 13, 0.08);
 }
 
 @layer base {
-  html, body { background: var(--paper); color: var(--ink); }
-  body { font-family: var(--font-sans); font-feature-settings: 'tnum' off; }
-  .tnum { font-feature-settings: 'tnum'; }
+  html,
+  body {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "tnum" off;
+  }
+  .tnum {
+    font-feature-settings: "tnum";
+  }
 }

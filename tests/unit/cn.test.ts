@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
 import { cn } from '@/lib/cn'
+import { describe, expect, it } from 'vitest'
 
 describe('cn', () => {
   it('joins class strings', () => {

@@ -1,5 +1,5 @@
-import { getLocale } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
+import { getLocale } from 'next-intl/server'
 import { LocaleSwitcher } from './locale-switcher'
 import { LogoutButton } from './logout-button'
 

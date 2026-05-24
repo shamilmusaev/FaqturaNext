@@ -7,7 +7,8 @@ export function Toaster() {
     <SonnerToaster
       position="bottom-right"
       toastOptions={{
-        className: 'rounded-[12px] border border-line-1 bg-card text-ink shadow-[var(--shadow-card)]',
+        className:
+          'rounded-[12px] border border-line-1 bg-card text-ink shadow-[var(--shadow-card)]',
       }}
     />
   )

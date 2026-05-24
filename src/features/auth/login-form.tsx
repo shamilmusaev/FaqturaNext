@@ -1,12 +1,12 @@
 'use client'
 
-import { useActionState } from 'react'
-import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
-import { loginAction, type AuthActionResult } from './actions'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { useActionState } from 'react'
+import { type AuthActionResult, loginAction } from './actions'
 
 const initialState: AuthActionResult = {}
 
@@ -25,14 +25,23 @@ export function LoginForm() {
       </label>
       <label className="flex flex-col gap-1.5 text-sm">
         {t('auth.password')}
-        <Input name="password" type="password" autoComplete="current-password" required minLength={8} />
+        <Input
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          required
+          minLength={8}
+        />
       </label>
       {state.error && <p className="text-sm text-neg">{state.error}</p>}
       <Button type="submit" disabled={pending}>
         {pending ? t('common.loading') : t('common.signIn')}
       </Button>
       <p className="text-sm text-ink/60">
-        {t('auth.noAccount')} <Link href={'/signup' as Route} className="underline">{t('common.signUp')}</Link>
+        {t('auth.noAccount')}{' '}
+        <Link href={'/signup' as Route} className="underline">
+          {t('common.signUp')}
+        </Link>
       </p>
     </form>
   )

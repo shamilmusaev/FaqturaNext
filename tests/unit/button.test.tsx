@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import { Button } from '@/components/ui/button'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Button } from '@/components/ui/button'
+import { describe, expect, it } from 'vitest'
 
 describe('Button', () => {
   it('renders children', () => {
@@ -11,14 +11,31 @@ describe('Button', () => {
 
   it('fires onClick', async () => {
     let clicked = false
-    render(<Button onClick={() => { clicked = true }}>Click</Button>)
+    render(
+      <Button
+        onClick={() => {
+          clicked = true
+        }}
+      >
+        Click
+      </Button>,
+    )
     await userEvent.click(screen.getByRole('button'))
     expect(clicked).toBe(true)
   })
 
   it('disables when disabled', async () => {
     let clicked = false
-    render(<Button disabled onClick={() => { clicked = true }}>Click</Button>)
+    render(
+      <Button
+        disabled
+        onClick={() => {
+          clicked = true
+        }}
+      >
+        Click
+      </Button>,
+    )
     await userEvent.click(screen.getByRole('button'))
     expect(clicked).toBe(false)
   })

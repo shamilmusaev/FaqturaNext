@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { Input } from '@/components/ui/input'
 import { MoneyInput } from '@/components/ui/money-input'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it } from 'vitest'
 
 describe('Input', () => {
   it('accepts typing', async () => {
@@ -16,7 +16,14 @@ describe('Input', () => {
 describe('MoneyInput', () => {
   it('emits cents via onChange', async () => {
     let cents = 0
-    render(<MoneyInput aria-label="amount" onValueChange={v => { cents = v }} />)
+    render(
+      <MoneyInput
+        aria-label="amount"
+        onValueChange={(v) => {
+          cents = v
+        }}
+      />,
+    )
     const el = screen.getByLabelText('amount')
     await userEvent.type(el, '1234,50')
     expect(cents).toBe(123450)

@@ -1,11 +1,11 @@
 'use client'
 
-import Link from 'next/link'
-import type { Route } from 'next'
-import { usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { ClientsIcon, HomeIcon, InvoiceIcon, SettingsIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
-import { HomeIcon, InvoiceIcon, ClientsIcon, SettingsIcon } from '@/components/ui/icons'
+import type { Route } from 'next'
+import { useTranslations } from 'next-intl'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const tabs = [
   { href: '/overview', icon: HomeIcon, key: 'overview' as const },
@@ -25,7 +25,10 @@ export function BottomTabs() {
           <Link
             key={href}
             href={href as Route}
-            className={cn('flex-1 flex flex-col items-center justify-center gap-0.5 text-xs', active ? 'text-ink' : 'text-ink/50')}
+            className={cn(
+              'flex-1 flex flex-col items-center justify-center gap-0.5 text-xs',
+              active ? 'text-ink' : 'text-ink/50',
+            )}
           >
             <Icon className="h-5 w-5" />
             {t(key)}

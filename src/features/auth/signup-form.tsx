@@ -1,12 +1,12 @@
 'use client'
 
-import { useActionState } from 'react'
-import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
-import { signupAction, type AuthActionResult } from './actions'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { useActionState } from 'react'
+import { type AuthActionResult, signupAction } from './actions'
 
 const initialState: AuthActionResult = {}
 
@@ -32,7 +32,10 @@ export function SignupForm() {
         {pending ? t('common.loading') : t('common.signUp')}
       </Button>
       <p className="text-sm text-ink/60">
-        {t('auth.haveAccount')} <Link href={'/login' as Route} className="underline">{t('common.signIn')}</Link>
+        {t('auth.haveAccount')}{' '}
+        <Link href={'/login' as Route} className="underline">
+          {t('common.signIn')}
+        </Link>
       </p>
     </form>
   )

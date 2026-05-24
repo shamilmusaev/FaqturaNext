@@ -1,8 +1,8 @@
 'use client'
 
-import * as RadixDialog from '@radix-ui/react-dialog'
-import { type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
+import * as RadixDialog from '@radix-ui/react-dialog'
+import type { ReactNode } from 'react'
 import { CloseIcon } from './icons'
 
 export const Dialog = RadixDialog.Root
@@ -42,9 +42,15 @@ export function DialogContent({
 }
 
 export function DialogTitle({ children }: { children: ReactNode }) {
-  return <RadixDialog.Title className="text-xl font-semibold tracking-tight">{children}</RadixDialog.Title>
+  return (
+    <RadixDialog.Title className="text-xl font-semibold tracking-tight">
+      {children}
+    </RadixDialog.Title>
+  )
 }
 
 export function DialogDescription({ children }: { children: ReactNode }) {
-  return <RadixDialog.Description className="text-ink/60 text-sm">{children}</RadixDialog.Description>
+  return (
+    <RadixDialog.Description className="text-ink/60 text-sm">{children}</RadixDialog.Description>
+  )
 }

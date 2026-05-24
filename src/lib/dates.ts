@@ -20,5 +20,7 @@ export function formatDateISO(d: Date): string {
 }
 
 export function formatDateLong(d: Date, locale = 'sv-SE'): string {
-  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(d)
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(
+    d,
+  )
 }

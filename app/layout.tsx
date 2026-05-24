@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react'
+import { Toaster } from '@/components/ui/toast'
+import { fontMono, fontSans } from '@/styles/fonts'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
-import { fontSans, fontMono } from '@/styles/fonts'
-import { Toaster } from '@/components/ui/toast'
+import type { ReactNode } from 'react'
 import './globals.css'
 
 export const metadata = { title: 'Faqtura', description: 'Swedish invoicing, calm and direct.' }

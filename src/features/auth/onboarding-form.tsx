@@ -1,10 +1,10 @@
 'use client'
 
-import { useActionState } from 'react'
-import { useTranslations } from 'next-intl'
-import { createOrganizationAction, type AuthActionResult } from './actions'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useTranslations } from 'next-intl'
+import { useActionState } from 'react'
+import { type AuthActionResult, createOrganizationAction } from './actions'
 
 const initialState: AuthActionResult = {}
 
@@ -30,7 +30,9 @@ export function OnboardingForm() {
         <Input name="vat_number" placeholder="SE..." />
       </label>
       {state.error && <p className="text-sm text-neg">{state.error}</p>}
-      <Button type="submit" disabled={pending}>{t('create')}</Button>
+      <Button type="submit" disabled={pending}>
+        {t('create')}
+      </Button>
     </form>
   )
 }

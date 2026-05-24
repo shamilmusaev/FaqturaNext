@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
 import { Avatar } from '@/components/ui/avatar'
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 
 describe('Avatar', () => {
   it('shows initials', () => {

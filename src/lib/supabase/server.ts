@@ -11,9 +11,13 @@ export async function createServerClient() {
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: list => {
+        setAll: (list) => {
           for (const { name, value, options } of list) {
-            try { cookieStore.set(name, value, options) } catch { /* called from RSC */ }
+            try {
+              cookieStore.set(name, value, options)
+            } catch {
+              /* called from RSC */
+            }
           }
         },
       },

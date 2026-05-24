@@ -1,8 +1,8 @@
 import 'server-only'
+import { createServerClient } from '@/lib/supabase/server'
+import type { Route } from 'next'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import type { Route } from 'next'
-import { createServerClient } from '@/lib/supabase/server'
 
 export type AuthContext = {
   userId: string
@@ -15,7 +15,9 @@ const ACTIVE_ORG_COOKIE = 'active_org_id'
 
 export async function requireUser(): Promise<AuthContext> {
   const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login' as Route)
 
   const cookieStore = await cookies()
@@ -28,8 +30,7 @@ export async function requireUser(): Promise<AuthContext> {
 
   if (!memberships || memberships.length === 0) redirect('/onboarding' as Route)
 
-  const active =
-    memberships.find(m => m.organization_id === preferredOrg) ?? memberships[0]!
+  const active = memberships.find((m) => m.organization_id === preferredOrg) ?? memberships[0]!
 
   return {
     userId: user.id,

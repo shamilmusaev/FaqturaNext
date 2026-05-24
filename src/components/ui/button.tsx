@@ -1,5 +1,5 @@
-import { forwardRef, type ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/cn'
+import { type ButtonHTMLAttributes, forwardRef } from 'react'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 type Size = 'sm' | 'md' | 'lg'
@@ -9,7 +9,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size
 }
 
-const base = 'inline-flex items-center justify-center gap-2 font-medium rounded-[12px] transition-colors min-h-11 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
+const base =
+  'inline-flex items-center justify-center gap-2 font-medium rounded-[12px] transition-colors min-h-11 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
 
 const variants: Record<Variant, string> = {
   primary: 'bg-ink text-white hover:bg-ink/90',

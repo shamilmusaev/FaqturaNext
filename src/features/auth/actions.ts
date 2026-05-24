@@ -1,9 +1,9 @@
 'use server'
 
-import { redirect } from 'next/navigation'
-import type { Route } from 'next'
-import { z } from 'zod'
 import { createServerClient } from '@/lib/supabase/server'
+import type { Route } from 'next'
+import { redirect } from 'next/navigation'
+import { z } from 'zod'
 import { CredentialsSchema } from './schema'
 
 export type AuthActionResult = { error?: string }

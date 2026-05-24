@@ -1,14 +1,15 @@
-import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
   const { response, user } = await updateSession(request)
   const url = request.nextUrl
 
-  const isApp = url.pathname.startsWith('/overview')
-    || url.pathname.startsWith('/invoices')
-    || url.pathname.startsWith('/clients')
-    || url.pathname.startsWith('/settings')
+  const isApp =
+    url.pathname.startsWith('/overview') ||
+    url.pathname.startsWith('/invoices') ||
+    url.pathname.startsWith('/clients') ||
+    url.pathname.startsWith('/settings')
   const isOnboarding = url.pathname.startsWith('/onboarding')
   const isAuthPage = url.pathname === '/login' || url.pathname === '/signup'
 

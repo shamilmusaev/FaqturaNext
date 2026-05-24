@@ -1,11 +1,11 @@
 'use client'
 
-import Link from 'next/link'
-import type { Route } from 'next'
-import { usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { ClientsIcon, HomeIcon, InvoiceIcon, SettingsIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
-import { HomeIcon, InvoiceIcon, ClientsIcon, SettingsIcon } from '@/components/ui/icons'
+import type { Route } from 'next'
+import { useTranslations } from 'next-intl'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const nav = [
   { href: '/overview', icon: HomeIcon, key: 'overview' as const },

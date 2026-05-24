@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
 import { Card } from '@/components/ui/card'
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 
 describe('Card', () => {
   it('renders content', () => {

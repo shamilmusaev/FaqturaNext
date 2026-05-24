@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
+import { BottomTabs } from './bottom-tabs'
 import { Sidebar } from './sidebar'
 import { TopBar } from './topbar'
-import { BottomTabs } from './bottom-tabs'
 
 export function AppShell({ userEmail, children }: { userEmail: string; children: ReactNode }) {
   return (
