@@ -218,6 +218,7 @@ export type Database = {
           p_currency?: string
           p_notes?: string | null
           p_line_items?: unknown
+          p_issued_at?: string | null
         }
         Returns: Database['public']['Tables']['invoices']['Row']
       }
