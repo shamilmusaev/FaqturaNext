@@ -48,5 +48,37 @@
     "email": "E-post",
     "organization": "Organisation",
     "role": "Roll"
+  },
+  "clients": {
+    "title": "Kunder",
+    "newClient": "Ny kund",
+    "search": "Sök efter namn eller e-post",
+    "showArchived": "Visa arkiverade",
+    "empty": "Inga kunder ännu.",
+    "emptyHint": "Lägg till din första kund för att komma igång.",
+    "createCta": "Skapa kund",
+    "edit": "Redigera",
+    "archive": "Arkivera",
+    "unarchive": "Återställ",
+    "back": "Tillbaka till kunder",
+    "archived": "Arkiverad",
+    "fields": {
+      "name": "Namn",
+      "email": "E-post",
+      "orgNumber": "Organisationsnummer",
+      "vatNumber": "Momsregistreringsnummer",
+      "notes": "Anteckningar",
+      "addressStreet": "Gata",
+      "addressPostal": "Postnummer",
+      "addressCity": "Ort",
+      "addressCountry": "Land"
+    },
+    "actions": {
+      "save": "Spara kund",
+      "create": "Skapa kund",
+      "cancel": "Avbryt",
+      "confirmArchive": "Arkivera den här kunden?",
+      "confirmUnarchive": "Återställ den här kunden?"
+    }
   }
 }

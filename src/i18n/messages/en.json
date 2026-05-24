@@ -48,5 +48,37 @@
     "email": "Email",
     "organization": "Organization",
     "role": "Role"
+  },
+  "clients": {
+    "title": "Clients",
+    "newClient": "New client",
+    "search": "Search by name or email",
+    "showArchived": "Show archived",
+    "empty": "No clients yet.",
+    "emptyHint": "Add your first client to get started.",
+    "createCta": "Create client",
+    "edit": "Edit",
+    "archive": "Archive",
+    "unarchive": "Restore",
+    "back": "Back to clients",
+    "archived": "Archived",
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "orgNumber": "Organization number",
+      "vatNumber": "VAT number",
+      "notes": "Notes",
+      "addressStreet": "Street",
+      "addressPostal": "Postal code",
+      "addressCity": "City",
+      "addressCountry": "Country"
+    },
+    "actions": {
+      "save": "Save client",
+      "create": "Create client",
+      "cancel": "Cancel",
+      "confirmArchive": "Archive this client?",
+      "confirmUnarchive": "Restore this client?"
+    }
   }
 }
