@@ -17,7 +17,10 @@ export const InvoiceInputSchema = z.object({
   clientId: z.string().uuid(),
   issuedAt: z.string().date().optional(),
   dueAt: z.string().date(),
-  currency: z.string().length(3).default('SEK'),
+  currency: z
+    .string()
+    .regex(/^[A-Z]{3}$/, 'Currency must be 3 uppercase ASCII letters (ISO 4217)')
+    .default('SEK'),
   notes: z.string().max(2000).optional(),
   lineItems: z.array(LineItemInputSchema).min(1, 'Add at least one line item'),
 })

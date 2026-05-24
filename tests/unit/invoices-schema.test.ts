@@ -98,6 +98,16 @@ describe('InvoiceInputSchema', () => {
     })
     expect(r.success).toBe(false)
   })
+  it('rejects non-alphabetic currency codes', () => {
+    const base = {
+      clientId: VALID_UUID,
+      dueAt: '2026-06-30',
+      lineItems: [baseLine],
+    }
+    expect(InvoiceInputSchema.safeParse({ ...base, currency: 'US1' }).success).toBe(false)
+    expect(InvoiceInputSchema.safeParse({ ...base, currency: 'sek' }).success).toBe(false)
+    expect(InvoiceInputSchema.safeParse({ ...base, currency: 'SEK' }).success).toBe(true)
+  })
 })
 
 describe('InvoiceStatusEnum', () => {
