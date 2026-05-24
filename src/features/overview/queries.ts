@@ -2,6 +2,7 @@ import 'server-only'
 import { requireUser } from '@/lib/auth'
 import type { Database } from '@/lib/supabase/database.types'
 import { createServerClient } from '@/lib/supabase/server'
+import { addMonthsUTC, monthKey, startOfMonthUTC } from './utils'
 
 export type OverviewMetrics = {
   outstanding: { count: number; totalCents: bigint; overdueCount: number; overdueCents: bigint }
@@ -33,24 +34,12 @@ export type RecentActivityItem = {
   invoice: { id: string; number: string; clientName: string | null } | null
 }
 
-function startOfMonth(d: Date): Date {
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
-}
-
-function addMonths(d: Date, n: number): Date {
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + n, 1))
-}
-
-function monthKey(d: Date): string {
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
-}
-
 export async function getOverviewMetrics(): Promise<OverviewMetrics> {
   const { organizationId } = await requireUser()
   const supabase = await createServerClient()
   const today = new Date()
-  const thisMonthStart = startOfMonth(today)
-  const lastMonthStart = addMonths(thisMonthStart, -1)
+  const thisMonthStart = startOfMonthUTC(today)
+  const lastMonthStart = addMonthsUTC(thisMonthStart, -1)
   const weekStart = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
 
   const [outstandingRes, paidThisRes, paidLastRes, sentWeekRes, paidLast90Res] =
@@ -83,7 +72,7 @@ export async function getOverviewMetrics(): Promise<OverviewMetrics> {
         .select('issued_at, paid_at, status')
         .eq('organization_id', organizationId)
         .eq('status', 'paid')
-        .gte('paid_at', addMonths(thisMonthStart, -3).toISOString()),
+        .gte('paid_at', addMonthsUTC(thisMonthStart, -3).toISOString()),
     ])
 
   const outstanding = (outstandingRes.data ?? []).reduce(
@@ -142,7 +131,7 @@ export async function getCashflow(months = 6): Promise<CashflowBucket[]> {
   const { organizationId } = await requireUser()
   const supabase = await createServerClient()
   const today = new Date()
-  const start = addMonths(startOfMonth(today), -(months - 1))
+  const start = addMonthsUTC(startOfMonthUTC(today), -(months - 1))
 
   const [{ data: paid }, { data: outstanding }] = await Promise.all([
     supabase
@@ -161,7 +150,7 @@ export async function getCashflow(months = 6): Promise<CashflowBucket[]> {
 
   const buckets = new Map<string, CashflowBucket>()
   for (let i = 0; i < months; i++) {
-    const d = addMonths(start, i)
+    const d = addMonthsUTC(start, i)
     const key = monthKey(d)
     buckets.set(key, { month: key, paidCents: 0n, outstandingCents: 0n })
   }
