@@ -3,10 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('next-intl/server', () => ({
   getTranslations: async (ns: string) => {
-    const messages = (await import('@/i18n/messages/en.json')).default as Record<
-      string,
-      unknown
-    >
+    const messages = (await import('@/i18n/messages/en.json')).default as Record<string, unknown>
     return (key: string) => {
       const path = `${ns}.${key}`.split('.')
       let acc: unknown = messages
@@ -45,10 +42,7 @@ function makeClient(overrides: Partial<ClientRow> = {}): ClientRow {
 describe('ClientList', () => {
   it('renders client names', async () => {
     const element = await ClientList({
-      clients: [
-        makeClient({ name: 'Acme AB' }),
-        makeClient({ id: 'c2', name: 'Visby Bakery' }),
-      ],
+      clients: [makeClient({ name: 'Acme AB' }), makeClient({ id: 'c2', name: 'Visby Bakery' })],
     })
     render(element)
     expect(screen.getAllByText('Acme AB').length).toBeGreaterThan(0)

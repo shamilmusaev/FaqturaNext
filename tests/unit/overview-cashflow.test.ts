@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { addMonthsUTC, monthKey, startOfMonthUTC } from '@/features/overview/utils'
+import { describe, expect, it } from 'vitest'
 
 describe('startOfMonthUTC', () => {
   it('returns UTC 1st of the same month', () => {

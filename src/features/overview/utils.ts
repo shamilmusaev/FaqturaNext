@@ -9,7 +9,11 @@ export function greetingKey(
 
 export function nameFromEmail(email: string): string {
   const local = email.split('@')[0] ?? ''
-  const guess = local.replace(/[._-]+/g, ' ').trim().split(' ')[0] ?? ''
+  const guess =
+    local
+      .replace(/[._-]+/g, ' ')
+      .trim()
+      .split(' ')[0] ?? ''
   if (!guess) return ''
   return guess.charAt(0).toUpperCase() + guess.slice(1)
 }

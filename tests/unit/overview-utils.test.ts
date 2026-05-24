@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { greetingKey, nameFromEmail } from '@/features/overview/utils'
+import { describe, expect, it } from 'vitest'
 
 describe('greetingKey', () => {
   it('morning before noon', () => {

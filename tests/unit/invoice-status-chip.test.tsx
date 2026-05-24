@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('next-intl/server', () => ({
   getTranslations: async (ns: string) => {
-    const messages = (await import('@/i18n/messages/en.json')).default as Record<
+    const messages = (await import('@/i18n/messages/en.json')).default as unknown as Record<
       string,
       Record<string, string>
     >
@@ -13,9 +13,7 @@ vi.mock('next-intl/server', () => ({
 
 import { InvoiceStatusChip } from '@/features/invoices/components/invoice-status-chip'
 
-async function renderChip(
-  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled',
-) {
+async function renderChip(status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled') {
   const element = await InvoiceStatusChip({ status })
   render(element)
 }

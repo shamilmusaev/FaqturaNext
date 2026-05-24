@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest'
 import {
   InvoiceInputSchema,
   InvoiceStatusEnum,
   LineItemInputSchema,
 } from '@/features/invoices/schema'
+import { describe, expect, it } from 'vitest'
 
 describe('LineItemInputSchema', () => {
   it('requires non-empty description', () => {
@@ -102,12 +102,6 @@ describe('InvoiceInputSchema', () => {
 
 describe('InvoiceStatusEnum', () => {
   it('lists exactly the spec statuses', () => {
-    expect(InvoiceStatusEnum.options).toEqual([
-      'draft',
-      'sent',
-      'paid',
-      'overdue',
-      'cancelled',
-    ])
+    expect(InvoiceStatusEnum.options).toEqual(['draft', 'sent', 'paid', 'overdue', 'cancelled'])
   })
 })
