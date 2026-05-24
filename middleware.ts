@@ -25,7 +25,9 @@ export async function middleware(request: NextRequest) {
 
   if (isAuthPage && user) {
     const res = NextResponse.redirect(new URL('/overview', request.url))
-    response.headers.getSetCookie().forEach(v => res.headers.append('set-cookie', v))
+    for (const v of response.headers.getSetCookie()) {
+      res.headers.append('set-cookie', v)
+    }
     return res
   }
 

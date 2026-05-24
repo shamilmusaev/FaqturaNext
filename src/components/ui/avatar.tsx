@@ -2,9 +2,11 @@ import { cn } from '@/lib/cn'
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/)
-  if (parts.length === 0 || !parts[0]) return '?'
-  if (parts.length === 1) return parts[0]!.charAt(0).toUpperCase()
-  return (parts[0]!.charAt(0) + parts[parts.length - 1]!.charAt(0)).toUpperCase()
+  const first = parts[0]
+  if (!first) return '?'
+  if (parts.length === 1) return first.charAt(0).toUpperCase()
+  const last = parts[parts.length - 1] ?? first
+  return (first.charAt(0) + last.charAt(0)).toUpperCase()
 }
 
 export function Avatar({ name, className }: { name: string; className?: string }) {

@@ -48,11 +48,12 @@ export async function requireUser(): Promise<AuthContext> {
 
   if (!memberships || memberships.length === 0) redirect('/onboarding' as Route)
 
-  const active = memberships.find((m) => m.organization_id === preferredOrg) ?? memberships[0]!
+  const active = memberships.find((m) => m.organization_id === preferredOrg) ?? memberships[0]
+  if (!active) redirect('/onboarding' as Route)
 
   return {
     userId: user.id,
-    email: user.email!,
+    email: user.email ?? '',
     organizationId: active.organization_id,
     role: active.role as AuthContext['role'],
   }
