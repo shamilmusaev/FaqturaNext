@@ -74,6 +74,10 @@ export async function getOverviewMetrics(): Promise<OverviewMetrics> {
       .gte('paid_at', addMonthsUTC(thisMonthStart, -3).toISOString()),
   ])
 
+  for (const r of [outstandingRes, paidThisRes, paidLastRes, sentWeekRes, paidLast90Res]) {
+    if (r.error) throw r.error
+  }
+
   const outstanding = (outstandingRes.data ?? []).reduce(
     (acc, inv) => {
       acc.count += 1
@@ -126,7 +130,7 @@ export async function getCashflow(months = 6): Promise<CashflowBucket[]> {
   const today = new Date()
   const start = addMonthsUTC(startOfMonthUTC(today), -(months - 1))
 
-  const [{ data: paid }, { data: outstanding }] = await Promise.all([
+  const [paidRes, outstandingRes] = await Promise.all([
     supabase
       .from('invoices')
       .select('total_cents, paid_at')
@@ -140,6 +144,12 @@ export async function getCashflow(months = 6): Promise<CashflowBucket[]> {
       .in('status', ['sent', 'overdue'])
       .gte('issued_at', start.toISOString().slice(0, 10)),
   ])
+
+  for (const r of [paidRes, outstandingRes]) {
+    if (r.error) throw r.error
+  }
+  const paid = paidRes.data
+  const outstanding = outstandingRes.data
 
   const buckets = new Map<string, CashflowBucket>()
   for (let i = 0; i < months; i++) {
@@ -169,7 +179,7 @@ export async function getDueThisWeek(): Promise<DueThisWeekItem[]> {
   const today = new Date()
   const inSevenDays = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('invoices')
     .select('id, number, total_cents, currency, status, due_at, client:clients(id, name)')
     .eq('organization_id', organizationId)
@@ -177,6 +187,7 @@ export async function getDueThisWeek(): Promise<DueThisWeekItem[]> {
     .lte('due_at', inSevenDays.toISOString().slice(0, 10))
     .order('due_at', { ascending: true })
     .limit(10)
+  if (error) throw error
 
   return (data ?? []).map((r) => ({
     id: r.id,
@@ -193,12 +204,13 @@ export async function getRecentActivity(limit = 10): Promise<RecentActivityItem[
   const { organizationId } = await requireUser()
   const supabase = await createServerClient()
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('invoice_events')
     .select('id, type, created_at, invoice:invoices(id, number, client:clients(name))')
     .eq('organization_id', organizationId)
     .order('created_at', { ascending: false })
     .limit(limit)
+  if (error) throw error
 
   return (data ?? []).map((e) => ({
     id: e.id,
