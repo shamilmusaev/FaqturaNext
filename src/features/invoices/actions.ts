@@ -53,12 +53,17 @@ export async function sendInvoiceAction(id: string): Promise<InvoiceActionResult
   const { organizationId, userId } = await requireUser()
   const supabase = await createServerClient()
 
-  const { error: updateError } = await supabase
+  const { data: updated, error: updateError } = await supabase
     .from('invoices')
     .update({ status: 'sent', sent_at: new Date().toISOString() })
     .eq('id', id)
     .eq('organization_id', organizationId)
+    .eq('status', 'draft')
+    .select('id')
   if (updateError) return { error: updateError.message }
+  if (!updated || updated.length === 0) {
+    return { error: 'invalid status transition' }
+  }
 
   await supabase.from('invoice_events').insert({
     invoice_id: id,
@@ -76,12 +81,17 @@ export async function markInvoicePaidAction(id: string): Promise<InvoiceActionRe
   const { organizationId, userId } = await requireUser()
   const supabase = await createServerClient()
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('invoices')
     .update({ status: 'paid', paid_at: new Date().toISOString() })
     .eq('id', id)
     .eq('organization_id', organizationId)
+    .in('status', ['sent', 'overdue'])
+    .select('id')
   if (error) return { error: error.message }
+  if (!updated || updated.length === 0) {
+    return { error: 'invalid status transition' }
+  }
 
   await supabase.from('invoice_events').insert({
     invoice_id: id,
@@ -99,12 +109,17 @@ export async function cancelInvoiceAction(id: string): Promise<InvoiceActionResu
   const { organizationId, userId } = await requireUser()
   const supabase = await createServerClient()
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('invoices')
     .update({ status: 'cancelled' })
     .eq('id', id)
     .eq('organization_id', organizationId)
+    .in('status', ['draft', 'sent', 'overdue'])
+    .select('id')
   if (error) return { error: error.message }
+  if (!updated || updated.length === 0) {
+    return { error: 'invalid status transition' }
+  }
 
   await supabase.from('invoice_events').insert({
     invoice_id: id,
