@@ -66,6 +66,13 @@ When reviewing pull requests, flag P0 (correctness, security) and P1 (significan
 - Three layers: client (`react-hook-form` + zod), server action (`zod.parse`), DB (constraints + RLS). All three required for user input.
 - Single zod schema shared between client and server. Flag duplicate schemas.
 
+### Clients (P1)
+- Hard delete is forbidden — always set `archived_at` instead.
+- Searching is by `name` or `email` only. Don't add full-text search to other columns without spec update.
+- `address` is `jsonb` with `{ street?, postal?, city?, country? }`; never store the address as a single text blob.
+- Client detail page must call `getClient(id)` (which scopes by `organization_id`), not raw Supabase queries.
+- New listings must keep org-scoping via `requireUser()` then `.eq('organization_id', organizationId)` (RLS is the safety net, not the primary check).
+
 ### Accessibility (P1)
 - Touch targets ≥ 44×44px (`min-h-11 min-w-11`).
 - Status info conveyed by color must also have text or `aria-label`.
