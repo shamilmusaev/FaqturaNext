@@ -2,6 +2,7 @@
 
 import { SearchIcon } from '@/components/ui/icons'
 import { Input } from '@/components/ui/input'
+import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useState, useTransition } from 'react'
@@ -17,8 +18,7 @@ export function ClientsToolbar() {
   const push = useCallback(
     (next: URLSearchParams) => {
       startTransition(() => {
-        // @ts-expect-error typedRoutes does not know about dynamic query strings
-        router.replace(`${pathname}?${next.toString()}`)
+        router.replace(`${pathname}?${next.toString()}` as Route)
       })
     },
     [pathname, router],
