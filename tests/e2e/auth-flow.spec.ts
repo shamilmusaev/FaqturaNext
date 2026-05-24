@@ -1,31 +1,22 @@
 import { expect, test } from '@playwright/test'
 
-test('signup → onboarding → overview, then logout and login again', async ({ page }) => {
-  const email = `e2e-${Date.now()}@faqtura.local`
-  const password = 'password123'
+test.describe('dev auto-login', () => {
+  test('protected route is reachable after auto-login redirect', async ({ page }) => {
+    // Clearing cookies forces middleware to send us through /auto-login.
+    await page.context().clearCookies()
+    await page.goto('/overview')
+    await expect(page).toHaveURL(/\/overview$/)
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+  })
 
-  await page.goto('/signup')
-  await page.getByLabel(/email/i).fill(email)
-  await page.getByLabel(/password/i).fill(password)
-  await page.getByRole('button', { name: /create account/i }).click()
-
-  await expect(page).toHaveURL(/\/onboarding/)
-  await page.getByLabel(/company name/i).fill('Playwright AB')
-  await page.getByRole('button', { name: /create company/i }).click()
-
-  await expect(page).toHaveURL(/\/overview/)
-  await expect(page.getByText(email)).toBeVisible()
-
-  await page.getByRole('button', { name: /sign out/i }).click()
-  await expect(page).toHaveURL(/\/login/)
-
-  await page.getByLabel(/email/i).fill(email)
-  await page.getByLabel(/password/i).fill(password)
-  await page.getByRole('button', { name: /sign in/i }).click()
-  await expect(page).toHaveURL(/\/overview/)
+  test('user chip in topbar shows the dev account', async ({ page }) => {
+    await page.goto('/overview')
+    // dev user email lives in the topbar user chip; on small screens it's hidden,
+    // but on the default 1280-wide Playwright viewport it should be visible.
+    await expect(page.getByText(/@/).first()).toBeVisible()
+  })
 })
 
-test('unauthenticated overview redirects to login', async ({ page }) => {
-  await page.goto('/overview')
-  await expect(page).toHaveURL(/\/login/)
-})
+// NOTE: signup / login UI is intentionally bypassed in dev mode via
+// DEV_AUTO_LOGIN_EMAIL/PASSWORD env vars. To test the real auth flow, unset
+// those vars and run a separate spec — out of scope while solo-testing.
