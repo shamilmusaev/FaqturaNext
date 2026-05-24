@@ -18,22 +18,22 @@ export function Sidebar() {
   const pathname = usePathname()
   const t = useTranslations('nav')
   return (
-    <aside className="hidden md:flex md:flex-col md:w-[240px] md:shrink-0 border-r border-line-1 bg-card h-screen sticky top-0">
-      <div className="px-6 py-6 text-xl font-semibold">Faqtura</div>
-      <nav className="px-3 flex flex-col gap-1">
+    <aside className="hidden md:flex md:flex-col md:w-16 md:shrink-0 border-r border-line-1 bg-card h-screen sticky top-0 py-4">
+      <nav className="flex flex-col items-center gap-1 px-2 flex-1">
         {nav.map(({ href, icon: Icon, key }) => {
           const active = pathname.startsWith(href)
           return (
             <Link
               key={href}
               href={href as Route}
+              aria-label={t(key)}
+              title={t(key)}
               className={cn(
-                'flex items-center gap-3 px-3 h-11 rounded-[12px] text-[15px]',
-                active ? 'bg-ink text-white' : 'text-ink hover:bg-line-1/40',
+                'h-11 w-11 inline-flex items-center justify-center rounded-[12px] transition-colors',
+                active ? 'bg-ink text-white' : 'text-ink/60 hover:text-ink hover:bg-line-1/40',
               )}
             >
               <Icon className="h-5 w-5" />
-              {t(key)}
             </Link>
           )
         })}
