@@ -1,5 +1,5 @@
+import { calcInvoiceTotals, calcLineTotal } from '@/features/invoices/vat'
 import { describe, expect, it } from 'vitest'
-import { calcLineTotal, calcInvoiceTotals } from '@/features/invoices/vat'
 
 describe('calcLineTotal', () => {
   it('computes amount and VAT for SEK 25%', () => {
@@ -29,7 +29,7 @@ describe('calcInvoiceTotals', () => {
   it('sums multiple lines', () => {
     const totals = calcInvoiceTotals([
       { quantity: 2, unitPriceCents: 10000n, vatRate: 25 }, // 20000 + 5000
-      { quantity: 1, unitPriceCents: 5000n, vatRate: 12 },  // 5000 + 600
+      { quantity: 1, unitPriceCents: 5000n, vatRate: 12 }, // 5000 + 600
     ])
     expect(totals.subtotalCents).toBe(25000n)
     expect(totals.vatCents).toBe(5600n)

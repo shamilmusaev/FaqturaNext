@@ -12,7 +12,14 @@ export type InvoiceListItem = InvoiceRow & {
 }
 
 export type InvoiceDetail = InvoiceRow & {
-  client: { id: string; name: string; email: string | null; org_number: string | null; vat_number: string | null; address: unknown | null } | null
+  client: {
+    id: string
+    name: string
+    email: string | null
+    org_number: string | null
+    vat_number: string | null
+    address: unknown | null
+  } | null
   line_items: LineItemRow[]
   events: InvoiceEventRow[]
 }
@@ -54,9 +61,7 @@ export async function getInvoice(id: string): Promise<InvoiceDetail | null> {
 
   const { data: invoice, error: invErr } = await supabase
     .from('invoices')
-    .select(
-      '*, client:clients(id, name, email, org_number, vat_number, address)',
-    )
+    .select('*, client:clients(id, name, email, org_number, vat_number, address)')
     .eq('id', id)
     .eq('organization_id', organizationId)
     .maybeSingle()

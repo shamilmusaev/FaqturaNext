@@ -5,7 +5,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import type { Route } from 'next'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { InvoiceInputSchema, type InvoiceInput } from './schema'
+import { type InvoiceInput, InvoiceInputSchema } from './schema'
 
 export type InvoiceActionResult = { error?: string; fieldErrors?: Record<string, string> }
 
@@ -42,9 +42,10 @@ export async function createInvoiceAction(
   })
   if (error) return { error: error.message }
   void userId
+  if (!data) return { error: 'invoice creation returned no row' }
 
   revalidatePath('/invoices')
-  redirect(`/invoices/${data!.id}` as Route)
+  redirect(`/invoices/${data.id}` as Route)
 }
 
 export async function sendInvoiceAction(id: string): Promise<InvoiceActionResult> {
