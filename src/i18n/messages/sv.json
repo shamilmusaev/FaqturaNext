@@ -138,6 +138,14 @@
       "marked_paid": "Markerad som betald",
       "cancelled": "Avbruten",
       "note_added": "Anteckning tillagd"
+    },
+    "toast": {
+      "created": "Faktura skapad"
+    },
+    "errors": {
+      "pickClient": "Välj en kund",
+      "atLeastOneLine": "Lägg till minst en rad",
+      "needClientFirst": "Du behöver minst en kund för att skapa en faktura."
     }
   },
   "settings": {

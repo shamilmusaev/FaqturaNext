@@ -50,6 +50,8 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
   const t = useTranslations('invoices')
   const tFields = useTranslations('invoices.fields')
   const tActions = useTranslations('invoices.actions')
+  const tErrors = useTranslations('invoices.errors')
+  const tToast = useTranslations('invoices.toast')
   const router = useRouter()
   const [pending, start] = useTransition()
   const [clientId, setClientId] = useState(clients[0]?.id ?? '')
@@ -83,7 +85,7 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
     setServerError(null)
 
     if (!clientId) {
-      setServerError('Pick a client')
+      setServerError(tErrors('pickClient'))
       return
     }
     const validLines: LineItemInput[] = lines
@@ -96,7 +98,7 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
         vatRate: l.vatRate as 0 | 6 | 12 | 25,
       }))
     if (validLines.length === 0) {
-      setServerError('Add at least one line item')
+      setServerError(tErrors('atLeastOneLine'))
       return
     }
 
@@ -119,7 +121,7 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
         setServerError(Object.values(res.fieldErrors).join('; '))
         return
       }
-      toast.success('Invoice created')
+      toast.success(tToast('created'))
       router.refresh()
     })
   }

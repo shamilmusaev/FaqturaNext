@@ -11,7 +11,7 @@ export default async function NewInvoicePage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-semibold tracking-tight">{t('newInvoice')}</h1>
       {clients.length === 0 ? (
-        <p className="text-ink/60">You need at least one client to create an invoice.</p>
+        <p className="text-ink/60">{t('errors.needClientFirst')}</p>
       ) : (
         <InvoiceForm
           clients={clients.map((c) => ({ id: c.id, name: c.name }))}
