@@ -78,11 +78,12 @@ export async function getOverviewMetrics(): Promise<OverviewMetrics> {
     if (r.error) throw r.error
   }
 
+  const todayDate = today.toISOString().slice(0, 10)
   const outstanding = (outstandingRes.data ?? []).reduce(
     (acc, inv) => {
       acc.count += 1
       acc.totalCents += BigInt(inv.total_cents)
-      const overdue = inv.status === 'overdue' || new Date(inv.due_at) < today
+      const overdue = inv.status === 'overdue' || inv.due_at < todayDate
       if (overdue) {
         acc.overdueCount += 1
         acc.overdueCents += BigInt(inv.total_cents)
