@@ -2,6 +2,7 @@ import { InvoiceActions } from '@/features/invoices/components/invoice-actions'
 import { InvoiceStatusChip } from '@/features/invoices/components/invoice-status-chip'
 import { InvoiceTimeline } from '@/features/invoices/components/invoice-timeline'
 import { getInvoice } from '@/features/invoices/queries'
+import { DownloadIcon } from '@/components/ui/icons'
 import { formatMoney } from '@/lib/money'
 import Link from 'next/link'
 import type { Route } from 'next'
@@ -41,11 +42,21 @@ export default async function InvoiceDetailPage({ params }: Props) {
           </div>
         </div>
         <div className="flex flex-col items-end gap-3">
-          {invoice.status === 'draft' && (
-            <Link href={`/invoices/${invoice.id}/edit` as Route}>
-              <span className="text-sm text-ink/60 hover:text-ink underline">{t('edit')}</span>
-            </Link>
-          )}
+          <div className="flex items-center gap-4">
+            {invoice.status === 'draft' && (
+              <Link href={`/invoices/${invoice.id}/edit` as Route}>
+                <span className="text-sm text-ink/60 hover:text-ink underline">{t('edit')}</span>
+              </Link>
+            )}
+            <a
+              href={`/api/invoices/${invoice.id}/pdf`}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1.5 text-sm text-ink/60 hover:text-ink"
+            >
+              <DownloadIcon className="h-4 w-4" /> PDF
+            </a>
+          </div>
           <InvoiceActions id={invoice.id} status={invoice.status} />
         </div>
       </div>
