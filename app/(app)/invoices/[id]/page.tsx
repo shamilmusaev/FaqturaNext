@@ -1,13 +1,13 @@
+import { DownloadIcon } from '@/components/ui/icons'
 import { InvoiceActions } from '@/features/invoices/components/invoice-actions'
 import { InvoiceStatusChip } from '@/features/invoices/components/invoice-status-chip'
 import { InvoiceTimeline } from '@/features/invoices/components/invoice-timeline'
 import { getInvoice } from '@/features/invoices/queries'
-import { DownloadIcon } from '@/components/ui/icons'
 import { formatMoney } from '@/lib/money'
-import Link from 'next/link'
 import type { Route } from 'next'
-import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -31,9 +31,7 @@ export default async function InvoiceDetailPage({ params }: Props) {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <div className="font-mono text-sm text-ink/60">{invoice.number}</div>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            {invoice.client?.name ?? '—'}
-          </h1>
+          <h1 className="text-3xl font-semibold tracking-tight">{invoice.client?.name ?? '—'}</h1>
           <div className="mt-2 flex items-center gap-3">
             <InvoiceStatusChip status={invoice.status} />
             <span className="text-sm text-ink/60">
@@ -51,7 +49,7 @@ export default async function InvoiceDetailPage({ params }: Props) {
             <a
               href={`/api/invoices/${invoice.id}/pdf`}
               target="_blank"
-              rel="noopener"
+              rel="noreferrer noopener"
               className="inline-flex items-center gap-1.5 text-sm text-ink/60 hover:text-ink"
             >
               <DownloadIcon className="h-4 w-4" /> PDF
@@ -93,12 +91,12 @@ export default async function InvoiceDetailPage({ params }: Props) {
       <section className="rounded-[24px] border border-line-1 bg-card p-4 md:max-w-sm md:ml-auto">
         <dl className="grid grid-cols-[1fr_auto] gap-y-1 text-sm">
           <dt className="text-ink/60">{tFields('subtotal')}</dt>
-          <dd className="tnum font-mono">{formatMoney(BigInt(invoice.subtotal_cents), currency)}</dd>
+          <dd className="tnum font-mono">
+            {formatMoney(BigInt(invoice.subtotal_cents), currency)}
+          </dd>
           <dt className="text-ink/60">{tFields('vatTotal')}</dt>
           <dd className="tnum font-mono">{formatMoney(BigInt(invoice.vat_cents), currency)}</dd>
-          <dt className="font-semibold pt-2 border-t border-line-1 mt-1">
-            {tFields('total')}
-          </dt>
+          <dt className="font-semibold pt-2 border-t border-line-1 mt-1">{tFields('total')}</dt>
           <dd className="tnum font-mono font-semibold pt-2 border-t border-line-1 mt-1">
             {formatMoney(BigInt(invoice.total_cents), currency)}
           </dd>

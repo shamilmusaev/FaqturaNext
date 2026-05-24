@@ -1,12 +1,12 @@
 'use client'
 
+import { SearchIcon } from '@/components/ui/icons'
+import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/cn'
 import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTransition } from 'react'
-import { Input } from '@/components/ui/input'
-import { SearchIcon } from '@/components/ui/icons'
 
 const STATUSES = ['all', 'draft', 'sent', 'paid', 'overdue'] as const
 type StatusKey = (typeof STATUSES)[number]

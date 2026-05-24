@@ -42,38 +42,37 @@ export async function getOverviewMetrics(): Promise<OverviewMetrics> {
   const lastMonthStart = addMonthsUTC(thisMonthStart, -1)
   const weekStart = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-  const [outstandingRes, paidThisRes, paidLastRes, sentWeekRes, paidLast90Res] =
-    await Promise.all([
-      supabase
-        .from('invoices')
-        .select('total_cents, status, due_at')
-        .eq('organization_id', organizationId)
-        .in('status', ['sent', 'overdue']),
-      supabase
-        .from('invoices')
-        .select('total_cents')
-        .eq('organization_id', organizationId)
-        .eq('status', 'paid')
-        .gte('paid_at', thisMonthStart.toISOString()),
-      supabase
-        .from('invoices')
-        .select('total_cents')
-        .eq('organization_id', organizationId)
-        .eq('status', 'paid')
-        .gte('paid_at', lastMonthStart.toISOString())
-        .lt('paid_at', thisMonthStart.toISOString()),
-      supabase
-        .from('invoices')
-        .select('total_cents')
-        .eq('organization_id', organizationId)
-        .gte('sent_at', weekStart.toISOString()),
-      supabase
-        .from('invoices')
-        .select('issued_at, paid_at, status')
-        .eq('organization_id', organizationId)
-        .eq('status', 'paid')
-        .gte('paid_at', addMonthsUTC(thisMonthStart, -3).toISOString()),
-    ])
+  const [outstandingRes, paidThisRes, paidLastRes, sentWeekRes, paidLast90Res] = await Promise.all([
+    supabase
+      .from('invoices')
+      .select('total_cents, status, due_at')
+      .eq('organization_id', organizationId)
+      .in('status', ['sent', 'overdue']),
+    supabase
+      .from('invoices')
+      .select('total_cents')
+      .eq('organization_id', organizationId)
+      .eq('status', 'paid')
+      .gte('paid_at', thisMonthStart.toISOString()),
+    supabase
+      .from('invoices')
+      .select('total_cents')
+      .eq('organization_id', organizationId)
+      .eq('status', 'paid')
+      .gte('paid_at', lastMonthStart.toISOString())
+      .lt('paid_at', thisMonthStart.toISOString()),
+    supabase
+      .from('invoices')
+      .select('total_cents')
+      .eq('organization_id', organizationId)
+      .gte('sent_at', weekStart.toISOString()),
+    supabase
+      .from('invoices')
+      .select('issued_at, paid_at, status')
+      .eq('organization_id', organizationId)
+      .eq('status', 'paid')
+      .gte('paid_at', addMonthsUTC(thisMonthStart, -3).toISOString()),
+  ])
 
   const outstanding = (outstandingRes.data ?? []).reduce(
     (acc, inv) => {
@@ -89,14 +88,8 @@ export async function getOverviewMetrics(): Promise<OverviewMetrics> {
     { count: 0, totalCents: 0n, overdueCount: 0, overdueCents: 0n },
   )
 
-  const paidThisCents = (paidThisRes.data ?? []).reduce(
-    (s, r) => s + BigInt(r.total_cents),
-    0n,
-  )
-  const paidLastCents = (paidLastRes.data ?? []).reduce(
-    (s, r) => s + BigInt(r.total_cents),
-    0n,
-  )
+  const paidThisCents = (paidThisRes.data ?? []).reduce((s, r) => s + BigInt(r.total_cents), 0n)
+  const paidLastCents = (paidLastRes.data ?? []).reduce((s, r) => s + BigInt(r.total_cents), 0n)
   let deltaPct: number | null = null
   if (paidLastCents > 0n) {
     deltaPct = Number(((paidThisCents - paidLastCents) * 10000n) / paidLastCents) / 100
@@ -202,9 +195,7 @@ export async function getRecentActivity(limit = 10): Promise<RecentActivityItem[
 
   const { data } = await supabase
     .from('invoice_events')
-    .select(
-      'id, type, created_at, invoice:invoices(id, number, client:clients(name))',
-    )
+    .select('id, type, created_at, invoice:invoices(id, number, client:clients(name))')
     .eq('organization_id', organizationId)
     .order('created_at', { ascending: false })
     .limit(limit)

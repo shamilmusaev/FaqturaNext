@@ -26,7 +26,13 @@ const styles = StyleSheet.create({
   metaLabel: { color: COLOR.muted, fontSize: 8 },
   metaValue: { fontFamily: 'Courier', fontSize: 10 },
   parties: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32 },
-  partyTitle: { fontSize: 8, color: COLOR.muted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
+  partyTitle: {
+    fontSize: 8,
+    color: COLOR.muted,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   partyName: { fontSize: 12, fontWeight: 600, marginBottom: 2 },
   partyLine: { color: COLOR.muted, marginBottom: 1 },
   table: { borderTop: `1pt solid ${COLOR.line}` },
@@ -112,11 +118,9 @@ function formatMoney(value: bigint | number, currency: string): string {
 
 function addressLines(addr: InvoicePdfData['organization']['address']): string[] {
   if (!addr) return []
-  return [
-    addr.street,
-    [addr.postal, addr.city].filter(Boolean).join(' '),
-    addr.country,
-  ].filter((l): l is string => Boolean(l && l.length > 0))
+  return [addr.street, [addr.postal, addr.city].filter(Boolean).join(' '), addr.country].filter(
+    (l): l is string => Boolean(l && l.length > 0),
+  )
 }
 
 export function InvoiceDocument({ invoice }: { invoice: InvoicePdfData }) {
@@ -177,6 +181,7 @@ export function InvoiceDocument({ invoice }: { invoice: InvoicePdfData }) {
             <Text style={[styles.colAmount, styles.tableHeader]}>Belopp</Text>
           </View>
           {invoice.lineItems.map((li, idx) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: PDF render only — no reordering.
             <View key={idx} style={styles.tableRow}>
               <Text style={styles.colDesc}>
                 {li.description}
@@ -187,9 +192,7 @@ export function InvoiceDocument({ invoice }: { invoice: InvoicePdfData }) {
                 {formatMoney(li.unitPriceCents, invoice.currency)}
               </Text>
               <Text style={styles.colVat}>{li.vatRate}%</Text>
-              <Text style={styles.colAmount}>
-                {formatMoney(li.amountCents, invoice.currency)}
-              </Text>
+              <Text style={styles.colAmount}>{formatMoney(li.amountCents, invoice.currency)}</Text>
             </View>
           ))}
         </View>
@@ -203,9 +206,7 @@ export function InvoiceDocument({ invoice }: { invoice: InvoicePdfData }) {
           </View>
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Moms</Text>
-            <Text style={styles.totalValue}>
-              {formatMoney(invoice.vatCents, invoice.currency)}
-            </Text>
+            <Text style={styles.totalValue}>{formatMoney(invoice.vatCents, invoice.currency)}</Text>
           </View>
           <View style={styles.grandTotal}>
             <Text style={styles.grandLabel}>Summa</Text>
@@ -224,9 +225,7 @@ export function InvoiceDocument({ invoice }: { invoice: InvoicePdfData }) {
 
         <View style={styles.footer} fixed>
           <Text>{invoice.organization.name}</Text>
-          {invoice.organization.bankgiro && (
-            <Text>Bankgiro {invoice.organization.bankgiro}</Text>
-          )}
+          {invoice.organization.bankgiro && <Text>Bankgiro {invoice.organization.bankgiro}</Text>}
           {invoice.organization.iban && <Text>IBAN {invoice.organization.iban}</Text>}
         </View>
       </Page>

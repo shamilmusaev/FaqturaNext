@@ -5,11 +5,7 @@ import { toast } from '@/components/ui/toast'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
-import {
-  cancelInvoiceAction,
-  markInvoicePaidAction,
-  sendInvoiceAction,
-} from '../actions'
+import { cancelInvoiceAction, markInvoicePaidAction, sendInvoiceAction } from '../actions'
 import type { InvoiceStatus } from '../schema'
 
 export function InvoiceActions({ id, status }: { id: string; status: InvoiceStatus }) {

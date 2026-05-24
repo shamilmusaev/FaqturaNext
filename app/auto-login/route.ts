@@ -1,7 +1,7 @@
-import { createServerClient } from '@supabase/ssr'
-import { type NextRequest, NextResponse } from 'next/server'
 import type { Database } from '@/lib/supabase/database.types'
 import { supabaseEnv } from '@/lib/supabase/env'
+import { createServerClient } from '@supabase/ssr'
+import { type NextRequest, NextResponse } from 'next/server'
 
 /**
  * Dev-only auto-login. Route handlers can write cookies on the response, which
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   const email = process.env.DEV_AUTO_LOGIN_EMAIL
   const password = process.env.DEV_AUTO_LOGIN_PASSWORD
   const nextParam = request.nextUrl.searchParams.get('next')
-  const target = nextParam && nextParam.startsWith('/') ? nextParam : '/overview'
+  const target = nextParam?.startsWith('/') ? nextParam : '/overview'
 
   if (!email || !password) {
     return new NextResponse(

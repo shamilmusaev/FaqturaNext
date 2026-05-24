@@ -26,7 +26,9 @@ export async function CashflowChart({
           <h2 className="text-lg font-semibold tracking-tight">{t('title')}</h2>
           <div className="text-2xl font-semibold tracking-tight tnum mt-1">
             {formatMoney(total, currency)}
-            <span className="ml-2 text-sm text-ink/60 font-normal">{t('subtitle', { months })}</span>
+            <span className="ml-2 text-sm text-ink/60 font-normal">
+              {t('subtitle', { months })}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-4 text-xs text-ink/60">

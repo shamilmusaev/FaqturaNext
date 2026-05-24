@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button'
 import { getInvoice } from '@/features/invoices/queries'
-import Link from 'next/link'
 import type { Route } from 'next'
-import { notFound, redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
+import { notFound, redirect } from 'next/navigation'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -27,8 +27,8 @@ export default async function EditInvoicePage({ params }: Props) {
         {t('edit')} · {invoice.number}
       </h1>
       <div className="rounded-[24px] border border-dashed border-line-2 bg-card p-8 text-center text-ink/60">
-        Inline editing of invoice line items will land in a follow-up. For now, cancel this
-        draft and create a new invoice if you need to make changes.
+        Inline editing of invoice line items will land in a follow-up. For now, cancel this draft
+        and create a new invoice if you need to make changes.
         <div className="mt-4">
           <Link href={`/invoices/${id}` as Route}>
             <Button variant="secondary">{t('back')}</Button>

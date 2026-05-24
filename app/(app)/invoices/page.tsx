@@ -3,9 +3,9 @@ import { PlusIcon } from '@/components/ui/icons'
 import { InvoiceFilters } from '@/features/invoices/components/invoice-filters'
 import { InvoiceList } from '@/features/invoices/components/invoice-list'
 import { listInvoices } from '@/features/invoices/queries'
-import Link from 'next/link'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 
 interface PageProps {
   searchParams: Promise<{ status?: string; q?: string }>

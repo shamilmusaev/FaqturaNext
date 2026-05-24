@@ -14,9 +14,9 @@ import {
 import { greetingKey, nameFromEmail } from '@/features/overview/utils'
 import { requireUser } from '@/lib/auth'
 import { formatMoney } from '@/lib/money'
-import Link from 'next/link'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 
 export default async function OverviewPage() {
   const t = await getTranslations('overview')
@@ -30,7 +30,7 @@ export default async function OverviewPage() {
     getRecentActivity(8),
   ])
 
-  const currency: 'SEK' = 'SEK'
+  const currency = 'SEK' as const
   const greeted = nameFromEmail(email)
   const greeting = `${t(greetingKey())}${greeted ? `, ${greeted}` : ''}`
 

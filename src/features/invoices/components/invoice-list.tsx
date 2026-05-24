@@ -1,7 +1,7 @@
 import { formatMoney } from '@/lib/money'
-import Link from 'next/link'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 import type { InvoiceListItem } from '../queries'
 import { InvoiceStatusChip } from './invoice-status-chip'
 

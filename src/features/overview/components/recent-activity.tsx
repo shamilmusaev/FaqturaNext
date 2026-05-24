@@ -1,6 +1,6 @@
-import Link from 'next/link'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 import type { RecentActivityItem } from '../queries'
 
 const TYPE_LABELS: Record<RecentActivityItem['type'], string> = {
@@ -47,9 +47,7 @@ export async function RecentActivity({ items }: { items: RecentActivityItem[] })
                   <span className="text-ink/60"> · {TYPE_LABELS[e.type]}</span>
                 </div>
                 <div className="text-xs text-ink/50">
-                  {e.invoice ? (
-                    <span className="font-mono">{e.invoice.number} · </span>
-                  ) : null}
+                  {e.invoice ? <span className="font-mono">{e.invoice.number} · </span> : null}
                   {new Date(e.createdAt).toLocaleString('sv-SE')}
                 </div>
               </div>

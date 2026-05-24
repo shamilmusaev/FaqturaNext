@@ -1,15 +1,14 @@
 import { Chip } from '@/components/ui/chip'
 import { formatMoney } from '@/lib/money'
-import Link from 'next/link'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 import type { DueThisWeekItem } from '../queries'
 
 function relativeDay(dueAt: string, today = new Date()): string {
   const due = new Date(dueAt)
   const diffDays = Math.round(
-    (due.getTime() - new Date(today.toISOString().slice(0, 10)).getTime()) /
-      (24 * 60 * 60 * 1000),
+    (due.getTime() - new Date(today.toISOString().slice(0, 10)).getTime()) / (24 * 60 * 60 * 1000),
   )
   if (diffDays < 0) return `${Math.abs(diffDays)} d ago`
   if (diffDays === 0) return 'today'

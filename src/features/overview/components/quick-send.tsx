@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from '@/components/ui/icons'
-import Link from 'next/link'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 
 export async function QuickSend() {
   const t = await getTranslations('overview.quickSend')

@@ -6,14 +6,14 @@ import { Input } from '@/components/ui/input'
 import { MoneyInput } from '@/components/ui/money-input'
 import { toast } from '@/components/ui/toast'
 import { addCents, formatMoney } from '@/lib/money'
-import Link from 'next/link'
 import type { Route } from 'next'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useMemo, useState, useTransition } from 'react'
 import { createInvoiceAction } from '../actions'
 import type { InvoiceInput, LineItemInput } from '../schema'
-import { calcInvoiceTotals, type SwedishVatRate } from '../vat'
+import { type SwedishVatRate, calcInvoiceTotals } from '../vat'
 
 interface ClientOption {
   id: string
@@ -145,11 +145,20 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
         </label>
         <label className="flex flex-col gap-1.5 text-sm">
           <span className="text-ink/80">{tFields('currency')}</span>
-          <Input value={currency} onChange={(e) => setCurrency(e.target.value.toUpperCase())} maxLength={3} />
+          <Input
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value.toUpperCase())}
+            maxLength={3}
+          />
         </label>
         <label className="flex flex-col gap-1.5 text-sm">
           <span className="text-ink/80">{tFields('issuedAt')}</span>
-          <Input type="date" value={issuedAt} onChange={(e) => setIssuedAt(e.target.value)} required />
+          <Input
+            type="date"
+            value={issuedAt}
+            onChange={(e) => setIssuedAt(e.target.value)}
+            required
+          />
         </label>
         <label className="flex flex-col gap-1.5 text-sm">
           <span className="text-ink/80">{tFields('dueAt')}</span>
@@ -160,13 +169,19 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
       <section className="flex flex-col gap-3">
         <header className="flex items-center justify-between">
           <h2 className="text-lg font-semibold tracking-tight">Line items</h2>
-          <Button type="button" variant="secondary" size="sm" onClick={() => setLines((p) => [...p, emptyLine()])}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => setLines((p) => [...p, emptyLine()])}
+          >
             <PlusIcon className="h-4 w-4" /> {tActions('addLine')}
           </Button>
         </header>
         <div className="flex flex-col gap-3">
           {lines.map((line, idx) => (
             <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: lines reorder only on add/remove; index is stable per render.
               key={idx}
               className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3"
             >
@@ -209,7 +224,9 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
                   {tFields('vat')}
                   <select
                     value={line.vatRate}
-                    onChange={(e) => updateLine(idx, { vatRate: Number(e.target.value) as SwedishVatRate })}
+                    onChange={(e) =>
+                      updateLine(idx, { vatRate: Number(e.target.value) as SwedishVatRate })
+                    }
                     className="h-11 rounded-[12px] border border-line-1 bg-card px-3 text-[15px]"
                   >
                     {VAT_RATES.map((r) => (
