@@ -39,5 +39,14 @@
   "overview": {
     "title": "Översikt",
     "placeholder": "Platshållare för fas 0. Autentisering och data kopplas in i fas 1."
+  },
+  "invoices": {
+    "title": "Fakturor"
+  },
+  "settings": {
+    "title": "Inställningar",
+    "email": "E-post",
+    "organization": "Organisation",
+    "role": "Roll"
   }
 }

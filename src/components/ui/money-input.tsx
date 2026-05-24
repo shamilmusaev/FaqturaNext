@@ -14,9 +14,12 @@ interface MoneyInputProps
 function defaultText(value: bigint | number | undefined, locale: string): string {
   if (value == null) return ''
   const big = typeof value === 'bigint' ? value : BigInt(value)
-  const whole = big / 100n
-  const fraction = (big < 0n ? -big % 100n : big % 100n).toString().padStart(2, '0')
-  return `${Number(whole).toLocaleString(locale)}${(1.1).toLocaleString(locale).charAt(1)}${fraction}`
+  const negative = big < 0n
+  const abs = negative ? -big : big
+  const whole = abs / 100n
+  const fraction = (abs % 100n).toString().padStart(2, '0')
+  const sep = (1.1).toLocaleString(locale).charAt(1)
+  return `${negative ? '-' : ''}${Number(whole).toLocaleString(locale)}${sep}${fraction}`
 }
 
 export const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(

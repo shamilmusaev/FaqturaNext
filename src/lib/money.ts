@@ -21,11 +21,12 @@ export function formatMoney(
   locale = 'sv-SE',
 ): string {
   const big = toBigIntCents(cents)
-  const whole = big / 100n
-  const fraction = big < 0n ? -big % 100n : big % 100n
-  // Intl.NumberFormat takes Number; convert via decimal string to keep precision
-  // up to Number.MAX_SAFE_INTEGER / 100. For larger values, scale via parts.
-  const decimal = `${whole.toString()}.${fraction.toString().padStart(2, '0')}`
+  const negative = big < 0n
+  const abs = negative ? -big : big
+  const whole = abs / 100n
+  const fraction = abs % 100n
+  // Build decimal string from bigint parts to avoid Number precision loss.
+  const decimal = `${negative ? '-' : ''}${whole}.${fraction.toString().padStart(2, '0')}`
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,

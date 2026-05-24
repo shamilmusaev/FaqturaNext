@@ -39,5 +39,14 @@
   "overview": {
     "title": "Overview",
     "placeholder": "Phase 0 placeholder. Auth and data wire up in Phase 1."
+  },
+  "invoices": {
+    "title": "Invoices"
+  },
+  "settings": {
+    "title": "Settings",
+    "email": "Email",
+    "organization": "Organization",
+    "role": "Role"
   }
 }
