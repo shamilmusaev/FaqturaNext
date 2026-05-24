@@ -1,28 +1,9 @@
-import {
-  Document,
-  Font,
-  Page,
-  StyleSheet,
-  Text,
-  View,
-} from '@react-pdf/renderer'
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
-// Register Hanken Grotesk (must be a TTF/OTF URL; using Google Fonts CDN's TTF endpoints).
-// In production these would be bundled or hosted; for MVP we link directly.
-Font.register({
-  family: 'Hanken Grotesk',
-  fonts: [
-    { src: 'https://fonts.gstatic.com/s/hankengrotesk/v8/ieVj2YZDLWuGJpnzaiwFXS9tcgVwhgo.ttf', fontWeight: 400 },
-    { src: 'https://fonts.gstatic.com/s/hankengrotesk/v8/ieVj2YZDLWuGJpnzaiwFXS9tdAVwhgr0AhE.ttf', fontWeight: 600 },
-  ],
-})
-
-Font.register({
-  family: 'IBM Plex Mono',
-  fonts: [
-    { src: 'https://fonts.gstatic.com/s/ibmplexmono/v19/-F63fjptAgt5VM-kVkqdyU8n3kwq0n1hj-sNFQ.ttf', fontWeight: 400 },
-  ],
-})
+// Use react-pdf's built-in Helvetica / Courier instead of loading Hanken Grotesk
+// over the wire on every render — that was slow, brittle when offline, and
+// occasionally hung the route. Branded fonts will be bundled in a follow-up
+// once we ship the Edge Function with pre-warmed font files.
 
 const COLOR = {
   ink: '#14110D',
@@ -34,7 +15,7 @@ const COLOR = {
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'Hanken Grotesk',
+    fontFamily: 'Helvetica',
     fontSize: 10,
     color: COLOR.ink,
     padding: 48,
@@ -43,7 +24,7 @@ const styles = StyleSheet.create({
   brand: { fontSize: 22, fontWeight: 600, letterSpacing: -0.5 },
   meta: { textAlign: 'right' },
   metaLabel: { color: COLOR.muted, fontSize: 8 },
-  metaValue: { fontFamily: 'IBM Plex Mono', fontSize: 10 },
+  metaValue: { fontFamily: 'Courier', fontSize: 10 },
   parties: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32 },
   partyTitle: { fontSize: 8, color: COLOR.muted, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
   partyName: { fontSize: 12, fontWeight: 600, marginBottom: 2 },
@@ -57,13 +38,13 @@ const styles = StyleSheet.create({
   tableHeader: { color: COLOR.muted, fontSize: 8, textTransform: 'uppercase' },
   colDesc: { flex: 3 },
   colQty: { flex: 1, textAlign: 'right' },
-  colPrice: { flex: 1.5, textAlign: 'right', fontFamily: 'IBM Plex Mono' },
+  colPrice: { flex: 1.5, textAlign: 'right', fontFamily: 'Courier' },
   colVat: { width: 40, textAlign: 'right' },
-  colAmount: { flex: 1.5, textAlign: 'right', fontFamily: 'IBM Plex Mono' },
+  colAmount: { flex: 1.5, textAlign: 'right', fontFamily: 'Courier' },
   totalsBlock: { marginTop: 24, alignSelf: 'flex-end', width: 240 },
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
   totalLabel: { color: COLOR.muted },
-  totalValue: { fontFamily: 'IBM Plex Mono' },
+  totalValue: { fontFamily: 'Courier' },
   grandTotal: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -72,7 +53,7 @@ const styles = StyleSheet.create({
     borderTop: `1pt solid ${COLOR.ink}`,
   },
   grandLabel: { fontWeight: 600 },
-  grandValue: { fontFamily: 'IBM Plex Mono', fontWeight: 600 },
+  grandValue: { fontFamily: 'Courier', fontWeight: 600 },
   footer: {
     position: 'absolute',
     bottom: 32,
