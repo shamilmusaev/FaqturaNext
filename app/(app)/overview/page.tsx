@@ -11,25 +11,12 @@ import {
   getOverviewMetrics,
   getRecentActivity,
 } from '@/features/overview/queries'
+import { greetingKey, nameFromEmail } from '@/features/overview/utils'
 import { requireUser } from '@/lib/auth'
 import { formatMoney } from '@/lib/money'
 import Link from 'next/link'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
-
-function greetingKey(date = new Date()): 'goodMorning' | 'goodAfternoon' | 'goodEvening' {
-  const h = date.getHours()
-  if (h < 12) return 'goodMorning'
-  if (h < 18) return 'goodAfternoon'
-  return 'goodEvening'
-}
-
-function nameFromEmail(email: string): string {
-  const local = email.split('@')[0] ?? ''
-  const guess = local.replace(/[._-]+/g, ' ').trim().split(' ')[0] ?? ''
-  if (!guess) return ''
-  return guess.charAt(0).toUpperCase() + guess.slice(1)
-}
 
 export default async function OverviewPage() {
   const t = await getTranslations('overview')
