@@ -1,6 +1,10 @@
 import { updateSession } from '@/lib/supabase/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
 
+const DEV_AUTO_LOGIN = Boolean(
+  process.env.DEV_AUTO_LOGIN_EMAIL && process.env.DEV_AUTO_LOGIN_PASSWORD,
+)
+
 export async function middleware(request: NextRequest) {
   const { response, user } = await updateSession(request)
   const url = request.nextUrl
@@ -12,6 +16,19 @@ export async function middleware(request: NextRequest) {
     url.pathname.startsWith('/settings')
   const isOnboarding = url.pathname.startsWith('/onboarding')
   const isAuthPage = url.pathname === '/login' || url.pathname === '/signup'
+  const isAutoLogin = url.pathname === '/auto-login'
+
+  // Dev shortcut: when DEV_AUTO_LOGIN env is set and the visitor lands
+  // unauthenticated, send them through /auto-login instead of /login so they
+  // never have to type credentials.
+  if (DEV_AUTO_LOGIN && !user && (isApp || isOnboarding || url.pathname === '/')) {
+    if (!isAutoLogin) {
+      const next = url.pathname === '/' ? '/overview' : url.pathname
+      const redirectUrl = new URL('/auto-login', request.url)
+      redirectUrl.searchParams.set('next', next)
+      return NextResponse.redirect(redirectUrl)
+    }
+  }
 
   if (isApp && !user) {
     const redirect = new URL('/login', request.url)
