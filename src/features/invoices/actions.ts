@@ -49,6 +49,52 @@ export async function createInvoiceAction(
   redirect(`/invoices/${data.id}` as Route)
 }
 
+export async function duplicateInvoiceAction(
+  id: string,
+): Promise<InvoiceActionResult & { invoiceId?: string }> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data: src, error: srcErr } = await supabase
+    .from('invoices')
+    .select('client_id, currency, notes, due_at')
+    .eq('id', id)
+    .eq('organization_id', organizationId)
+    .single()
+  if (srcErr || !src) return { error: srcErr?.message ?? 'invoice not found' }
+
+  const { data: items, error: itemsErr } = await supabase
+    .from('invoice_line_items')
+    .select('description, quantity, unit, unit_price_cents, vat_rate')
+    .eq('invoice_id', id)
+    .order('position')
+  if (itemsErr) return { error: itemsErr.message }
+  if (!items || items.length === 0) return { error: 'cannot duplicate empty invoice' }
+
+  const due = new Date()
+  due.setDate(due.getDate() + 30)
+  const dueAt = due.toISOString().slice(0, 10)
+
+  const { data, error } = await supabase.rpc('create_invoice', {
+    p_org: organizationId,
+    p_client_id: src.client_id,
+    p_due_at: dueAt,
+    p_currency: src.currency,
+    p_notes: src.notes,
+    p_line_items: items.map((li) => ({
+      description: li.description,
+      quantity: Number(li.quantity),
+      unit: li.unit,
+      unit_price_cents: String(li.unit_price_cents),
+      vat_rate: Number(li.vat_rate),
+    })),
+  })
+  if (error || !data) return { error: error?.message ?? 'duplicate failed' }
+
+  revalidatePath('/invoices')
+  return { invoiceId: data.id }
+}
+
 export async function sendInvoiceAction(id: string): Promise<InvoiceActionResult> {
   const { organizationId, userId } = await requireUser()
   const supabase = await createServerClient()

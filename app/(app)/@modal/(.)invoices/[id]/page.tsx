@@ -1,3 +1,4 @@
+import { DuplicateInvoiceButton } from '@/features/invoices/components/duplicate-button'
 import { InvoiceActions } from '@/features/invoices/components/invoice-actions'
 import { InvoiceDrawer } from '@/features/invoices/components/invoice-drawer'
 import { InvoiceStatusChip } from '@/features/invoices/components/invoice-status-chip'
@@ -23,6 +24,9 @@ export default async function InvoiceDetailModal({ params }: Props) {
   return (
     <InvoiceDrawer title={`${invoice.number} · ${invoice.client?.name ?? '—'}`} width="detail">
       <div className="flex flex-col gap-6">
+        <div className="flex justify-end">
+          <DuplicateInvoiceButton id={invoice.id} />
+        </div>
         <section className="rounded-[24px] border border-line-1 bg-card p-7 flex items-start justify-between gap-6 flex-wrap">
           <div>
             <InvoiceStatusChip status={invoice.status} />

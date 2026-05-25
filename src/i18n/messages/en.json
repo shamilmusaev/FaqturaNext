@@ -142,6 +142,7 @@
       "removeLine": "Remove",
       "save": "Save draft",
       "create": "Create invoice",
+      "duplicate": "Duplicate",
       "confirmSend": "Send this invoice to the client?",
       "confirmPaid": "Mark this invoice as paid?",
       "confirmCancel": "Cancel this invoice?"
@@ -158,7 +159,8 @@
     },
     "toast": {
       "created": "Invoice created",
-      "reminderSent": "Reminder sent"
+      "reminderSent": "Reminder sent",
+      "duplicated": "Duplicated as draft"
     },
     "errors": {
       "pickClient": "Pick a client",

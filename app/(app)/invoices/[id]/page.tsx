@@ -1,4 +1,5 @@
 import { DownloadIcon } from '@/components/ui/icons'
+import { DuplicateInvoiceButton } from '@/features/invoices/components/duplicate-button'
 import { InvoiceActions } from '@/features/invoices/components/invoice-actions'
 import { InvoiceStatusChip } from '@/features/invoices/components/invoice-status-chip'
 import { InvoiceTimeline } from '@/features/invoices/components/invoice-timeline'
@@ -49,6 +50,7 @@ export default async function InvoiceDetailPage({ params }: Props) {
             >
               <DownloadIcon className="h-4 w-4" /> PDF
             </a>
+            <DuplicateInvoiceButton id={invoice.id} />
           </div>
           <InvoiceActions id={invoice.id} status={invoice.status} />
         </div>

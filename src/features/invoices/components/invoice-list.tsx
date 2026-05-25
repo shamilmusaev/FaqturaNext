@@ -4,6 +4,7 @@ import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import type { InvoiceListItem } from '../queries'
+import { InvoiceRowCheckbox, InvoiceRowMore } from './invoice-row-actions'
 import { InvoiceStatusChip } from './invoice-status-chip'
 
 const COLS = 'grid-cols-[24px_120px_1fr_120px_110px_100px_100px_40px]'
@@ -36,12 +37,7 @@ export async function InvoiceList({ invoices }: { invoices: InvoiceListItem[] })
               href={`/invoices/${inv.id}` as Route}
               className={`grid ${COLS} items-center gap-3 px-6 py-3.5 border-t border-line-1 hover:bg-paper/60 transition-colors`}
             >
-              <input
-                type="checkbox"
-                aria-label={`select-${inv.number}`}
-                onClick={(e) => e.stopPropagation()}
-                className="accent-ink"
-              />
+              <InvoiceRowCheckbox invoiceNumber={inv.number} />
               <div className="font-mono text-[13px] text-ink/70">{inv.number}</div>
               <div className="flex items-center gap-2.5 min-w-0">
                 <Avatar name={client?.name ?? '—'} className="h-7 w-7 text-[11px]" />
@@ -63,27 +59,7 @@ export async function InvoiceList({ invoices }: { invoices: InvoiceListItem[] })
                 {inv.due_at ?? '—'}
               </div>
               <div className="text-right">
-                <button
-                  type="button"
-                  aria-label="more"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                  }}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-ink/50 hover:text-ink hover:bg-line-1/50"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <circle cx="3" cy="8" r="1.4" />
-                    <circle cx="8" cy="8" r="1.4" />
-                    <circle cx="13" cy="8" r="1.4" />
-                  </svg>
-                </button>
+                <InvoiceRowMore />
               </div>
             </Link>
           )

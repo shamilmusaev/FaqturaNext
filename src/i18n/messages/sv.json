@@ -142,6 +142,7 @@
       "removeLine": "Ta bort",
       "save": "Spara utkast",
       "create": "Skapa faktura",
+      "duplicate": "Duplicera",
       "confirmSend": "Skicka den här fakturan till kunden?",
       "confirmPaid": "Markera den här fakturan som betald?",
       "confirmCancel": "Avbryt den här fakturan?"
@@ -158,7 +159,8 @@
     },
     "toast": {
       "created": "Faktura skapad",
-      "reminderSent": "Påminnelse skickad"
+      "reminderSent": "Påminnelse skickad",
+      "duplicated": "Duplicerad som utkast"
     },
     "errors": {
       "pickClient": "Välj en kund",
