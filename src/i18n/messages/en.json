@@ -175,6 +175,16 @@
     "unarchive": "Restore",
     "back": "Back to clients",
     "archived": "Archived",
+    "overdue": "Overdue",
+    "subtitle": {
+      "count": "{count, plural, =0 {No clients} =1 {1 client} other {# clients}}",
+      "lifetimeRevenue": "{amount} in lifetime revenue"
+    },
+    "stats": {
+      "revenue": "Revenue",
+      "outstanding": "Outstanding",
+      "invoiceCount": "{count, plural, =0 {No invoices} =1 {1 invoice} other {# invoices}}"
+    },
     "fields": {
       "name": "Name",
       "email": "Email",
@@ -191,7 +201,10 @@
       "create": "Create client",
       "cancel": "Cancel",
       "confirmArchive": "Archive this client?",
-      "confirmUnarchive": "Restore this client?"
+      "confirmUnarchive": "Restore this client?",
+      "newInvoice": "New invoice",
+      "viewInvoices": "View invoices",
+      "message": "Message"
     }
   }
 }

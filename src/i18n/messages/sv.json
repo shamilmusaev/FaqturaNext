@@ -175,6 +175,16 @@
     "unarchive": "Återställ",
     "back": "Tillbaka till kunder",
     "archived": "Arkiverad",
+    "overdue": "Förfallen",
+    "subtitle": {
+      "count": "{count, plural, =0 {Inga kunder} =1 {1 kund} other {# kunder}}",
+      "lifetimeRevenue": "{amount} i livstidsintäkter"
+    },
+    "stats": {
+      "revenue": "Intäkter",
+      "outstanding": "Utestående",
+      "invoiceCount": "{count, plural, =0 {Inga fakturor} =1 {1 faktura} other {# fakturor}}"
+    },
     "fields": {
       "name": "Namn",
       "email": "E-post",
@@ -191,7 +201,10 @@
       "create": "Skapa kund",
       "cancel": "Avbryt",
       "confirmArchive": "Arkivera den här kunden?",
-      "confirmUnarchive": "Återställ den här kunden?"
+      "confirmUnarchive": "Återställ den här kunden?",
+      "newInvoice": "Ny faktura",
+      "viewInvoices": "Visa fakturor",
+      "message": "Meddelande"
     }
   }
 }
