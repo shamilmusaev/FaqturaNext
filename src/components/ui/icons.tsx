@@ -18,4 +18,6 @@ export {
   ArrowRight,
   LogOut,
   Building as OrgIcon,
+  Bell as BellIcon,
+  Info as InfoIcon,
 } from 'lucide-react'
