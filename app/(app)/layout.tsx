@@ -2,7 +2,18 @@ import { AppShell } from '@/components/chrome/app-shell'
 import { requireUser } from '@/lib/auth'
 import type { ReactNode } from 'react'
 
-export default async function AppLayout({ children }: { children: ReactNode }) {
+export default async function AppLayout({
+  children,
+  modal,
+}: {
+  children: ReactNode
+  modal: ReactNode
+}) {
   const { email } = await requireUser()
-  return <AppShell userEmail={email}>{children}</AppShell>
+  return (
+    <AppShell userEmail={email}>
+      {children}
+      {modal}
+    </AppShell>
+  )
 }
