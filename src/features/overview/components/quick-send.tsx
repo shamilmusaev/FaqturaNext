@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from '@/components/ui/icons'
 import { listActiveClientOptions } from '@/features/clients/queries'
-import { getTranslations } from 'next-intl/server'
 import { NewInvoiceDialog } from '@/features/invoices/components/new-invoice-dialog'
+import { getTranslations } from 'next-intl/server'
 
 export async function QuickSend() {
   const t = await getTranslations('overview.quickSend')

@@ -48,7 +48,13 @@ function todayPlusDays(days: number): string {
   return d.toISOString().slice(0, 10)
 }
 
-export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK', onCancel, onSuccess }: Props) {
+export function InvoiceForm({
+  clients,
+  cancelHref,
+  defaultCurrency = 'SEK',
+  onCancel,
+  onSuccess,
+}: Props) {
   const t = useTranslations('invoices')
   const tFields = useTranslations('invoices.fields')
   const tActions = useTranslations('invoices.actions')
@@ -293,11 +299,7 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK', onCa
           {tActions('create')}
         </Button>
         {onCancel ? (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="text-sm text-ink/60 hover:text-ink"
-          >
+          <button type="button" onClick={onCancel} className="text-sm text-ink/60 hover:text-ink">
             {t('back')}
           </button>
         ) : (

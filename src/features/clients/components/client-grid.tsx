@@ -78,7 +78,7 @@ export async function ClientGrid({ clients }: { clients: ClientWithStats[] }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 border-t border-line-1 bg-paper">
+            <div className="grid grid-cols-3 border-t border-line-1 bg-paper-2/60 shadow-[inset_0_6px_8px_-6px_rgba(0,0,0,0.08)]">
               <ActionTile
                 href={`/invoices/new?clientId=${c.id}` as Route}
                 label={tActions('newInvoice')}
@@ -125,7 +125,7 @@ function Stat({
         {label}
       </div>
       <div
-        className={`tnum truncate font-mono text-[clamp(1rem,4.4vw,1.35rem)] font-semibold leading-tight tracking-normal sm:text-[22px] ${alert ? 'text-neg' : 'text-ink'}`}
+        className={`tnum truncate text-[clamp(1rem,4.4vw,1.35rem)] font-semibold leading-tight tracking-tight sm:text-[22px] ${alert ? 'text-neg' : 'text-ink'}`}
       >
         {value}
       </div>
@@ -148,7 +148,7 @@ function ActionTile({
   external?: boolean
   disabled?: boolean
 }) {
-  const className = `inline-flex min-h-11 items-center justify-center gap-1.5 px-3 py-3 text-center text-xs font-medium text-ink/70 transition-colors hover:bg-paper/60 hover:text-ink sm:text-sm ${divider ? 'border-l border-line-1' : ''} ${disabled ? 'pointer-events-none opacity-45' : ''}`
+  const className = `inline-flex min-h-11 items-center justify-center gap-1.5 px-3 py-3 text-center text-xs font-medium text-ink/70 transition-colors hover:bg-brand/10 hover:text-brand sm:text-sm ${divider ? 'border-l border-line-1' : ''} ${disabled ? 'pointer-events-none opacity-45' : ''}`
   if (disabled) {
     return (
       <span className={className} aria-disabled="true">

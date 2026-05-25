@@ -19,10 +19,10 @@ const VALID_STATUSES = new Set(['draft', 'sent', 'paid', 'overdue', 'all'])
 
 export default async function InvoicesPage({ searchParams }: PageProps) {
   const { status, q } = await searchParams
-  const t = await getTranslations('invoices')
   const normalised = status && VALID_STATUSES.has(status) ? status : 'all'
 
-  const [invoices, clientOptions] = await Promise.all([
+  const [t, invoices, clientOptions] = await Promise.all([
+    getTranslations('invoices'),
     listInvoices({
       status: normalised as 'all' | 'draft' | 'sent' | 'paid' | 'overdue',
       search: q,

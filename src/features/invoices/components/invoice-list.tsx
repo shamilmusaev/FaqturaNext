@@ -54,7 +54,7 @@ export async function InvoiceList({ invoices }: { invoices: InvoiceListItem[] })
                       </div>
                     </div>
                   </div>
-                  <div className="tnum text-right font-mono text-sm font-medium text-ink/90">
+                  <div className="tnum text-right text-sm font-semibold text-ink/90">
                     {formatMoney(inv.total_cents, (inv.currency || 'SEK') as 'SEK')}
                   </div>
                   <div>
@@ -93,7 +93,7 @@ export async function InvoiceList({ invoices }: { invoices: InvoiceListItem[] })
                 </div>
                 <div className="flex flex-col items-end gap-2 shrink-0">
                   <InvoiceStatusChip status={inv.status} className="whitespace-nowrap" />
-                  <div className="tnum max-w-[42vw] truncate font-mono font-medium text-ink/90">
+                  <div className="tnum max-w-[42vw] truncate font-semibold text-ink/90">
                     {formatMoney(inv.total_cents, (inv.currency || 'SEK') as 'SEK')}
                   </div>
                 </div>

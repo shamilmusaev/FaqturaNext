@@ -11,12 +11,11 @@ interface Props {
 
 export default async function EditInvoicePage({ params }: Props) {
   const { id } = await params
-  const invoice = await getInvoice(id)
+  const [invoice, t] = await Promise.all([getInvoice(id), getTranslations('invoices')])
   if (!invoice) notFound()
   if (invoice.status !== 'draft') {
     redirect(`/invoices/${id}` as Route)
   }
-  const t = await getTranslations('invoices')
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">

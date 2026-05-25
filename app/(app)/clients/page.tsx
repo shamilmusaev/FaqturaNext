@@ -15,11 +15,13 @@ interface PageProps {
 
 export default async function ClientsPage({ searchParams }: PageProps) {
   const { q, archived } = await searchParams
-  const t = await getTranslations('clients')
-  const clients = await listClientsWithStats({
-    search: q,
-    includeArchived: archived === '1',
-  })
+  const [t, clients] = await Promise.all([
+    getTranslations('clients'),
+    listClientsWithStats({
+      search: q,
+      includeArchived: archived === '1',
+    }),
+  ])
 
   const lifetimeRevenue = clients.reduce<bigint>((sum, c) => sum + c.revenue_cents, 0n)
 

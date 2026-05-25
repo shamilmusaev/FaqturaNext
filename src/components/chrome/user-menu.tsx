@@ -1,13 +1,7 @@
 'use client'
 
 import { Avatar } from '@/components/ui/avatar'
-import {
-  ChevronDown,
-  LogOut,
-  OrgIcon,
-  SettingsIcon,
-  UserIcon,
-} from '@/components/ui/icons'
+import { ChevronDown, LogOut, OrgIcon, SettingsIcon, UserIcon } from '@/components/ui/icons'
 import { logoutAction } from '@/features/auth/actions'
 import { AnimatePresence, motion } from 'motion/react'
 import type { Route } from 'next'

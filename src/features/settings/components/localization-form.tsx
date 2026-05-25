@@ -1,8 +1,8 @@
 'use client'
 
 import { LocaleSwitcher } from '@/components/chrome/locale-switcher'
-import { cn } from '@/lib/cn'
 import type { Locale } from '@/i18n/config'
+import { cn } from '@/lib/cn'
 import { useTranslations } from 'next-intl'
 import { updateLocalizationAction } from '../actions'
 import type { Organization } from '../queries'

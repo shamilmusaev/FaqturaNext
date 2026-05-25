@@ -4,8 +4,7 @@ import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
 
 export default async function NewInvoicePage() {
-  const t = await getTranslations('invoices')
-  const clients = await listActiveClientOptions()
+  const [t, clients] = await Promise.all([getTranslations('invoices'), listActiveClientOptions()])
 
   return (
     <div className="flex flex-col gap-6">

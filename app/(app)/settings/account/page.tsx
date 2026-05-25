@@ -1,25 +1,10 @@
 import { AccountForm } from '@/features/settings/components/account-form'
-import { createServerClient } from '@/lib/supabase/server'
-import type { Route } from 'next'
-import { redirect } from 'next/navigation'
+import { requireUser } from '@/lib/auth'
 
 export default async function SettingsAccountPage() {
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login' as Route)
-
-  const meta = (user.user_metadata ?? {}) as Record<string, unknown>
-  const storedName =
-    (typeof meta.display_name === 'string' && meta.display_name.trim()) ||
-    (typeof meta.name === 'string' && meta.name.trim()) ||
-    (typeof meta.full_name === 'string' && meta.full_name.trim()) ||
-    null
-
-  const email = user.email ?? ''
-  // Fall back to the same name shown in the topbar (derived from email)
-  // so the field never looks empty while the menu shows a name.
+  // requireUser is React-cached per request and already runs in the (app)
+  // layout — reuse it instead of issuing another auth.getUser() round-trip.
+  const { email, displayName: storedName } = await requireUser()
   const displayName = storedName || emailToDisplayName(email)
   const hasStoredName = Boolean(storedName)
 

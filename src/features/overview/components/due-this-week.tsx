@@ -1,11 +1,11 @@
 import { Avatar } from '@/components/ui/avatar'
+import { InvoiceDetailDialog } from '@/features/invoices/components/invoice-detail-dialog'
 import { InvoiceStatusChip } from '@/features/invoices/components/invoice-status-chip'
 import { formatMoney } from '@/lib/money'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import type { DueThisWeekSummary } from '../queries'
-import { InvoiceDetailDialog } from '@/features/invoices/components/invoice-detail-dialog'
 
 function relativeDay(dueAt: string, today = new Date()): string {
   const due = new Date(dueAt)

@@ -78,19 +78,22 @@ export async function listClientsWithStats(
     clientsQuery = clientsQuery.or(`name.ilike.${pattern},email.ilike.${pattern}`)
   }
 
-  const { data: clients, error: cErr } = await clientsQuery
-  if (cErr) throw cErr
+  // Run both queries in parallel. We filter invoices only by organization_id
+  // here (not by client ids) so the invoices request doesn't have to wait for
+  // the clients response. Postgres + the RLS-filtered index on
+  // (organization_id) makes this still cheap, and aggregation happens locally.
+  const [clientsRes, invoicesRes] = await Promise.all([
+    clientsQuery,
+    supabase
+      .from('invoices')
+      .select('client_id, status, total_cents')
+      .eq('organization_id', organizationId),
+  ])
+  if (clientsRes.error) throw clientsRes.error
+  if (invoicesRes.error) throw invoicesRes.error
+  const clients = clientsRes.data
+  const invoices = invoicesRes.data
   if (!clients || clients.length === 0) return []
-
-  const { data: invoices, error: iErr } = await supabase
-    .from('invoices')
-    .select('client_id, status, total_cents')
-    .eq('organization_id', organizationId)
-    .in(
-      'client_id',
-      clients.map((c) => c.id),
-    )
-  if (iErr) throw iErr
 
   type Stat = {
     invoice_count: number

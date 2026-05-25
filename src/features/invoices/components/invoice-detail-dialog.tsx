@@ -113,11 +113,11 @@ export function InvoiceDetailDialog({ invoiceId, children }: Props) {
                   <table className="w-full text-sm">
                     <thead className="text-ink/60 text-xs uppercase tracking-wide">
                       <tr className="border-b border-line-1">
-                        <th className="text-left font-medium px-4 py-3">{tFields('description')}</th>
-                        <th className="text-right font-medium px-4 py-3">{tFields('quantity')}</th>
-                        <th className="text-right font-medium px-4 py-3">
-                          {tFields('unitPrice')}
+                        <th className="text-left font-medium px-4 py-3">
+                          {tFields('description')}
                         </th>
+                        <th className="text-right font-medium px-4 py-3">{tFields('quantity')}</th>
+                        <th className="text-right font-medium px-4 py-3">{tFields('unitPrice')}</th>
                         <th className="text-right font-medium px-4 py-3">{tFields('vat')}</th>
                         <th className="text-right font-medium px-4 py-3">{tFields('amount')}</th>
                       </tr>

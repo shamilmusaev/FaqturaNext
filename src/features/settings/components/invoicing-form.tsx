@@ -70,11 +70,7 @@ export function InvoicingForm({ org, readOnly }: Props) {
             />
           </Field>
 
-          <Field
-            label={t('fields.currency')}
-            hint={t('hints.currency')}
-            error={err('currency')}
-          >
+          <Field label={t('fields.currency')} hint={t('hints.currency')} error={err('currency')}>
             <div className="flex flex-wrap gap-2">
               {currencies.map((c) => (
                 <CurrencyChip key={c} value={c} defaultChecked={org.currency === c} />

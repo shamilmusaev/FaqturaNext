@@ -17,13 +17,20 @@ export function AccountForm({ email, displayName, hasStoredName = false }: Props
   const t = useTranslations('settings.account')
   return (
     <div className="flex flex-col gap-6">
-      <SettingsForm action={updateProfileAction} successToastKey="settings.account.toast.profileSaved">
+      <SettingsForm
+        action={updateProfileAction}
+        successToastKey="settings.account.toast.profileSaved"
+      >
         {({ err }) => (
           <SectionCard title={t('profileTitle')} subtitle={t('profileSubtitle')}>
             <Field
               label={t('fields.displayName')}
               error={err('display_name')}
-              hint={!hasStoredName && displayName ? 'Auto-suggested from your email — save to confirm.' : undefined}
+              hint={
+                !hasStoredName && displayName
+                  ? 'Auto-suggested from your email — save to confirm.'
+                  : undefined
+              }
             >
               <Input
                 name="display_name"
@@ -37,7 +44,10 @@ export function AccountForm({ email, displayName, hasStoredName = false }: Props
         )}
       </SettingsForm>
 
-      <SettingsForm action={updateEmailAction} successToastKey="settings.account.toast.emailRequested">
+      <SettingsForm
+        action={updateEmailAction}
+        successToastKey="settings.account.toast.emailRequested"
+      >
         {({ err }) => (
           <SectionCard title={t('emailTitle')} subtitle={t('emailSubtitle')}>
             <Field
@@ -79,10 +89,7 @@ export function AccountForm({ email, displayName, hasStoredName = false }: Props
                 autoComplete="new-password"
               />
             </Field>
-            <Field
-              label={t('fields.confirmPassword')}
-              error={mapPwError(err('confirm'), t)}
-            >
+            <Field label={t('fields.confirmPassword')} error={mapPwError(err('confirm'), t)}>
               <Input
                 name="confirm"
                 type="password"

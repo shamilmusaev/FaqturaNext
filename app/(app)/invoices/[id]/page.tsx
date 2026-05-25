@@ -17,10 +17,12 @@ interface Props {
 
 export default async function InvoiceDetailPage({ params }: Props) {
   const { id } = await params
-  const invoice = await getInvoice(id)
+  const [invoice, t, tFields] = await Promise.all([
+    getInvoice(id),
+    getTranslations('invoices'),
+    getTranslations('invoices.fields'),
+  ])
   if (!invoice) notFound()
-  const t = await getTranslations('invoices')
-  const tFields = await getTranslations('invoices.fields')
   const currency = (invoice.currency || 'SEK') as 'SEK'
 
   return (

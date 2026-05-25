@@ -2,9 +2,9 @@ import { AnimatedMoney, AnimatedNumber } from '@/components/ui/animated-number'
 import { Button } from '@/components/ui/button'
 import { DownloadIcon } from '@/components/ui/icons'
 import { listActiveClientOptions } from '@/features/clients/queries'
+import { NewInvoiceDialogButton } from '@/features/invoices/components/new-invoice-dialog'
 import { CashflowChart } from '@/features/overview/components/cashflow-chart'
 import { DueThisWeek } from '@/features/overview/components/due-this-week'
-import { NewInvoiceDialogButton } from '@/features/invoices/components/new-invoice-dialog'
 import { InvoiceCountBadge } from '@/features/overview/components/invoice-count-badge'
 import { QuickSend } from '@/features/overview/components/quick-send'
 import { RecentActivity } from '@/features/overview/components/recent-activity'
@@ -28,19 +28,22 @@ export default async function OverviewPage({
 }: {
   searchParams: Promise<{ cashflowPeriod?: CashflowPeriod }>
 }) {
-  const t = await getTranslations('overview')
-  const tMetrics = await getTranslations('overview.metrics')
-
   const sp = await searchParams
   const period: CashflowPeriod =
     sp.cashflowPeriod === '12mo' || sp.cashflowPeriod === 'ytd' ? sp.cashflowPeriod : '6mo'
   const months = periodToMonths(period)
 
-  const { email, displayName } = await requireUser()
-  const [{ metrics, cashflow, due, activity }, clientOptions] = await Promise.all([
-    getOverviewData(months, 8),
-    listActiveClientOptions(),
-  ])
+  // Fan-out everything in parallel: translations are file IO, auth + queries
+  // are network. No reason for any of them to wait for the others.
+  const [t, tMetrics, user, { metrics, cashflow, due, activity }, clientOptions] =
+    await Promise.all([
+      getTranslations('overview'),
+      getTranslations('overview.metrics'),
+      requireUser(),
+      getOverviewData(months, 8),
+      listActiveClientOptions(),
+    ])
+  const { email, displayName } = user
 
   const currency = 'SEK' as const
   // Prefer the user's display_name (first word for the greeting), fall back to email-derived
@@ -65,7 +68,9 @@ export default async function OverviewPage({
         <StatCard
           variant="hero"
           label={tMetrics('outstanding')}
-          value={<AnimatedMoney cents={Number(metrics.outstanding.totalCents)} currency={currency} />}
+          value={
+            <AnimatedMoney cents={Number(metrics.outstanding.totalCents)} currency={currency} />
+          }
           hint={
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="min-w-0">

@@ -53,12 +53,24 @@ export const requireUser = cache(async (): Promise<AuthContext> => {
   const active = memberships.find((m) => m.organization_id === preferredOrg) ?? memberships[0]
   if (!active) redirect('/onboarding' as Route)
 
-  // Fetch fresh user record so user_metadata reflects the latest update
-  // (the JWT in the cookie can be stale until the next refresh).
-  const { data: userData } = await supabase.auth.getUser()
-  const meta = (userData.user?.user_metadata ?? {}) as Record<string, unknown>
-  const pickName = (k: string) => (typeof meta[k] === 'string' ? (meta[k] as string).trim() : '')
-  const metaName = pickName('display_name') || pickName('name') || pickName('full_name')
+  // Prefer display_name from the JWT claims (no network). Only fall back to
+  // auth.getUser() when claims don't carry user_metadata yet — this avoids a
+  // sync round-trip on every navigation. After the next token refresh the
+  // claims pick up the latest metadata automatically.
+  const pickFrom = (src: Record<string, unknown> | undefined, k: string) =>
+    typeof src?.[k] === 'string' ? (src[k] as string).trim() : ''
+  const claimsMeta = (claims.user_metadata ?? {}) as Record<string, unknown>
+  let metaName =
+    pickFrom(claimsMeta, 'display_name') ||
+    pickFrom(claimsMeta, 'name') ||
+    pickFrom(claimsMeta, 'full_name')
+
+  if (!metaName) {
+    const { data: userData } = await supabase.auth.getUser()
+    const meta = (userData.user?.user_metadata ?? {}) as Record<string, unknown>
+    metaName =
+      pickFrom(meta, 'display_name') || pickFrom(meta, 'name') || pickFrom(meta, 'full_name')
+  }
 
   return {
     userId: claims.sub,

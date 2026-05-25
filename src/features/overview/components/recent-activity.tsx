@@ -1,9 +1,9 @@
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ChevronRight } from '@/components/ui/icons'
+import { InvoiceDetailDialog } from '@/features/invoices/components/invoice-detail-dialog'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { RecentActivityItem } from '../queries'
-import { InvoiceDetailDialog } from '@/features/invoices/components/invoice-detail-dialog'
 
 const DOT: Record<RecentActivityItem['type'], string> = {
   created: 'bg-ink-3',

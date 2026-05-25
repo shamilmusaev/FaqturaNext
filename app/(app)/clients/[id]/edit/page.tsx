@@ -11,9 +11,8 @@ interface Props {
 
 export default async function EditClientPage({ params }: Props) {
   const { id } = await params
-  const client = await getClient(id)
+  const [client, t] = await Promise.all([getClient(id), getTranslations('clients')])
   if (!client) notFound()
-  const t = await getTranslations('clients')
 
   const boundAction = async (
     _prev: ClientActionResult,

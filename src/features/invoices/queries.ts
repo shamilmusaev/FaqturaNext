@@ -64,16 +64,15 @@ export async function getInvoice(id: string): Promise<InvoiceDetail | null> {
   const { organizationId } = await requireUser()
   const supabase = await createServerClient()
 
-  const { data: invoice, error: invErr } = await supabase
-    .from('invoices')
-    .select('*, client:clients(id, name, email, org_number, vat_number, address)')
-    .eq('id', id)
-    .eq('organization_id', organizationId)
-    .maybeSingle()
-  if (invErr) throw invErr
-  if (!invoice) return null
-
-  const [{ data: items }, { data: events }] = await Promise.all([
+  // Fire all three queries in parallel — we already know `id`, so items/events
+  // don't need to wait for the invoice row to come back first.
+  const [invoiceRes, itemsRes, eventsRes] = await Promise.all([
+    supabase
+      .from('invoices')
+      .select('*, client:clients(id, name, email, org_number, vat_number, address)')
+      .eq('id', id)
+      .eq('organization_id', organizationId)
+      .maybeSingle(),
     supabase
       .from('invoice_line_items')
       .select('*')
@@ -85,6 +84,11 @@ export async function getInvoice(id: string): Promise<InvoiceDetail | null> {
       .eq('invoice_id', id)
       .order('created_at', { ascending: false }),
   ])
+  if (invoiceRes.error) throw invoiceRes.error
+  const invoice = invoiceRes.data
+  if (!invoice) return null
+  const items = itemsRes.data
+  const events = eventsRes.data
 
   return {
     ...invoice,

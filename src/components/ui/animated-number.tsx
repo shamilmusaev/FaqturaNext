@@ -31,9 +31,7 @@ export function AnimatedNumber({
   delay = 0,
 }: AnimatedNumberProps) {
   const mv = useMotionValue(0)
-  const display = useTransform(mv, (v) =>
-    format ? format(v) : v.toFixed(decimals),
-  )
+  const display = useTransform(mv, (v) => (format ? format(v) : v.toFixed(decimals)))
 
   useEffect(() => {
     const controls = animate(mv, value, {
