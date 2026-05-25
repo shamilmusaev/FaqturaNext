@@ -6,6 +6,7 @@ import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { ThemeToggleStub } from './theme-toggle-stub'
 
 const nav = [
   { href: '/overview', icon: HomeIcon, key: 'overview' as const },
@@ -18,7 +19,8 @@ export function Sidebar() {
   const pathname = usePathname()
   const t = useTranslations('nav')
   return (
-    <aside className="hidden md:flex md:flex-col md:w-16 md:shrink-0 border-r border-line-1 bg-card h-screen sticky top-0 py-4">
+    <aside className="hidden md:flex md:flex-col md:items-center md:w-16 md:shrink-0 border-r border-line-1 bg-card h-screen sticky top-0 py-4">
+      <ThemeToggleStub />
       <nav className="flex flex-col items-center gap-1 px-2 flex-1">
         {nav.map(({ href, icon: Icon, key }) => {
           const active = pathname.startsWith(href)
