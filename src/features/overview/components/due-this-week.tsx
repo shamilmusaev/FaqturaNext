@@ -1,4 +1,4 @@
-import { Chip } from '@/components/ui/chip'
+import { InvoiceStatusChip } from '@/features/invoices/components/invoice-status-chip'
 import { formatMoney } from '@/lib/money'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
@@ -61,9 +61,7 @@ export async function DueThisWeek({ items }: { items: DueThisWeekItem[] }) {
                   <span className="tnum font-mono font-semibold">
                     {formatMoney(inv.totalCents, (inv.currency || 'SEK') as 'SEK')}
                   </span>
-                  <Chip tone={inv.status === 'overdue' ? 'neg' : 'warn'}>
-                    {inv.status === 'overdue' ? 'Overdue' : 'Pending'}
-                  </Chip>
+                  <InvoiceStatusChip status={inv.status} />
                 </div>
               </Link>
             </li>
