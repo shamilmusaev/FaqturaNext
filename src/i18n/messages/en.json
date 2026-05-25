@@ -85,6 +85,11 @@
   "invoices": {
     "title": "Invoices",
     "newInvoice": "New invoice",
+    "exportCsv": "Export CSV",
+    "subtitle": {
+      "count": "{count, plural, =0 {No invoices} =1 {1 invoice} other {# invoices}}",
+      "outstanding": "outstanding"
+    },
     "search": "Search by number",
     "empty": "No invoices yet.",
     "emptyHint": "Create your first invoice to get started.",

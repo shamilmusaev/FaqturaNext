@@ -85,6 +85,11 @@
   "invoices": {
     "title": "Fakturor",
     "newInvoice": "Ny faktura",
+    "exportCsv": "Exportera CSV",
+    "subtitle": {
+      "count": "{count, plural, =0 {Inga fakturor} =1 {1 faktura} other {# fakturor}}",
+      "outstanding": "utestående"
+    },
     "search": "Sök efter nummer",
     "empty": "Inga fakturor ännu.",
     "emptyHint": "Skapa din första faktura för att komma igång.",

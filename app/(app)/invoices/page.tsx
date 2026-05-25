@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button'
-import { PlusIcon } from '@/components/ui/icons'
+import { DownloadIcon, PlusIcon } from '@/components/ui/icons'
 import { InvoiceFilters } from '@/features/invoices/components/invoice-filters'
 import { InvoiceList } from '@/features/invoices/components/invoice-list'
 import { listInvoices } from '@/features/invoices/queries'
+import { formatMoney } from '@/lib/money'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
@@ -23,16 +24,32 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
     search: q,
   })
 
+  const outstandingCents = invoices
+    .filter((i) => i.status === 'sent' || i.status === 'overdue')
+    .reduce<bigint>((sum, i) => sum + BigInt(i.total_cents), 0n)
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
-        <Link href={'/invoices/new' as Route}>
-          <Button>
-            <PlusIcon className="h-4 w-4" />
-            {t('newInvoice')}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
+          <p className="mt-1 text-sm text-ink/60">
+            {t('subtitle.count', { count: invoices.length })} ·{' '}
+            {formatMoney(outstandingCents, 'SEK')} {t('subtitle.outstanding')}
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <Button variant="secondary" disabled title="coming soon">
+            <DownloadIcon className="h-4 w-4" />
+            {t('exportCsv')}
           </Button>
-        </Link>
+          <Link href={'/invoices/new' as Route}>
+            <Button>
+              <PlusIcon className="h-4 w-4" />
+              {t('newInvoice')}
+            </Button>
+          </Link>
+        </div>
       </div>
       <InvoiceFilters />
       {invoices.length === 0 ? (
