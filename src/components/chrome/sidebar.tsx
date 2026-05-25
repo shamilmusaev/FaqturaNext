@@ -1,11 +1,18 @@
 'use client'
 
-import { ClientsIcon, HomeIcon, InvoiceIcon, SettingsIcon } from '@/components/ui/icons'
+import {
+  ClientsIcon,
+  HelpCircleIcon,
+  HomeIcon,
+  InvoiceIcon,
+  SettingsIcon,
+} from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { SidebarLogoutButton } from './sidebar-logout-button'
 import { ThemeToggleStub } from './theme-toggle-stub'
 
 const nav = [
@@ -21,7 +28,7 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex md:flex-col md:items-center md:w-16 md:shrink-0 border-r border-line-1 bg-card h-screen sticky top-0 py-4">
       <ThemeToggleStub />
-      <nav className="flex flex-col items-center gap-1 px-2 flex-1">
+      <nav className="flex flex-col items-center gap-1 px-2">
         {nav.map(({ href, icon: Icon, key }) => {
           const active = pathname.startsWith(href)
           return (
@@ -40,6 +47,18 @@ export function Sidebar() {
           )
         })}
       </nav>
+      <div className="flex-1" />
+      <div className="flex flex-col items-center gap-1 px-2 pb-2">
+        <button
+          type="button"
+          aria-label="Help"
+          title="Help"
+          className="h-11 w-11 inline-flex items-center justify-center rounded-[12px] text-ink-3 hover:text-ink hover:bg-paper-2"
+        >
+          <HelpCircleIcon className="h-5 w-5" />
+        </button>
+        <SidebarLogoutButton />
+      </div>
     </aside>
   )
 }

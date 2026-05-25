@@ -7,7 +7,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { HorizontalNav } from './horizontal-nav'
 import { LocaleSwitcher } from './locale-switcher'
-import { LogoutButton } from './logout-button'
 
 function displayName(email: string): string {
   const local = email.split('@')[0] ?? ''
@@ -66,7 +65,6 @@ export async function TopBar({ userEmail }: { userEmail: string }) {
           </div>
           <ChevronDown className="h-4 w-4 text-ink/40" />
         </div>
-        <LogoutButton />
       </div>
     </header>
   )
