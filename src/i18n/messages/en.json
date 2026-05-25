@@ -12,12 +12,20 @@
     "overview": "Overview",
     "invoices": "Invoices",
     "clients": "Clients",
+    "expenses": "Expenses",
+    "reports": "Reports",
     "settings": "Settings"
   },
   "chrome": {
     "search": "Search",
     "notifications": "Notifications",
-    "info": "Help"
+    "info": "Help",
+    "userMenu": {
+      "account": "Account",
+      "company": "Company",
+      "settings": "Settings",
+      "signOut": "Sign out"
+    }
   },
   "auth": {
     "loginTitle": "Sign in",
@@ -35,19 +43,19 @@
     "create": "Create company"
   },
   "invoiceStatus": {
-    "draft": "Utkast",
-    "sent": "Faktura skickad",
-    "paid": "Betald",
-    "overdue": "Förfallen",
-    "cancelled": "Avbruten"
+    "draft": "Draft",
+    "sent": "Sent",
+    "paid": "Paid",
+    "overdue": "Overdue",
+    "cancelled": "Cancelled"
   },
   "overview": {
     "goodMorning": "Good morning",
     "goodAfternoon": "Good afternoon",
     "goodEvening": "Good evening",
-    "subtitleUnpaid": "You have {count} unpaid invoice — {amount} outstanding",
-    "subtitleUnpaidPlural": "You have {count} unpaid invoices — {amount} outstanding",
-    "subtitleNoUnpaid": "All clear — no unpaid invoices.",
+    "subtitleUnpaid": "You have {count} unpaid invoice · {amount} outstanding",
+    "subtitleUnpaidPlural": "You have {count} unpaid invoices · {amount} outstanding",
+    "subtitleNoUnpaid": "All clear · no unpaid invoices.",
     "newInvoice": "New invoice",
     "export": "Export",
     "metrics": {
@@ -56,6 +64,7 @@
       "avgDaysToPay": "Avg days to pay",
       "sentThisWeek": "Sent this week",
       "live": "Live",
+      "invoiceCount": "{count, plural, =0 {0 invoices} =1 {1 invoice} other {# invoices}}",
       "sendReminders": "Send reminders",
       "vsLastMonth": "vs last month",
       "days": "d",
@@ -90,6 +99,12 @@
       "title": "Bill a client in under 30 seconds",
       "subtitle": "Pick a client, add lines, send. We'll handle VAT, ROT/RUT, e-invoice routing.",
       "cta": "New invoice"
+    },
+    "vatDue": {
+      "title": "VAT due · Q2",
+      "amount": "€ 4,580",
+      "due": "Due Jul 25",
+      "aside": "Set aside €2,930 of €4,580"
     }
   },
   "invoices": {
@@ -132,6 +147,7 @@
       "unit": "Unit",
       "unitPrice": "Unit price",
       "vat": "VAT %",
+      "status": "Status",
       "amount": "Amount",
       "subtotal": "Subtotal",
       "vatTotal": "VAT",
@@ -170,9 +186,131 @@
   },
   "settings": {
     "title": "Settings",
-    "email": "Email",
-    "organization": "Organization",
-    "role": "Role"
+    "subtitle": "Everything that shapes how your invoices look and get paid.",
+    "nav": {
+      "account": "Account",
+      "company": "Company",
+      "payment": "Payment",
+      "invoicing": "Invoicing",
+      "localization": "Localization"
+    },
+    "account": {
+      "title": "Your account",
+      "subtitle": "How you appear in Faqtura and how you sign in.",
+      "profileTitle": "Profile",
+      "profileSubtitle": "Shown to teammates and on invoices you send.",
+      "emailTitle": "Email",
+      "emailSubtitle": "Used to sign in and to receive product email.",
+      "passwordTitle": "Password",
+      "passwordSubtitle": "Choose something memorable but hard to guess.",
+      "fields": {
+        "displayName": "Display name",
+        "email": "Email address",
+        "newPassword": "New password",
+        "confirmPassword": "Confirm new password"
+      },
+      "hints": {
+        "email": "We'll send a confirmation link to the new address. The change takes effect once you confirm.",
+        "password": "At least 8 characters. Includes a letter and a number is recommended."
+      },
+      "actions": {
+        "saveProfile": "Save profile",
+        "changeEmail": "Change email",
+        "changePassword": "Change password"
+      },
+      "toast": {
+        "profileSaved": "Profile updated",
+        "emailRequested": "Confirmation sent to your new address",
+        "passwordChanged": "Password changed"
+      },
+      "errors": {
+        "passwordMismatch": "Passwords don't match",
+        "sameEmail": "That's already your email"
+      }
+    },
+    "common": {
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saved": "Settings saved",
+      "cancel": "Discard",
+      "readOnly": "You have view-only access. Ask an owner or admin to change these settings.",
+      "optional": "Optional"
+    },
+    "company": {
+      "title": "Company profile",
+      "subtitle": "Shown on every invoice you send.",
+      "identityTitle": "Identity",
+      "identitySubtitle": "Legal name and registration numbers.",
+      "addressTitle": "Address",
+      "addressSubtitle": "Used as your sender address on PDFs.",
+      "fields": {
+        "name": "Company name",
+        "orgNumber": "Organization number",
+        "vatNumber": "VAT number",
+        "street": "Street",
+        "postal": "Postal code",
+        "city": "City",
+        "country": "Country"
+      },
+      "placeholders": {
+        "orgNumber": "556677-8899",
+        "vatNumber": "SE556677889901",
+        "country": "Sweden"
+      }
+    },
+    "payment": {
+      "title": "Payment details",
+      "subtitle": "How clients pay you. These appear on the invoice PDF.",
+      "fields": {
+        "iban": "IBAN",
+        "bankgiro": "Bankgiro",
+        "plusgiro": "Plusgiro",
+        "swish": "Swish"
+      },
+      "placeholders": {
+        "iban": "SE45 5000 0000 0583 9825 7466",
+        "bankgiro": "123-4567",
+        "plusgiro": "12 34 56-7",
+        "swish": "1230000000"
+      },
+      "hint": "At least one method is recommended so clients can pay without contacting you."
+    },
+    "invoicing": {
+      "title": "Invoicing defaults",
+      "subtitle": "Applied automatically when you create a new invoice.",
+      "fields": {
+        "vatRate": "Default VAT rate",
+        "paymentTerms": "Payment terms",
+        "numberTemplate": "Invoice number template",
+        "currency": "Currency"
+      },
+      "hints": {
+        "vatRate": "Standard Swedish rate is 25%.",
+        "paymentTerms": "Days after issue until due.",
+        "numberTemplate": "Use '{YYYY}' for year and '{NNNN}' for sequence. Example: INV-'{YYYY}'-'{NNNN}'.",
+        "currency": "Default currency for new invoices."
+      },
+      "units": {
+        "percent": "%",
+        "days": "days"
+      }
+    },
+    "localization": {
+      "title": "Localization",
+      "subtitle": "Language and regional formatting.",
+      "uiTitle": "Interface language",
+      "uiSubtitle": "Changes the language you see in Faqtura.",
+      "brandTitle": "Document locale",
+      "brandSubtitle": "Number, date and currency formatting on PDFs and emails sent to clients.",
+      "locales": {
+        "sv-SE": "Swedish (Sweden)",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "nb-NO": "Norwegian (Bokmål)",
+        "da-DK": "Danish",
+        "fi-FI": "Finnish"
+      }
+    }
   },
   "clients": {
     "title": "Clients",

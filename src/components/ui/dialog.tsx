@@ -19,13 +19,27 @@ export function DialogContent({
 }) {
   return (
     <RadixDialog.Portal>
-      <RadixDialog.Overlay className="fixed inset-0 bg-ink/30 data-[state=open]:animate-in data-[state=open]:fade-in" />
+      <RadixDialog.Overlay
+        className={cn(
+          'fixed inset-0 bg-ink/30',
+          'data-[state=open]:animate-[overlay-in_240ms_cubic-bezier(0.22,1,0.36,1)]',
+          'data-[state=closed]:animate-[overlay-out_200ms_ease-in]',
+        )}
+      />
       <RadixDialog.Content
         className={cn(
-          'fixed bg-card focus:outline-none',
+          'fixed bg-card focus:outline-none will-change-transform',
           side === 'right'
-            ? 'right-0 top-0 h-screen w-full md:w-[720px] border-l border-line-1'
-            : 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-lg rounded-[24px] border border-line-1',
+            ? cn(
+                'right-0 top-0 h-screen w-full md:w-[720px] border-l border-line-1',
+                'data-[state=open]:animate-[sheet-in-right_340ms_cubic-bezier(0.22,1,0.36,1)]',
+                'data-[state=closed]:animate-[sheet-out-right_240ms_cubic-bezier(0.55,0,1,0.45)]',
+              )
+            : cn(
+                'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-lg rounded-[24px] border border-line-1',
+                'data-[state=open]:animate-[dialog-in_220ms_cubic-bezier(0.22,1,0.36,1)]',
+                'data-[state=closed]:animate-[dialog-out_160ms_ease-in]',
+              ),
           className,
         )}
       >

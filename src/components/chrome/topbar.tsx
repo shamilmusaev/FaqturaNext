@@ -1,14 +1,12 @@
-import { Avatar } from '@/components/ui/avatar'
-import { BellIcon, ChevronDown, InfoIcon, SearchIcon } from '@/components/ui/icons'
-import type { Locale } from '@/i18n/config'
+import { BellIcon, InfoIcon, SearchIcon } from '@/components/ui/icons'
 import type { Route } from 'next'
-import { getLocale, getTranslations } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
 import { HorizontalNav } from './horizontal-nav'
-import { LocaleSwitcher } from './locale-switcher'
+import { UserMenu } from './user-menu'
 
-function displayName(email: string): string {
+function emailToDisplayName(email: string): string {
   const local = email.split('@')[0] ?? ''
   const cleaned = local.replace(/[._-]+/g, ' ').trim()
   if (!cleaned) return email
@@ -18,21 +16,44 @@ function displayName(email: string): string {
     .join(' ')
 }
 
-export async function TopBar({ userEmail }: { userEmail: string }) {
-  const locale = (await getLocale()) as Locale
+export async function TopBar({
+  userEmail,
+  userName,
+}: {
+  userEmail: string
+  userName?: string | null
+}) {
   const t = await getTranslations('chrome')
-  const name = displayName(userEmail)
+  const tMenu = await getTranslations('chrome.userMenu')
+  const name = userName?.trim() || emailToDisplayName(userEmail)
+  const menuLabels = {
+    account: tMenu('account'),
+    company: tMenu('company'),
+    settings: tMenu('settings'),
+    signOut: tMenu('signOut'),
+  }
   return (
-    <header className="h-16 border-b border-line-1 bg-paper flex items-center justify-between px-4 md:px-6 gap-4 sticky top-0 z-10">
-      <Link href={'/overview' as Route} className="flex items-center gap-2 shrink-0">
-        <Image src="/logo.svg" alt="Faqtura" width={32} height={32} className="h-8 w-8" priority />
-        <span className="font-semibold tracking-tight hidden sm:inline">faqtura</span>
-      </Link>
+    <header className="h-20 bg-paper flex items-center justify-between px-4 md:pl-6 md:pr-8 gap-4 sticky top-0 z-10">
+      <div className="flex min-w-0 items-center gap-4">
+        <Link href={'/overview' as Route} className="flex items-center gap-2.5 shrink-0 pr-4">
+          <Image
+            src="/logo.svg"
+            alt="Faqtura"
+            width={40}
+            height={40}
+            className="h-10 w-10 rounded-[10px]"
+            priority
+          />
+          <span className="hidden text-[19px] font-semibold tracking-[-0.02em] sm:inline">
+            faqtura
+          </span>
+        </Link>
 
-      <HorizontalNav />
+        <HorizontalNav />
+      </div>
 
       <div className="flex items-center gap-3 shrink-0">
-        <div className="hidden md:inline-flex items-center gap-0.5 bg-card border border-line-1 rounded-full p-1">
+        <div className="hidden md:inline-flex items-center gap-0.5 bg-card border border-line-1 rounded-full p-1.5">
           <button
             type="button"
             aria-label={t('search')}
@@ -56,15 +77,7 @@ export async function TopBar({ userEmail }: { userEmail: string }) {
             <InfoIcon className="h-4 w-4" />
           </button>
         </div>
-        <LocaleSwitcher current={locale} />
-        <div className="hidden sm:flex items-center gap-2 pl-3 pr-2 h-10 rounded-full bg-card border border-line-1">
-          <Avatar name={name} className="h-7 w-7 text-xs" />
-          <div className="leading-tight">
-            <div className="text-sm font-medium">{name}</div>
-            <div className="text-[11px] text-ink/50">{userEmail}</div>
-          </div>
-          <ChevronDown className="h-4 w-4 text-ink/40" />
-        </div>
+        <UserMenu name={name} email={userEmail} labels={menuLabels} />
       </div>
     </header>
   )

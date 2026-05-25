@@ -1,9 +1,9 @@
+import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ChevronRight } from '@/components/ui/icons'
-import type { Route } from 'next'
-import { getTranslations } from 'next-intl/server'
-import Link from 'next/link'
+import { getLocale, getTranslations } from 'next-intl/server'
 import type { RecentActivityItem } from '../queries'
+import { InvoiceDetailDialog } from '@/features/invoices/components/invoice-detail-dialog'
 
 const DOT: Record<RecentActivityItem['type'], string> = {
   created: 'bg-ink-3',
@@ -18,46 +18,70 @@ const DOT: Record<RecentActivityItem['type'], string> = {
 export async function RecentActivity({ items }: { items: RecentActivityItem[] }) {
   const t = await getTranslations('overview.activity')
   const tTimeline = await getTranslations('invoices.timeline')
+  const locale = await getLocale()
+  const dateFmt = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
 
   return (
-    <section className="rounded-[24px] border border-line-1 bg-card p-6 flex flex-col gap-4">
-      <header className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold tracking-tight">{t('title')}</h2>
+    <section className="rounded-[24px] border border-line-1 bg-card flex flex-col overflow-hidden">
+      <header className="flex items-center justify-between px-6 pt-5 pb-3">
+        <h2 className="text-[17px] font-semibold tracking-tight">{t('title')}</h2>
         <Button variant="secondary" size="sm" type="button">
           {t('filter')}
         </Button>
       </header>
 
       {items.length === 0 ? (
-        <p className="text-sm text-ink/50">{t('empty')}</p>
+        <p className="px-6 pb-5 text-sm text-ink/50">{t('empty')}</p>
       ) : (
         <ol className="flex flex-col">
           {items.map((e) => (
-            <li
-              key={e.id}
-              className="flex items-center gap-4 py-3 border-b border-line-1 last:border-0"
-            >
-              <span className={`h-2 w-2 rounded-full shrink-0 ${DOT[e.type]}`} />
-              <div className="flex-1 min-w-0">
-                <div className="text-sm">
-                  {e.invoice ? (
-                    <Link
-                      href={`/invoices/${e.invoice.id}` as Route}
-                      className="font-medium hover:underline"
-                    >
-                      {e.invoice.clientName ?? e.invoice.number}
-                    </Link>
-                  ) : (
-                    <span className="font-medium">—</span>
-                  )}
-                  <span className="text-ink/60"> · {tTimeline(e.type)}</span>
+            <li key={e.id} className="border-t border-line-1">
+              {e.invoice ? (
+                <InvoiceDetailDialog invoiceId={e.invoice.id}>
+                  <button
+                    type="button"
+                    className="w-full text-left grid grid-cols-[8px_1fr_auto] items-center gap-3 px-6 py-3 transition-colors hover:bg-paper focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand"
+                  >
+                    <span className={`h-2 w-2 rounded-full shrink-0 ${DOT[e.type]}`} />
+                    <div className="flex min-w-0 items-center gap-3">
+                      <Avatar
+                        name={e.invoice.clientName ?? e.invoice.number}
+                        className="h-9 w-9 text-xs shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <div className="font-medium truncate">
+                          {e.invoice.clientName ?? e.invoice.number}
+                          <span className="text-ink/60"> · {tTimeline(e.type)}</span>
+                        </div>
+                        <div className="text-xs text-ink/60 font-mono truncate">
+                          {e.invoice.number} · {dateFmt.format(new Date(e.createdAt))}
+                        </div>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-ink/40 shrink-0" />
+                  </button>
+                </InvoiceDetailDialog>
+              ) : (
+                <div className="grid grid-cols-[8px_1fr_auto] items-center gap-3 px-6 py-3">
+                  <span className={`h-2 w-2 rounded-full shrink-0 ${DOT[e.type]}`} />
+                  <div className="flex min-w-0 items-center gap-3">
+                    <Avatar name="Unknown" className="h-9 w-9 text-xs shrink-0" />
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">
+                        N/A<span className="text-ink/60"> · {tTimeline(e.type)}</span>
+                      </div>
+                      <div className="text-xs text-ink/60 font-mono truncate">
+                        {dateFmt.format(new Date(e.createdAt))}
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-ink/20 shrink-0" />
                 </div>
-                <div className="text-xs text-ink/50">
-                  {e.invoice ? <span className="font-mono">{e.invoice.number} · </span> : null}
-                  {new Date(e.createdAt).toLocaleString('sv-SE')}
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-ink/40 shrink-0" />
+              )}
             </li>
           ))}
         </ol>

@@ -1,4 +1,5 @@
 export {
+  LayoutGrid as OverviewIcon,
   Home as HomeIcon,
   FileText as InvoiceIcon,
   Users as ClientsIcon,
@@ -12,11 +13,13 @@ export {
   ChevronLeft,
   Menu as MenuIcon,
   Send as SendIcon,
+  Mail as MailIcon,
   Download as DownloadIcon,
   AlertCircle as AlertIcon,
   Calendar as CalendarIcon,
   ArrowRight,
   LogOut,
+  User as UserIcon,
   Building as OrgIcon,
   Bell as BellIcon,
   Info as InfoIcon,
@@ -24,4 +27,6 @@ export {
   Moon as MoonIcon,
   HelpCircle as HelpCircleIcon,
   Copy as CopyIcon,
+  Receipt as ExpensesIcon,
+  LineChart as ReportsIcon,
 } from 'lucide-react'
