@@ -2,6 +2,7 @@ import { DownloadIcon } from '@/components/ui/icons'
 import { InvoiceActions } from '@/features/invoices/components/invoice-actions'
 import { InvoiceStatusChip } from '@/features/invoices/components/invoice-status-chip'
 import { InvoiceTimeline } from '@/features/invoices/components/invoice-timeline'
+import { SendReminderButton } from '@/features/invoices/components/send-reminder-button'
 import { getInvoice } from '@/features/invoices/queries'
 import { formatMoney } from '@/lib/money'
 import type { Route } from 'next'
@@ -32,12 +33,6 @@ export default async function InvoiceDetailPage({ params }: Props) {
         <div>
           <div className="font-mono text-sm text-ink/60">{invoice.number}</div>
           <h1 className="text-3xl font-semibold tracking-tight">{invoice.client?.name ?? '—'}</h1>
-          <div className="mt-2 flex items-center gap-3">
-            <InvoiceStatusChip status={invoice.status} />
-            <span className="text-sm text-ink/60">
-              {tFields('dueAt')}: {invoice.due_at}
-            </span>
-          </div>
         </div>
         <div className="flex flex-col items-end gap-3">
           <div className="flex items-center gap-4">
@@ -58,6 +53,24 @@ export default async function InvoiceDetailPage({ params }: Props) {
           <InvoiceActions id={invoice.id} status={invoice.status} />
         </div>
       </div>
+
+      <section className="rounded-[24px] border border-line-1 bg-card p-7 flex items-start justify-between gap-6 flex-wrap">
+        <div>
+          <InvoiceStatusChip status={invoice.status} />
+          <div className="mt-3 text-5xl font-semibold tracking-tight tnum font-mono">
+            {formatMoney(BigInt(invoice.total_cents), currency)}
+          </div>
+          <div className="mt-1 text-sm text-ink/70">
+            {tFields('dueAt')} {invoice.due_at}
+            {invoice.status === 'overdue' && (
+              <span className="ml-2 text-neg">· {t('overdueLabel')}</span>
+            )}
+          </div>
+        </div>
+        {(invoice.status === 'sent' || invoice.status === 'overdue') && (
+          <SendReminderButton id={invoice.id} />
+        )}
+      </section>
 
       <section className="rounded-[24px] border border-line-1 bg-card overflow-hidden">
         <table className="w-full text-sm">

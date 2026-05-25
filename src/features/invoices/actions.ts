@@ -105,6 +105,44 @@ export async function markInvoicePaidAction(id: string): Promise<InvoiceActionRe
   return {}
 }
 
+export async function sendReminderAction(id: string): Promise<InvoiceActionResult> {
+  const { organizationId, userId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data: invoice, error: fetchErr } = await supabase
+    .from('invoices')
+    .select('id, status, reminder_count')
+    .eq('id', id)
+    .eq('organization_id', organizationId)
+    .maybeSingle()
+  if (fetchErr) return { error: fetchErr.message }
+  if (!invoice) return { error: 'invoice not found' }
+  if (invoice.status !== 'sent' && invoice.status !== 'overdue') {
+    return { error: 'reminders only available for sent or overdue invoices' }
+  }
+
+  const { error: updateErr } = await supabase
+    .from('invoices')
+    .update({
+      reminder_count: (invoice.reminder_count ?? 0) + 1,
+      last_reminder_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('organization_id', organizationId)
+  if (updateErr) return { error: updateErr.message }
+
+  await supabase.from('invoice_events').insert({
+    invoice_id: id,
+    organization_id: organizationId,
+    type: 'reminder_sent',
+    actor_user_id: userId,
+  })
+
+  revalidatePath('/invoices')
+  revalidatePath(`/invoices/${id}`)
+  return {}
+}
+
 export async function cancelInvoiceAction(id: string): Promise<InvoiceActionResult> {
   const { organizationId, userId } = await requireUser()
   const supabase = await createServerClient()
