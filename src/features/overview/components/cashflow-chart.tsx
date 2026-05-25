@@ -1,10 +1,7 @@
 import { formatMoney } from '@/lib/money'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { CashflowBucket } from '../queries'
-import {
-  type CashflowPeriod,
-  CashflowPeriodSelector,
-} from './cashflow-period-selector'
+import { type CashflowPeriod, CashflowPeriodSelector } from './cashflow-period-selector'
 
 function formatShortK(value: number): string {
   const k = Math.round(value / 1000)
