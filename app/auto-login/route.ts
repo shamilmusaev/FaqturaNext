@@ -8,7 +8,7 @@ import { type NextRequest, NextResponse } from 'next/server'
  * is what @supabase/ssr needs to persist the session. The RSC equivalent
  * silently dropped cookies, causing repeated sign-ins and Supabase rate limits.
  *
- * Remove this route — and the DEV_AUTO_LOGIN_* env vars — before production.
+ * Remove this route and the DEV_AUTO_LOGIN_* env vars before production.
  */
 export async function GET(request: NextRequest) {
   const email = process.env.DEV_AUTO_LOGIN_EMAIL

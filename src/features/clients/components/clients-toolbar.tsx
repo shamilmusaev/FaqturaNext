@@ -40,7 +40,7 @@ export function ClientsToolbar() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center gap-3">
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
       <label className="flex-1 relative">
         <span className="sr-only">{t('search')}</span>
         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink/40 pointer-events-none" />
@@ -49,10 +49,10 @@ export function ClientsToolbar() {
           placeholder={t('search')}
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-9"
+          className="h-12 rounded-[14px] pl-9 text-sm"
         />
       </label>
-      <label className="flex items-center gap-2 text-sm text-ink/70">
+      <label className="flex min-h-12 w-fit items-center gap-2 rounded-full border border-line-1 bg-card px-4 text-sm text-ink/70 transition-colors hover:bg-paper">
         <input
           type="checkbox"
           checked={params.get('archived') === '1'}

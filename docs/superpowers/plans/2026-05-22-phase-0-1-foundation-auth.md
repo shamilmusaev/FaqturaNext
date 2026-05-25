@@ -1,25 +1,25 @@
-# Faqtura â€” Phase 0 + Phase 1 Implementation Plan
+# Faqtura --- Phase 0 + Phase 1 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Bootstrap the Faqtura Next.js + Supabase web application with brand-aligned design primitives, responsive AppShell, internationalization (EN + SV), and a working email/password auth flow with multi-tenant organizations.
 
-**Architecture:** Single Next.js 15 App Router app with feature-based colocation under `src/features/`. Supabase for Postgres + Auth + Storage. Tailwind v4 with brand tokens from existing `colors_and_type.css`. UI primitives ported from the existing `ui.jsx` prototype to TypeScript. No shadcn â€” only Radix headless primitives where complex a11y is needed.
+**Architecture:** Single Next.js 15 App Router app with feature-based colocation under `src/features/`. Supabase for Postgres + Auth + Storage. Tailwind v4 with brand tokens from existing `colors_and_type.css`. UI primitives ported from the existing `ui.jsx` prototype to TypeScript. No shadcn --- only Radix headless primitives where complex a11y is needed.
 
 **Tech Stack:** Next.js 15, React 19, TypeScript (strict), Tailwind v4, Supabase (@supabase/ssr), Radix UI, Lucide icons, next-intl, Biome, Vitest, Playwright, GitHub Actions, pnpm.
 
 **Reference:** [Design spec](../specs/2026-05-22-faqtura-app-design.md)
 
 **Prerequisites the engineer needs locally:**
-- Node.js â‰¥ 20
-- pnpm â‰¥ 9 (`npm install -g pnpm`)
+- Node.js -‰¥ 20
+- pnpm -‰¥ 9 (`npm install -g pnpm`)
 - Docker (for `supabase start` local stack)
 - Supabase CLI (`brew install supabase/tap/supabase` or `npm i -g supabase`)
-- A Supabase account (free tier) for the hosted project â€” only needed at the very end of Phase 0
+- A Supabase account (free tier) for the hosted project --- only needed at the very end of Phase 0
 
 ---
 
-## Phase 0 â€” Foundation
+## Phase 0 --- Foundation
 
 ### Task 0.1: Initialize Next.js project in-place
 
@@ -155,14 +155,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 `app/page.tsx`:
 ```tsx
 export default function HomePage() {
-  return <main>Faqtura â€” bootstrapping.</main>
+  return <main>Faqtura --- bootstrapping.</main>
 }
 ```
 
 - [ ] **Step 7: Verify dev server boots**
 
 Run: `pnpm dev`
-Expected: `Ready in ...` at `http://localhost:3000`, page shows "Faqtura â€” bootstrapping.". Stop with Ctrl-C.
+Expected: `Ready in ...` at `http://localhost:3000`, page shows "Faqtura --- bootstrapping.". Stop with Ctrl-C.
 
 - [ ] **Step 8: Commit**
 
@@ -176,8 +176,8 @@ git commit -m "chore: bootstrap Next.js 15 + React 19 + TypeScript"
 ### Task 0.2: Move legacy prototype out of the way
 
 **Files:**
-- Move: `ui_kits/web_app/` â†’ `docs/legacy-prototype/`
-- Move: `preview/` â†’ `docs/design-system/preview/`
+- Move: `ui_kits/web_app/` -†’ `docs/legacy-prototype/`
+- Move: `preview/` -†’ `docs/design-system/preview/`
 
 - [ ] **Step 1: Move directories**
 
@@ -191,11 +191,11 @@ rmdir ui_kits 2>/dev/null || true
 - [ ] **Step 2: Verify nothing references the old paths**
 
 Run: `git grep -n "ui_kits/web_app" -- ':!docs/legacy-prototype'`
-Expected: no matches (or only matches in README â€” update those references).
+Expected: no matches (or only matches in README --- update those references).
 
 If README references the moved files, update them:
-- `ui_kits/web_app/` â†’ `docs/legacy-prototype/`
-- `preview/*.html` â†’ `docs/design-system/preview/*.html`
+- `ui_kits/web_app/` -†’ `docs/legacy-prototype/`
+- `preview/*.html` -†’ `docs/design-system/preview/*.html`
 
 - [ ] **Step 3: Commit**
 
@@ -269,7 +269,7 @@ git commit -m "chore: add Biome for lint and format"
 ### Task 0.4: Move design tokens and set up Tailwind v4
 
 **Files:**
-- Move: `colors_and_type.css` â†’ `src/styles/tokens.css`
+- Move: `colors_and_type.css` -†’ `src/styles/tokens.css`
 - Create: `app/globals.css`, `postcss.config.mjs`
 - Modify: `app/layout.tsx`
 
@@ -328,7 +328,7 @@ export default {
 }
 ```
 
-> If `tokens.css` doesn't already declare `--line-1`/`--line-2`, that's fine â€” the `var(name, fallback)` covers the gap.
+> If `tokens.css` doesn't already declare `--line-1`/`--line-2`, that's fine --- the `var(name, fallback)` covers the gap.
 
 - [ ] **Step 5: Import `globals.css` in root layout**
 
@@ -417,7 +417,7 @@ Replace the `@theme` font lines in `app/globals.css`:
 
 - [ ] **Step 4: Verify fonts load**
 
-Run: `pnpm dev`. Open DevTools â†’ Network â†’ filter "font". Expect 1â€“2 woff2 requests for Hanken Grotesk and IBM Plex Mono.
+Run: `pnpm dev`. Open DevTools -†’ Network -†’ filter "font". Expect 1---2 woff2 requests for Hanken Grotesk and IBM Plex Mono.
 
 - [ ] **Step 5: Commit**
 
@@ -488,7 +488,7 @@ describe('cn', () => {
 - [ ] **Step 4: Run, expect failure**
 
 Run: `pnpm test cn`
-Expected: FAIL â€” module not found.
+Expected: FAIL --- module not found.
 
 - [ ] **Step 5: Implement**
 
@@ -516,7 +516,7 @@ git commit -m "feat(lib): add cn() class-name helper with tests"
 
 ---
 
-### Task 0.7: `money.ts` â€” SEK formatting
+### Task 0.7: `money.ts` --- SEK formatting
 
 **Files:**
 - Create: `src/lib/money.ts`, `tests/unit/money.test.ts`
@@ -537,7 +537,7 @@ describe('formatMoney', () => {
     expect(formatMoney(0, 'SEK', 'sv-SE')).toMatch(/0,00/)
   })
   it('formats EUR with EN locale', () => {
-    expect(formatMoney(123450, 'EUR', 'en-GB')).toContain('â‚¬')
+    expect(formatMoney(123450, 'EUR', 'en-GB')).toContain('-‚¬')
     expect(formatMoney(123450, 'EUR', 'en-GB')).toContain('1,234.50')
   })
 })
@@ -562,7 +562,7 @@ describe('addCents', () => {
 - [ ] **Step 2: Run, expect failure**
 
 Run: `pnpm test money`
-Expected: FAIL â€” module not found.
+Expected: FAIL --- module not found.
 
 - [ ] **Step 3: Implement**
 
@@ -607,7 +607,7 @@ git commit -m "feat(lib): money formatter and parser for SEK/EUR with locale sup
 
 ---
 
-### Task 0.8: `dates.ts` â€” date helpers
+### Task 0.8: `dates.ts` --- date helpers
 
 **Files:**
 - Create: `src/lib/dates.ts`, `tests/unit/dates.test.ts`
@@ -650,7 +650,7 @@ describe('formatDateLong', () => {
 })
 ```
 
-- [ ] **Step 2: Run, expect failure** â€” `pnpm test dates` â€” FAIL.
+- [ ] **Step 2: Run, expect failure** --- `pnpm test dates` --- FAIL.
 
 - [ ] **Step 3: Implement**
 
@@ -739,7 +739,7 @@ git commit -m "feat(ui): add Lucide icon barrel"
 
 ---
 
-### Task 0.10: Port UI primitive â€” `Button`
+### Task 0.10: Port UI primitive --- `Button`
 
 **Files:**
 - Create: `src/components/ui/button.tsx`, `tests/unit/button.test.tsx`
@@ -833,7 +833,7 @@ git commit -m "feat(ui): port Button primitive to TypeScript"
 
 ---
 
-### Task 0.11: Port UI primitive â€” `Chip`
+### Task 0.11: Port UI primitive --- `Chip`
 
 **Files:**
 - Create: `src/components/ui/chip.tsx`, `tests/unit/chip.test.tsx`
@@ -896,7 +896,7 @@ git commit -m "feat(ui): port Chip primitive"
 
 ---
 
-### Task 0.12: Port UI primitive â€” `Card`
+### Task 0.12: Port UI primitive --- `Card`
 
 **Files:**
 - Create: `src/components/ui/card.tsx`, `tests/unit/card.test.tsx`
@@ -961,7 +961,7 @@ git commit -m "feat(ui): port Card primitive"
 
 ---
 
-### Task 0.13: Port UI primitive â€” `Input` and `MoneyInput`
+### Task 0.13: Port UI primitive --- `Input` and `MoneyInput`
 
 **Files:**
 - Create: `src/components/ui/input.tsx`, `src/components/ui/money-input.tsx`, `tests/unit/input.test.tsx`
@@ -1074,7 +1074,7 @@ git commit -m "feat(ui): port Input and MoneyInput primitives"
 
 ---
 
-### Task 0.14: Port UI primitive â€” `Avatar`
+### Task 0.14: Port UI primitive --- `Avatar`
 
 **Files:**
 - Create: `src/components/ui/avatar.tsx`, `tests/unit/avatar.test.tsx`
@@ -1226,7 +1226,7 @@ git commit -m "feat(ui): add Radix Dialog wrapper for drawers and modals"
 pnpm add sonner
 ```
 
-> We use `sonner` instead of Radix Toast â€” it's the de-facto modern Toast in React 19 and has less boilerplate. Brand styling via props.
+> We use `sonner` instead of Radix Toast --- it's the de-facto modern Toast in React 19 and has less boilerplate. Brand styling via props.
 
 - [ ] **Step 2: Create wrapper**
 
@@ -1603,7 +1603,7 @@ git commit -m "feat(i18n): next-intl with en + sv messages, cookie-based locale"
 
 ---
 
-### Task 0.20: AppShell â€” Sidebar component
+### Task 0.20: AppShell --- Sidebar component
 
 **Files:**
 - Create: `src/components/chrome/sidebar.tsx`
@@ -1664,7 +1664,7 @@ git commit -m "feat(chrome): Sidebar with active state and i18n labels"
 
 ---
 
-### Task 0.21: AppShell â€” TopBar component
+### Task 0.21: AppShell --- TopBar component
 
 **Files:**
 - Create: `src/components/chrome/topbar.tsx`, `src/components/chrome/locale-switcher.tsx`
@@ -1730,7 +1730,7 @@ git commit -m "feat(chrome): TopBar with locale switcher"
 
 ---
 
-### Task 0.22: AppShell â€” Bottom tab bar (mobile) + layout glue
+### Task 0.22: AppShell --- Bottom tab bar (mobile) + layout glue
 
 **Files:**
 - Create: `src/components/chrome/bottom-tabs.tsx`, `src/components/chrome/app-shell.tsx`
@@ -1878,7 +1878,7 @@ git commit -m "feat(marketing): basic landing page in (marketing) route group"
 **Files:**
 - Create: `app/(app)/layout.tsx`, `app/(app)/overview/page.tsx`
 
-- [ ] **Step 1: App layout (auth-gated later â€” for now just renders shell)**
+- [ ] **Step 1: App layout (auth-gated later --- for now just renders shell)**
 
 `app/(app)/layout.tsx`:
 ```tsx
@@ -2057,17 +2057,17 @@ At this point the engineer has:
 - CI pipeline
 
 **Manual checkpoint before Phase 1:**
-1. `pnpm typecheck` â€” clean
-2. `pnpm lint` â€” clean
-3. `pnpm test` â€” all green
-4. `pnpm test:e2e` â€” both smoke tests pass
+1. `pnpm typecheck` --- clean
+2. `pnpm lint` --- clean
+3. `pnpm test` --- all green
+4. `pnpm test:e2e` --- both smoke tests pass
 5. Visit `/` (marketing), `/overview` (app shell) in browser at mobile (375px) and desktop (1440px) widths; layouts should be correct.
 
 ---
 
-## Phase 1 â€” Auth + Tenancy
+## Phase 1 --- Auth + Tenancy
 
-### Task 1.1: First migration â€” organizations + memberships
+### Task 1.1: First migration --- organizations + memberships
 
 **Files:**
 - Create: `supabase/migrations/0001_organizations.sql`
@@ -2076,7 +2076,7 @@ At this point the engineer has:
 
 ```bash
 supabase migration new organizations
-# This creates supabase/migrations/<timestamp>_organizations.sql â€” rename to 0001 for clarity
+# This creates supabase/migrations/<timestamp>_organizations.sql --- rename to 0001 for clarity
 ```
 
 - [ ] **Step 2: Write SQL**
@@ -2253,9 +2253,9 @@ Expected: `src/lib/supabase/database.types.ts` contains `Database` type with `or
 
 Modify `src/lib/supabase/server.ts`, `client.ts`, `middleware.ts`:
 
-- Replace `supaCreateServer(...)` â†’ `supaCreateServer<Database>(...)`
-- Replace `createServerClient(...)` â†’ `createServerClient<Database>(...)`
-- Replace `createBrowserClient(...)` â†’ `createBrowserClient<Database>(...)`
+- Replace `supaCreateServer(...)` -†’ `supaCreateServer<Database>(...)`
+- Replace `createServerClient(...)` -†’ `createServerClient<Database>(...)`
+- Replace `createBrowserClient(...)` -†’ `createBrowserClient<Database>(...)`
 
 Add at top of each file:
 ```ts
@@ -2343,7 +2343,7 @@ git commit -m "feat(auth): requireUser() and active org cookie"
 
 ---
 
-### Task 1.6: Middleware â€” protect (app) routes
+### Task 1.6: Middleware --- protect (app) routes
 
 **Files:**
 - Create: `middleware.ts` (repo root)
@@ -2389,7 +2389,7 @@ export const config = {
 
 - [ ] **Step 2: Verify**
 
-Run `pnpm dev`. Try `http://localhost:3000/overview` in incognito. Expected: redirect to `/login?next=/overview` (page doesn't exist yet â€” 404 is fine; we build it next).
+Run `pnpm dev`. Try `http://localhost:3000/overview` in incognito. Expected: redirect to `/login?next=/overview` (page doesn't exist yet --- 404 is fine; we build it next).
 
 - [ ] **Step 3: Commit**
 
@@ -2547,7 +2547,7 @@ export default function LoginPage() {
 
 - [ ] **Step 6: Verify**
 
-`pnpm dev` â†’ `/login`. Expected: form renders with EN labels. Try submitting empty (browser native validation). Try with `notarealuser@x.com` / `password123` â†’ error from Supabase.
+`pnpm dev` -†’ `/login`. Expected: form renders with EN labels. Try submitting empty (browser native validation). Try with `notarealuser@x.com` / `password123` -†’ error from Supabase.
 
 - [ ] **Step 7: Commit**
 
@@ -2620,7 +2620,7 @@ export default function SignupPage() {
 
 - [ ] **Step 3: Verify signup creates a user**
 
-Run `pnpm dev`. Open `http://127.0.0.1:54323` (Supabase Studio). Go to `/signup`, register `test@faqtura.local` / `password123`. After redirect to `/onboarding` (404 for now), check Studio â†’ Authentication â†’ Users. Expected: test user listed.
+Run `pnpm dev`. Open `http://127.0.0.1:54323` (Supabase Studio). Go to `/signup`, register `test@faqtura.local` / `password123`. After redirect to `/onboarding` (404 for now), check Studio -†’ Authentication -†’ Users. Expected: test user listed.
 
 - [ ] **Step 4: Commit**
 
@@ -2812,12 +2812,12 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 - [ ] **Step 4: Verify the full flow manually**
 
 1. `pnpm dev`
-2. Visit `/overview` in incognito â†’ redirected to `/login`
+2. Visit `/overview` in incognito -†’ redirected to `/login`
 3. Click "Create account", register `e2e@test.local` / `password1`
 4. Redirected to `/onboarding`, fill in "Test Co", submit
 5. Redirected to `/overview`, AppShell shows with `e2e@test.local` in top bar
-6. Click logout â†’ back to `/login`
-7. Log in with same credentials â†’ back to `/overview` (already onboarded)
+6. Click logout -†’ back to `/login`
+7. Log in with same credentials -†’ back to `/overview` (already onboarded)
 
 - [ ] **Step 5: Commit**
 
@@ -2828,7 +2828,7 @@ git commit -m "feat(auth): protect (app) routes via requireUser() and add logout
 
 ---
 
-### Task 1.11: E2E test â€” full auth flow
+### Task 1.11: E2E test --- full auth flow
 
 **Files:**
 - Create: `tests/e2e/auth-flow.spec.ts`
@@ -2838,7 +2838,7 @@ git commit -m "feat(auth): protect (app) routes via requireUser() and add logout
 ```ts
 import { test, expect } from '@playwright/test'
 
-test('signup â†’ onboarding â†’ overview, then logout and login again', async ({ page }) => {
+test('signup -†’ onboarding -†’ overview, then logout and login again', async ({ page }) => {
   const email = `e2e-${Date.now()}@faqtura.local`
   const password = 'password123'
 
@@ -2885,7 +2885,7 @@ And update the test to: `await page.getByRole('button', { name: /sign out/i }).c
 
 - [ ] **Step 2: Make sure local Supabase is running before the test**
 
-The test depends on `supabase start` running. Add to project README or `playwright.config.ts` precondition (manual for now; CI uses hosted Supabase or a separate workflow with Supabase actions â€” out of MVP scope).
+The test depends on `supabase start` running. Add to project README or `playwright.config.ts` precondition (manual for now; CI uses hosted Supabase or a separate workflow with Supabase actions --- out of MVP scope).
 
 - [ ] **Step 3: Run**
 
@@ -2954,33 +2954,33 @@ git commit -m "feat(app): stub Invoices, Clients, Settings pages so sidebar nav 
 
 ---
 
-## Phase 1 Complete â€” Acceptance Criteria
+## Phase 1 Complete --- Acceptance Criteria
 
 Before declaring Phase 1 done, manually verify:
 
-1. âœ… Visiting any `(app)` route while signed out redirects to `/login?next=<path>`.
-2. âœ… Sign-up with email/password creates a user (visible in Supabase Studio at `http://127.0.0.1:54323`).
-3. âœ… After signup, user is redirected to `/onboarding`.
-4. âœ… Submitting onboarding creates an `organizations` row and a `memberships` row with `role='owner'`.
-5. âœ… User is then redirected to `/overview` and sees their email in the top bar.
-6. âœ… Logout returns to `/login`.
-7. âœ… Visiting `/onboarding` after onboarding is already complete redirects to `/overview`.
-8. âœ… All sidebar / bottom-tab links navigate to existing pages.
-9. âœ… Locale switcher changes UI from EN to SV and persists in a cookie.
-10. âœ… `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e` all green.
-11. âœ… RLS smoke check: in Supabase Studio, run `select * from organizations` as anon â€” returns 0 rows. As a logged-in user (via app) â€” returns only that user's org.
+1. -œ… Visiting any `(app)` route while signed out redirects to `/login?next=<path>`.
+2. -œ… Sign-up with email/password creates a user (visible in Supabase Studio at `http://127.0.0.1:54323`).
+3. -œ… After signup, user is redirected to `/onboarding`.
+4. -œ… Submitting onboarding creates an `organizations` row and a `memberships` row with `role='owner'`.
+5. -œ… User is then redirected to `/overview` and sees their email in the top bar.
+6. -œ… Logout returns to `/login`.
+7. -œ… Visiting `/onboarding` after onboarding is already complete redirects to `/overview`.
+8. -œ… All sidebar / bottom-tab links navigate to existing pages.
+9. -œ… Locale switcher changes UI from EN to SV and persists in a cookie.
+10. -œ… `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e` all green.
+11. -œ… RLS smoke check: in Supabase Studio, run `select * from organizations` as anon --- returns 0 rows. As a logged-in user (via app) --- returns only that user's org.
 
 ---
 
 ## Notes for the engineer
 
-- **`pnpm db:reset` is destructive** â€” it wipes the local Supabase DB. Safe in local dev; never run against a hosted project.
-- **`server-only` package imports** â€” if you accidentally import `src/lib/supabase/server.ts` from a client component, the build will throw a clear error. Trust it.
-- **Server actions throw `redirect()`** â€” never wrap them in `try/catch` that swallows errors, or redirects break (this is a Next.js quirk: `redirect` is thrown internally).
-- **`requireUser()` does `redirect('/login')` on failure** â€” that's why it returns a non-nullable `AuthContext`. Don't add a `?` to its return type.
-- **No `.env.local` checked in** â€” `.env.local.example` documents the keys, real values come from `supabase start` output.
-- **`docs/legacy-prototype/`** is `tsconfig` and `biome` excluded â€” it's reference material, not built code. Read its components when porting, but don't edit it.
-- **i18n strings** â€” every user-visible string in components must go through `useTranslations`. New strings: add to BOTH `en.json` and `sv.json` (Biome can be configured to warn on missing keys; not done here to keep MVP simple).
+- **`pnpm db:reset` is destructive** --- it wipes the local Supabase DB. Safe in local dev; never run against a hosted project.
+- **`server-only` package imports** --- if you accidentally import `src/lib/supabase/server.ts` from a client component, the build will throw a clear error. Trust it.
+- **Server actions throw `redirect()`** --- never wrap them in `try/catch` that swallows errors, or redirects break (this is a Next.js quirk: `redirect` is thrown internally).
+- **`requireUser()` does `redirect('/login')` on failure** --- that's why it returns a non-nullable `AuthContext`. Don't add a `?` to its return type.
+- **No `.env.local` checked in** --- `.env.local.example` documents the keys, real values come from `supabase start` output.
+- **`docs/legacy-prototype/`** is `tsconfig` and `biome` excluded --- it's reference material, not built code. Read its components when porting, but don't edit it.
+- **i18n strings** --- every user-visible string in components must go through `useTranslations`. New strings: add to BOTH `en.json` and `sv.json` (Biome can be configured to warn on missing keys; not done here to keep MVP simple).
 
 ---
 
@@ -2988,7 +2988,7 @@ Before declaring Phase 1 done, manually verify:
 
 Reserved for later phases:
 - Clients CRUD (Phase 2)
-- Invoices, line items, PDF, email (Phases 3â€“4)
+- Invoices, line items, PDF, email (Phases 3---4)
 - Overview dashboard with real data (Phase 5)
 - Reminders, cron, polish (Phase 6)
 - Email confirmation enabling (production prep)

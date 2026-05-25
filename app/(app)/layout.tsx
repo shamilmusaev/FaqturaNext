@@ -9,9 +9,9 @@ export default async function AppLayout({
   children: ReactNode
   modal: ReactNode
 }) {
-  const { email } = await requireUser()
+  const { email, displayName } = await requireUser()
   return (
-    <AppShell userEmail={email}>
+    <AppShell userEmail={email} userName={displayName}>
       {children}
       {modal}
     </AppShell>

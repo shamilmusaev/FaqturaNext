@@ -23,7 +23,7 @@ test.describe
       // Pick the client we just created
       await page.getByLabel('Client').selectOption({ label: clientName })
 
-      // First line item is present by default — fill it
+      // First line item is present by default, fill it
       await page.getByLabel('Description').first().fill('Senior consulting')
       await page.getByLabel('Qty').first().fill('10')
       // MoneyInput accepts the localised number; sv-SE uses comma decimal

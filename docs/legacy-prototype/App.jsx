@@ -114,7 +114,7 @@ const PlaceholderScreen = ({ name }) => {
         fontSize: 48, letterSpacing: '-0.03em', lineHeight: 1.05, margin: '8px 8px 4px',
       }}>{labels[name]}</h1>
       <div className="body" style={{ color: 'var(--ink-2)', padding: '0 8px 24px' }}>
-        Not in this prototype — would live here.
+        Not in this prototype --- would live here.
       </div>
       <Card padding={48} style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',

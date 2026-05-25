@@ -48,7 +48,7 @@ export function InvoiceFilters() {
           placeholder={t('search')}
           defaultValue={params.get('q') ?? ''}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
+          className="h-12 rounded-[14px] pl-9 text-sm"
         />
       </label>
       <div className="flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ export function InvoiceFilters() {
             type="button"
             onClick={() => setStatus(s)}
             className={cn(
-              'h-9 px-3 rounded-full text-sm border transition-colors min-h-9',
+              'min-h-10 rounded-full border px-4 text-sm transition-colors',
               current === s
                 ? 'bg-ink text-white border-ink'
                 : 'bg-card text-ink border-line-1 hover:bg-paper',

@@ -92,7 +92,7 @@ const IconButton = ({ children, onClick, style, active }) => {
   );
 };
 
-// $ <Money> – tabular figures for clean numeric columns.
+// $ <Money> --- tabular figures for clean numeric columns.
 const Money = ({ value, currency = 'EUR', muted, large, style }) => (
   <span style={{
     fontFamily: large ? 'var(--font-display)' : 'var(--font-mono)',

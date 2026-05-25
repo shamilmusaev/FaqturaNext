@@ -23,7 +23,7 @@ begin
   end loop;
 end $$;
 
--- Use 'reminder_sent' is wrong — the flip itself is not a reminder. Drop the event log
+-- Use 'reminder_sent' is wrong --- the flip itself is not a reminder. Drop the event log
 -- inside the loop; we'll log a dedicated event type when we actually send reminders.
 create or replace function mark_overdue_invoices() returns void
 language plpgsql

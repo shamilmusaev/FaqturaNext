@@ -10,7 +10,17 @@ const TONE: Record<InvoiceStatus, 'neutral' | 'pos' | 'warn' | 'neg' | 'brand'> 
   cancelled: 'neutral',
 }
 
-export async function InvoiceStatusChip({ status }: { status: InvoiceStatus }) {
+export async function InvoiceStatusChip({
+  status,
+  className,
+}: {
+  status: InvoiceStatus
+  className?: string
+}) {
   const t = await getTranslations('invoiceStatus')
-  return <Chip tone={TONE[status]}>{t(status)}</Chip>
+  return (
+    <Chip tone={TONE[status]} className={className}>
+      {t(status)}
+    </Chip>
+  )
 }

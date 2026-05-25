@@ -48,8 +48,8 @@ export function CashflowPeriodSelector({
             aria-selected={active}
             onClick={() => select(p)}
             className={cn(
-              'h-7 px-3 rounded-full font-medium transition-colors',
-              active ? 'bg-card text-ink shadow-sm' : 'text-ink-2 hover:text-ink',
+              'h-8 px-4 rounded-full font-medium transition-colors',
+              active ? 'bg-card text-ink shadow-sm' : 'text-ink-2 hover:text-ink hover:bg-card/60',
             )}
           >
             {labels[p]}

@@ -80,7 +80,7 @@ const Invoices = ({ invoices, onOpen, onNew, onMarkPaid }) => {
           <div style={{ flex: 1 }} />
           <Input
             value={query} onChange={setQuery}
-            placeholder="Search client or invoice number…"
+            placeholder="Search client or invoice number--�"
             prefix={<ISearch size={15} />}
             style={{ width: 320 }}
           />
@@ -147,7 +147,7 @@ const InvoiceRow = ({ inv, onOpen, onMarkPaid }) => {
       <div><Chip status={inv.status} /></div>
       <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{inv.issued}</div>
       <div style={{ fontSize: 13, color: inv.status === 'overdue' ? 'var(--neg)' : 'var(--ink-2)' }}>
-        {inv.due === '—' ? '—' : inv.due}
+        {inv.due === '---' ? '---' : inv.due}
       </div>
       <div style={{ textAlign: 'right' }}>
         <button onClick={e => e.stopPropagation()} style={{

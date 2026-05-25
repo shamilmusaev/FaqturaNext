@@ -23,7 +23,7 @@ create policy "members update org invoices"
     select organization_id from memberships where user_id = auth.uid()
   ));
 
--- No delete policy — invoices are financial documents, only cancellable.
+-- No delete policy --- invoices are financial documents, only cancellable.
 
 -- invoice_line_items: scoped through parent invoice
 create policy "members read org line items"

@@ -1,10 +1,10 @@
 const InvoiceEditor = ({ onClose, onSend, onSaveDraft }) => {
   const [clientId, setClientId] = React.useState('c1');
   const [items, setItems] = React.useState([
-    { id: 1, desc: 'Brand identity – design', qty: 24, rate: 145, vat: 25, deduction: null },
+    { id: 1, desc: 'Brand identity --- design', qty: 24, rate: 145, vat: 25, deduction: null },
   ]);
   const [due, setDue] = React.useState('May 28, 2026');
-  const [notes, setNotes] = React.useState('Thanks for working with me — payment within 14 days, please.');
+  const [notes, setNotes] = React.useState('Thanks for working with me --- payment within 14 days, please.');
   const nextId = React.useRef(2);
 
   const updateItem = (id, patch) => setItems(items.map(it => it.id === id ? { ...it, ...patch } : it));
@@ -151,7 +151,7 @@ const LineItemRow = ({ item, onChange, onRemove }) => {
       padding: '10px 24px', borderTop: '1px solid var(--line)',
       alignItems: 'center', gap: 10,
     }}>
-      <input value={item.desc} onChange={e => onChange({ desc: e.target.value })} placeholder="Describe the work…"
+      <input value={item.desc} onChange={e => onChange({ desc: e.target.value })} placeholder="Describe the work--�"
              style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: 14, fontFamily: 'var(--font-sans)' }}/>
       <input value={item.qty} onChange={e => onChange({ qty: Number(e.target.value) || 0 })} type="number"
              style={{ border: 'none', outline: 'none', background: 'transparent', textAlign: 'right',

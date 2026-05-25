@@ -222,6 +222,26 @@ export type Database = {
         }
         Returns: Database['public']['Tables']['invoices']['Row']
       }
+      update_organization: {
+        Args: {
+          p_org_id: string
+          p_name?: string | null
+          p_org_number?: string | null
+          p_vat_number?: string | null
+          p_address?: Record<string, unknown> | null
+          p_iban?: string | null
+          p_bankgiro?: string | null
+          p_plusgiro?: string | null
+          p_swish_number?: string | null
+          p_default_vat_rate?: number | null
+          p_default_payment_terms_days?: number | null
+          p_locale?: string | null
+          p_currency?: string | null
+          p_invoice_number_template?: string | null
+          p_logo_url?: string | null
+        }
+        Returns: Database['public']['Tables']['organizations']['Row']
+      }
     }
     Enums: {
       invoice_status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'

@@ -7,7 +7,10 @@ export type InvoiceRow = Database['public']['Tables']['invoices']['Row']
 export type LineItemRow = Database['public']['Tables']['invoice_line_items']['Row']
 export type InvoiceEventRow = Database['public']['Tables']['invoice_events']['Row']
 
-export type InvoiceListItem = InvoiceRow & {
+export type InvoiceListItem = Pick<
+  InvoiceRow,
+  'id' | 'number' | 'status' | 'issued_at' | 'due_at' | 'currency' | 'total_cents'
+> & {
   client: { id: string; name: string; email: string | null } | null
 }
 
@@ -35,7 +38,9 @@ export async function listInvoices(opts: ListInvoicesOptions = {}): Promise<Invo
 
   let q = supabase
     .from('invoices')
-    .select('*, client:clients(id, name, email)')
+    .select(
+      'id, number, status, issued_at, due_at, currency, total_cents, client:clients(id, name, email)',
+    )
     .eq('organization_id', organizationId)
     .order('issued_at', { ascending: false })
     .limit(500)

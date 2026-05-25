@@ -10,7 +10,7 @@ export function InvoiceRowCheckbox({ invoiceNumber }: InvoiceRowActionsProps) {
       type="checkbox"
       aria-label={`select-${invoiceNumber}`}
       onClick={(e) => e.stopPropagation()}
-      className="accent-ink"
+      className="h-4 w-4 accent-ink"
     />
   )
 }

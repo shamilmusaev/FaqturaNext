@@ -18,13 +18,13 @@
 
   /* -------- Color: brand --------
      Faqtura orange + ink black is the whole system. Orange is the energy,
-     black is the structure. Brand and accent are the same hue — they differ
+     black is the structure. Brand and accent are the same hue; they differ
      only in the role they play, not the color. */
   --brand: #ec5a2a; /* Faqtura orange */
   --brand-2: #d44a1e; /* hover/press */
   --brand-ink: #ffffff; /* text on brand */
 
-  --accent: #ec5a2a; /* same orange — for chips/CTAs/highlights */
+  --accent: #ec5a2a; /* same orange for chips/CTAs/highlights */
   --accent-2: #d44a1e; /* hover */
   --accent-ink: #ffffff; /* text on accent */
 
@@ -39,7 +39,7 @@
   --info-bg: #e0eaf4;
 
   /* -------- Type: families --------
-     Hanken Grotesk — serious, neutral grotesque in the Söhne/GT America family.
+     Hanken Grotesk: serious, neutral grotesque in the Söhne/GT America family.
      One family across UI and display, differentiated by weight + tracking.
      IBM Plex Mono for invoice IDs and tabular figures. */
   --font-display: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -97,75 +97,77 @@
    Semantic typographic styles
    ============================================================ */
 
-.display-xl,
-.display-l,
-.display-m {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--lh-tight);
-  color: var(--ink);
-  font-feature-settings: "tnum", "ss01";
-}
-.display-xl {
-  font-size: var(--fs-display-xl);
-}
-.display-l {
-  font-size: var(--fs-display-l);
-}
-.display-m {
-  font-size: var(--fs-display-m);
-}
+@layer base {
+  .display-xl,
+  .display-l,
+  .display-m {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--lh-tight);
+    color: var(--ink);
+    font-feature-settings: "tnum", "ss01";
+  }
+  .display-xl {
+    font-size: var(--fs-display-xl);
+  }
+  .display-l {
+    font-size: var(--fs-display-l);
+  }
+  .display-m {
+    font-size: var(--fs-display-m);
+  }
 
-h1,
-.h1 {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--fs-h1);
-  letter-spacing: var(--tracking-snug);
-  line-height: var(--lh-snug);
-  color: var(--ink);
-}
-h2,
-.h2 {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--fs-h2);
-  letter-spacing: var(--tracking-snug);
-  line-height: var(--lh-snug);
-  color: var(--ink);
-}
-h3,
-.h3 {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--fs-h3);
-  line-height: var(--lh-snug);
-  color: var(--ink);
-}
-.body {
-  font-family: var(--font-sans);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-  color: var(--ink);
-}
-.small {
-  font-family: var(--font-sans);
-  font-size: var(--fs-small);
-  line-height: var(--lh-body);
-  color: var(--ink-2);
-}
-.micro {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  line-height: 1.3;
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-.mono {
-  font-family: var(--font-mono);
-  font-feature-settings: "tnum";
+  h1,
+  .h1 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-h1);
+    letter-spacing: var(--tracking-snug);
+    line-height: var(--lh-snug);
+    color: var(--ink);
+  }
+  h2,
+  .h2 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-h2);
+    letter-spacing: var(--tracking-snug);
+    line-height: var(--lh-snug);
+    color: var(--ink);
+  }
+  h3,
+  .h3 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--fs-h3);
+    line-height: var(--lh-snug);
+    color: var(--ink);
+  }
+  .body {
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--ink);
+  }
+  .small {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    line-height: var(--lh-body);
+    color: var(--ink-2);
+  }
+  .micro {
+    font-family: var(--font-sans);
+    font-size: var(--fs-micro);
+    line-height: 1.3;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-feature-settings: "tnum";
+  }
 }
 
 /* baseline reset for previews */

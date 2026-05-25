@@ -4,6 +4,7 @@ import type { Database } from '@/lib/supabase/database.types'
 import { createServerClient } from '@/lib/supabase/server'
 
 export type ClientRow = Database['public']['Tables']['clients']['Row']
+export type ClientOption = Pick<ClientRow, 'id' | 'name'>
 
 export type ListClientsOptions = {
   search?: string
@@ -34,6 +35,21 @@ export async function listClients(opts: ListClientsOptions = {}): Promise<Client
   return data ?? []
 }
 
+export async function listActiveClientOptions(): Promise<ClientOption[]> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data, error } = await supabase
+    .from('clients')
+    .select('id, name')
+    .eq('organization_id', organizationId)
+    .is('archived_at', null)
+    .order('name', { ascending: true })
+    .limit(500)
+  if (error) throw error
+  return data ?? []
+}
+
 export type ClientWithStats = ClientRow & {
   invoice_count: number
   revenue_cents: bigint
@@ -47,12 +63,22 @@ export async function listClientsWithStats(
   const { organizationId } = await requireUser()
   const supabase = await createServerClient()
 
-  const { data: clients, error: cErr } = await supabase
+  let clientsQuery = supabase
     .from('clients')
     .select('*')
     .eq('organization_id', organizationId)
     .order('name', { ascending: true })
     .limit(500)
+
+  if (!opts.includeArchived) clientsQuery = clientsQuery.is('archived_at', null)
+
+  const search = opts.search?.trim()
+  if (search) {
+    const pattern = `%${search.replace(/[%_]/g, '\\$&')}%`
+    clientsQuery = clientsQuery.or(`name.ilike.${pattern},email.ilike.${pattern}`)
+  }
+
+  const { data: clients, error: cErr } = await clientsQuery
   if (cErr) throw cErr
   if (!clients || clients.length === 0) return []
 
@@ -92,20 +118,10 @@ export async function listClientsWithStats(
     if (inv.status === 'overdue') s.has_overdue = true
   }
 
-  let result: ClientWithStats[] = clients.map((c) => {
+  const result: ClientWithStats[] = clients.map((c) => {
     const s = stats.get(c.id) as Stat
     return { ...c, ...s }
   })
-
-  if (!opts.includeArchived) result = result.filter((c) => !c.archived_at)
-
-  const search = opts.search?.trim()?.toLowerCase()
-  if (search) {
-    result = result.filter(
-      (c) =>
-        c.name.toLowerCase().includes(search) || (c.email ?? '').toLowerCase().includes(search),
-    )
-  }
 
   return result.sort((a, b) => {
     const diff = b.revenue_cents - a.revenue_cents

@@ -25,7 +25,7 @@ export default async function ClientsPage({ searchParams }: PageProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
           <p className="mt-1 text-sm text-ink/60">
@@ -36,7 +36,7 @@ export default async function ClientsPage({ searchParams }: PageProps) {
           </p>
         </div>
         <Link href={'/clients/new' as Route}>
-          <Button>
+          <Button className="h-10 px-4 text-sm sm:h-11 sm:px-5 sm:text-[15px]">
             <PlusIcon className="h-4 w-4" />
             {t('newClient')}
           </Button>

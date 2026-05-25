@@ -1,7 +1,7 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 // Use react-pdf's built-in Helvetica / Courier instead of loading Hanken Grotesk
-// over the wire on every render — that was slow, brittle when offline, and
+// over the wire on every render. That was slow, brittle when offline, and
 // occasionally hung the route. Branded fonts will be bundled in a follow-up
 // once we ship the Edge Function with pre-warmed font files.
 
@@ -181,7 +181,7 @@ export function InvoiceDocument({ invoice }: { invoice: InvoicePdfData }) {
             <Text style={[styles.colAmount, styles.tableHeader]}>Belopp</Text>
           </View>
           {invoice.lineItems.map((li, idx) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: PDF render only — no reordering.
+            // biome-ignore lint/suspicious/noArrayIndexKey: PDF render only, no reordering.
             <View key={idx} style={styles.tableRow}>
               <Text style={styles.colDesc}>
                 {li.description}

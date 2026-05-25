@@ -38,7 +38,7 @@ function toPdfData(
       bankgiro: org.bankgiro,
     },
     client: {
-      name: invoice.client?.name ?? '—',
+      name: invoice.client?.name ?? 'N/A',
       email: invoice.client?.email ?? null,
       org_number: invoice.client?.org_number ?? null,
       vat_number: invoice.client?.vat_number ?? null,

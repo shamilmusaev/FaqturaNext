@@ -5,7 +5,12 @@ import { createServerClient } from '@/lib/supabase/server'
 import type { Route } from 'next'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { getInvoice, type InvoiceDetail } from './queries'
 import { type InvoiceInput, InvoiceInputSchema } from './schema'
+
+export async function fetchInvoiceForDialog(id: string): Promise<InvoiceDetail | null> {
+  return await getInvoice(id)
+}
 
 export type InvoiceActionResult = { error?: string; fieldErrors?: Record<string, string> }
 

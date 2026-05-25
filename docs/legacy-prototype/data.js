@@ -15,8 +15,8 @@ const INVOICES = [
     id: 'INV-2026-0312', clientId: 'c1', status: 'overdue',
     issued: 'Apr 28, 2026', due: 'May 12, 2026', dueRel: '12 d ago', currency: 'EUR',
     items: [
-      { id: 1, desc: 'Brand identity – discovery', qty: 8,  rate: 120, vat: 25, deduction: null },
-      { id: 2, desc: 'Brand identity – design',    qty: 24, rate: 145, vat: 25, deduction: null },
+      { id: 1, desc: 'Brand identity --- discovery', qty: 8,  rate: 120, vat: 25, deduction: null },
+      { id: 2, desc: 'Brand identity --- design',    qty: 24, rate: 145, vat: 25, deduction: null },
       { id: 3, desc: 'Travel costs',               qty: 1,  rate: 380, vat: 25, deduction: null },
     ],
     timeline: [
@@ -30,7 +30,7 @@ const INVOICES = [
     id: 'INV-2026-0311', clientId: 'c2', status: 'pending',
     issued: 'May 14, 2026', due: 'May 28, 2026', dueRel: 'in 14 d', currency: 'EUR',
     items: [
-      { id: 1, desc: 'Photo retouching – 12 frames', qty: 12, rate: 95, vat: 25, deduction: null },
+      { id: 1, desc: 'Photo retouching --- 12 frames', qty: 12, rate: 95, vat: 25, deduction: null },
       { id: 2, desc: 'Color grading',                qty: 1,  rate: 110, vat: 25, deduction: null },
     ],
     timeline: [
@@ -42,7 +42,7 @@ const INVOICES = [
     id: 'INV-2026-0310', clientId: 'c3', status: 'paid',
     issued: 'May 02, 2026', due: 'May 14, 2026', dueRel: 'paid May 14', currency: 'EUR',
     items: [
-      { id: 1, desc: 'Web build – sprint 2', qty: 1, rate: 980, vat: 25, deduction: null },
+      { id: 1, desc: 'Web build --- sprint 2', qty: 1, rate: 980, vat: 25, deduction: null },
     ],
     timeline: [
       { date: 'May 14, 2026', text: 'Paid via bank transfer' },
@@ -54,7 +54,7 @@ const INVOICES = [
     id: 'INV-2026-0309', clientId: 'c4', status: 'pending',
     issued: 'May 09, 2026', due: 'May 23, 2026', dueRel: 'in 9 d', currency: 'EUR',
     items: [
-      { id: 1, desc: 'Interior consultation – 4h',   qty: 4, rate: 140, vat: 25, deduction: { kind: 'ROT', pct: 30 } },
+      { id: 1, desc: 'Interior consultation --- 4h',   qty: 4, rate: 140, vat: 25, deduction: { kind: 'ROT', pct: 30 } },
     ],
     timeline: [
       { date: 'May 09, 2026', text: 'Invoice sent to pay@elmoak.se' },
@@ -75,7 +75,7 @@ const INVOICES = [
   },
   {
     id: 'INV-2026-0307', clientId: 'c6', status: 'draft',
-    issued: '—', due: '—', dueRel: 'draft', currency: 'EUR',
+    issued: '---', due: '---', dueRel: 'draft', currency: 'EUR',
     items: [
       { id: 1, desc: 'Architectural visualisation', qty: 1, rate: 2200, vat: 25, deduction: null },
     ],
@@ -110,7 +110,7 @@ function invoiceTotal(inv) {
 }
 
 function fmtMoney(n, currency = 'EUR') {
-  const symbol = currency === 'EUR' ? '€' : currency === 'SEK' ? 'kr' : '$';
+  const symbol = currency === 'EUR' ? '-��' : currency === 'SEK' ? 'kr' : '$';
   const v = (Math.round(n * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return `${symbol} ${v}`;
 }

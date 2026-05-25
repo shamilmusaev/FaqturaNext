@@ -24,6 +24,8 @@ interface Props {
   clients: ClientOption[]
   cancelHref: Route
   defaultCurrency?: string
+  onCancel?: () => void
+  onSuccess?: () => void
 }
 
 interface DraftLine {
@@ -46,7 +48,7 @@ function todayPlusDays(days: number): string {
   return d.toISOString().slice(0, 10)
 }
 
-export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Props) {
+export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK', onCancel, onSuccess }: Props) {
   const t = useTranslations('invoices')
   const tFields = useTranslations('invoices.fields')
   const tActions = useTranslations('invoices.actions')
@@ -123,6 +125,7 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
       }
       toast.success(tToast('created'))
       router.refresh()
+      onSuccess?.()
     })
   }
 
@@ -137,7 +140,7 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
             required
             className="h-11 rounded-[12px] border border-line-1 bg-card px-3 text-[15px]"
           >
-            {clients.length === 0 && <option value="">— no clients —</option>}
+            {clients.length === 0 && <option value="">No clients</option>}
             {clients.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -289,9 +292,19 @@ export function InvoiceForm({ clients, cancelHref, defaultCurrency = 'SEK' }: Pr
         <Button type="submit" disabled={pending}>
           {tActions('create')}
         </Button>
-        <Link href={cancelHref} className="text-sm text-ink/60 hover:text-ink">
-          {t('back')}
-        </Link>
+        {onCancel ? (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="text-sm text-ink/60 hover:text-ink"
+          >
+            {t('back')}
+          </button>
+        ) : (
+          <Link href={cancelHref} className="text-sm text-ink/60 hover:text-ink">
+            {t('back')}
+          </Link>
+        )}
       </div>
     </form>
   )

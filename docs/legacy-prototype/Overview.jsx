@@ -20,7 +20,7 @@ const Overview = ({ invoices, onOpenInvoice, onNew, onMarkPaid, toast }) => {
             fontSize: 56, letterSpacing: '-0.03em', lineHeight: 1.05, margin: 0,
           }}>Good morning, Elin</h1>
           <div className="body" style={{ color: 'var(--ink-2)', marginTop: 6 }}>
-            You have {outstanding.length} unpaid invoices â€” {fmtMoney(outstandingAmt)} outstanding.
+            You have {outstanding.length} unpaid invoices --- {fmtMoney(outstandingAmt)} outstanding.
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -52,7 +52,7 @@ const Overview = ({ invoices, onOpenInvoice, onNew, onMarkPaid, toast }) => {
         <Stat
           label="Sent this week"
           amount="6"
-          delta={{ dir: 'up', text: 'â‚¬11,240 invoiced' }}
+          delta={{ dir: 'up', text: '-‚¬11,240 invoiced' }}
         />
       </div>
 
@@ -128,7 +128,7 @@ const StatHero = ({ label, amount, sub, variant, ctaLabel }) => {
           border: '1px solid rgba(255,255,255,0.22)', borderRadius: 999,
           padding: '7px 14px', fontSize: 12, fontWeight: 500, cursor: 'pointer',
           fontFamily: 'var(--font-sans)',
-        }}>{ctaLabel} â†’</button>
+        }}>{ctaLabel} -†’</button>
       </div>
     </div>
   );
@@ -152,7 +152,7 @@ const CashflowChart = () => {
         <div>
           <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink-2)' }}>Cashflow</div>
           <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 32, letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: 4 }}>
-            â‚¬ 23,130 <span style={{ fontSize: 16, color: 'var(--ink-3)' }}>last 6 months</span>
+            -‚¬ 23,130 <span style={{ fontSize: 16, color: 'var(--ink-3)' }}>last 6 months</span>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
@@ -174,7 +174,7 @@ const CashflowChart = () => {
             borderTop: '1px dashed var(--line)',
           }}>
             <span style={{ fontSize: 10, color: 'var(--ink-3)', position: 'absolute', right: 0, top: -8, background: 'var(--card)', padding: '0 4px' }}>
-              â‚¬ {Math.round(max * p)}k
+              -‚¬ {Math.round(max * p)}k
             </span>
           </div>
         ))}
@@ -229,7 +229,7 @@ const DueThisWeek = ({ items, onOpen, onMarkPaid }) => (
       <button style={{
         background: 'transparent', border: 'none', cursor: 'pointer',
         color: 'var(--ink-3)', fontSize: 13, fontWeight: 500, fontFamily: 'var(--font-sans)',
-      }}>All â†’</button>
+      }}>All -†’</button>
     </div>
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       {items.map((inv, i) => {
@@ -332,9 +332,9 @@ const QuickActions = ({ onNew }) => (
     <Card padding={20}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink-2)' }}>VAT due â€” Q2</div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink-2)' }}>VAT due --- Q2</div>
           <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 28, letterSpacing: '-0.03em', marginTop: 6, fontFeatureSettings: '"tnum"' }}>
-            â‚¬ 4,580
+            -‚¬ 4,580
           </div>
         </div>
         <span style={{
@@ -347,7 +347,7 @@ const QuickActions = ({ onNew }) => (
       }}>
         <div style={{ background: 'var(--warn)', height: '100%', width: '64%', borderRadius: 999 }} />
       </div>
-      <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 8 }}>Set aside â‚¬2,930 of â‚¬4,580</div>
+      <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 8 }}>Set aside -‚¬2,930 of -‚¬4,580</div>
     </Card>
   </div>
 );

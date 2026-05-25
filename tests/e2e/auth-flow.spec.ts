@@ -19,4 +19,4 @@ test.describe('dev auto-login', () => {
 
 // NOTE: signup / login UI is intentionally bypassed in dev mode via
 // DEV_AUTO_LOGIN_EMAIL/PASSWORD env vars. To test the real auth flow, unset
-// those vars and run a separate spec — out of scope while solo-testing.
+// those vars and run a separate spec. Out of scope while solo-testing.

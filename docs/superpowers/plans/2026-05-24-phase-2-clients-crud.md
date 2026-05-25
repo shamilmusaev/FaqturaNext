@@ -1,16 +1,16 @@
-# Faqtura — Phase 2 Implementation Plan (Clients CRUD)
+# Faqtura --- Phase 2 Implementation Plan (Clients CRUD)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the full clients CRUD surface — list with search and archive filter, create form, detail view with edit + archive, mobile and desktop layouts — all backed by typed Supabase queries and server actions with RLS isolation.
+**Goal:** Build the full clients CRUD surface --- list with search and archive filter, create form, detail view with edit + archive, mobile and desktop layouts --- all backed by typed Supabase queries and server actions with RLS isolation.
 
 **Architecture:** Feature lives in `src/features/clients/`. Reads via `queries.ts` from Server Components, writes via `actions.ts` server actions. Single form component reused by `/clients/new` and `/clients/[id]/edit`. Zod schema is the source of truth for types and validation on both client and server.
 
-**Tech Stack:** Same as Phase 0/1 — Next.js 15 (App Router), React 19, TypeScript strict, Tailwind v4, Supabase, next-intl, zod, Biome, Vitest.
+**Tech Stack:** Same as Phase 0/1 --- Next.js 15 (App Router), React 19, TypeScript strict, Tailwind v4, Supabase, next-intl, zod, Biome, Vitest.
 
 **Reference:**
-- [Design spec](../specs/2026-05-22-faqtura-app-design.md) — clients schema, RLS, feature layout
-- [Phase 0/1 plan](2026-05-22-phase-0-1-foundation-auth.md) — established patterns
+- [Design spec](../specs/2026-05-22-faqtura-app-design.md) --- clients schema, RLS, feature layout
+- [Phase 0/1 plan](2026-05-22-phase-0-1-foundation-auth.md) --- established patterns
 
 **Prerequisites:** Phase 0 + Phase 1 merged or branch-stacked on top. Docker for `supabase start` locally.
 
@@ -20,11 +20,11 @@
 
 | Question | Decision |
 |---|---|
-| Required client fields | `name` only — email and rest optional |
-| Mobile create form | Single page (form is short — name + 5 optional fields) |
+| Required client fields | `name` only --- email and rest optional |
+| Mobile create form | Single page (form is short --- name + 5 optional fields) |
 | Client list filters | Search by `name` or `email`; toggle to include archived |
 | Client detail in Phase 2 | Info card + Edit + Archive actions. Linked invoices list deferred to Phase 3. |
-| Soft delete | Yes via `archived_at` per spec — never hard delete |
+| Soft delete | Yes via `archived_at` per spec --- never hard delete |
 | Address shape | `jsonb` with `{ street?, postal?, city?, country? }`; UI presents 4 separate fields |
 | Pagination | Defer to Phase 3 when invoices arrive. List shows up to 500 clients sorted by `name`. |
 | Empty state | When no clients: friendly hero with "Create your first client" CTA |
@@ -65,7 +65,7 @@ create trigger clients_updated_at
   for each row execute function set_updated_at();
 ```
 
-- [ ] **Step 2:** Apply if Docker is running (`supabase db reset`). Otherwise skip — file is the source of truth.
+- [ ] **Step 2:** Apply if Docker is running (`supabase db reset`). Otherwise skip --- file is the source of truth.
 
 - [ ] **Step 3:** Commit
 ```
@@ -208,7 +208,7 @@ describe('ClientInputSchema', () => {
 })
 ```
 
-- [ ] **Step 2:** `pnpm test clients-schema` — expect FAIL (module missing).
+- [ ] **Step 2:** `pnpm test clients-schema` --- expect FAIL (module missing).
 
 - [ ] **Step 3:** Implement `src/features/clients/schema.ts`
 ```ts
@@ -235,7 +235,7 @@ export const ClientInputSchema = z.object({
 export type ClientInput = z.infer<typeof ClientInputSchema>
 ```
 
-- [ ] **Step 4:** `pnpm test clients-schema` — expect PASS (4/4).
+- [ ] **Step 4:** `pnpm test clients-schema` --- expect PASS (4/4).
 
 - [ ] **Step 5:** Commit
 ```
@@ -628,7 +628,7 @@ function Field({
 }
 ```
 
-- [ ] **Step 2:** `pnpm typecheck`, `pnpm build` — must pass.
+- [ ] **Step 2:** `pnpm typecheck`, `pnpm build` --- must pass.
 
 - [ ] **Step 3:** Commit
 ```
@@ -684,8 +684,8 @@ function DesktopTable({ clients }: { clients: ClientRow[] }) {
                   {c.name}
                 </Link>
               </td>
-              <td className="px-6 py-3 text-ink/70">{c.email ?? '—'}</td>
-              <td className="px-6 py-3 text-ink/70 font-mono text-xs">{c.vat_number ?? '—'}</td>
+              <td className="px-6 py-3 text-ink/70">{c.email ?? '---'}</td>
+              <td className="px-6 py-3 text-ink/70 font-mono text-xs">{c.vat_number ?? '---'}</td>
               <td className="px-6 py-3 text-right">
                 {c.archived_at && <ArchivedChip />}
               </td>
@@ -1002,7 +1002,7 @@ export default async function ClientDetailPage({ params }: Props) {
     <div className="flex flex-col gap-6 max-w-2xl">
       <div>
         <Link href={'/clients' as Route} className="text-sm text-ink/60 hover:text-ink">
-          ← {t('back')}
+          -�� {t('back')}
         </Link>
       </div>
       <div className="flex items-start justify-between gap-4">
@@ -1133,7 +1133,7 @@ git commit -m "feat(clients): edit page reuses ClientForm"
 - [ ] **Step 1:** Append a `Clients` section under "Review guidelines"
 ```markdown
 ### Clients (P1)
-- Hard delete is forbidden — always set `archived_at` instead.
+- Hard delete is forbidden --- always set `archived_at` instead.
 - Searching is by `name` or `email` only. Don't add full-text search to other columns without spec update.
 - `address` is `jsonb` with `{ street?, postal?, city?, country? }`; never store the address as a single text blob.
 - Client detail page must call `getClient(id)` (which scopes by `organization_id`), not raw Supabase queries.

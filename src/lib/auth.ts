@@ -3,10 +3,12 @@ import { createServerClient } from '@/lib/supabase/server'
 import type { Route } from 'next'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { cache } from 'react'
 
 export type AuthContext = {
   userId: string
   email: string
+  displayName: string | null
   organizationId: string
   role: 'owner' | 'admin' | 'member'
 }
@@ -20,7 +22,7 @@ export type AuthenticatedUser = {
 
 /**
  * Ensures the request has a Supabase session. Use in actions that run before
- * membership exists (onboarding) — does NOT redirect to /onboarding.
+ * membership exists (onboarding). Does NOT redirect to /onboarding.
  */
 export async function requireAuthenticatedUser(): Promise<AuthenticatedUser> {
   const supabase = await createServerClient()
@@ -31,12 +33,11 @@ export async function requireAuthenticatedUser(): Promise<AuthenticatedUser> {
   return { userId: user.id, email: user.email ?? '' }
 }
 
-export async function requireUser(): Promise<AuthContext> {
+export const requireUser = cache(async (): Promise<AuthContext> => {
   const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login' as Route)
+  const { data } = await supabase.auth.getClaims()
+  const claims = data?.claims
+  if (!claims?.sub) redirect('/login' as Route)
 
   const cookieStore = await cookies()
   const preferredOrg = cookieStore.get(ACTIVE_ORG_COOKIE)?.value
@@ -44,7 +45,7 @@ export async function requireUser(): Promise<AuthContext> {
   const { data: memberships } = await supabase
     .from('memberships')
     .select('organization_id, role, created_at')
-    .eq('user_id', user.id)
+    .eq('user_id', claims.sub)
     .order('created_at', { ascending: true })
 
   if (!memberships || memberships.length === 0) redirect('/onboarding' as Route)
@@ -52,13 +53,21 @@ export async function requireUser(): Promise<AuthContext> {
   const active = memberships.find((m) => m.organization_id === preferredOrg) ?? memberships[0]
   if (!active) redirect('/onboarding' as Route)
 
+  // Fetch fresh user record so user_metadata reflects the latest update
+  // (the JWT in the cookie can be stale until the next refresh).
+  const { data: userData } = await supabase.auth.getUser()
+  const meta = (userData.user?.user_metadata ?? {}) as Record<string, unknown>
+  const pickName = (k: string) => (typeof meta[k] === 'string' ? (meta[k] as string).trim() : '')
+  const metaName = pickName('display_name') || pickName('name') || pickName('full_name')
+
   return {
-    userId: user.id,
-    email: user.email ?? '',
+    userId: claims.sub,
+    email: typeof claims.email === 'string' ? claims.email : '',
+    displayName: metaName || null,
     organizationId: active.organization_id,
     role: active.role as AuthContext['role'],
   }
-}
+})
 
 export async function setActiveOrg(orgId: string) {
   const cookieStore = await cookies()
