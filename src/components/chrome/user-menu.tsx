@@ -53,7 +53,8 @@ export function UserMenu({
   }> = [
     { href: '/settings/account' as Route, label: labels.account, icon: UserIcon },
     { href: '/settings/company' as Route, label: labels.company, icon: OrgIcon },
-    { href: '/settings' as Route, label: labels.settings, icon: SettingsIcon },
+    // Skip the /settings redirect — link to the default subpage directly.
+    { href: '/settings/account' as Route, label: labels.settings, icon: SettingsIcon },
   ]
 
   return (

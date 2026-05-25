@@ -7,11 +7,18 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+// /settings links directly to /settings/account to avoid the server-side
+// redirect that would otherwise add a full extra request per tab tap.
 const tabs = [
   { href: '/overview', icon: HomeIcon, key: 'overview' as const },
   { href: '/invoices', icon: InvoiceIcon, key: 'invoices' as const },
   { href: '/clients', icon: ClientsIcon, key: 'clients' as const },
-  { href: '/settings', icon: SettingsIcon, key: 'settings' as const },
+  {
+    href: '/settings/account',
+    match: '/settings',
+    icon: SettingsIcon,
+    key: 'settings' as const,
+  },
 ]
 
 export function BottomTabs() {
@@ -19,8 +26,9 @@ export function BottomTabs() {
   const t = useTranslations('nav')
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t border-line-1 bg-card flex">
-      {tabs.map(({ href, icon: Icon, key }) => {
-        const active = pathname.startsWith(href)
+      {tabs.map((item) => {
+        const { href, icon: Icon, key } = item
+        const active = pathname.startsWith('match' in item ? item.match : href)
         return (
           <Link
             key={href}
