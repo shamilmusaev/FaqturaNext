@@ -61,7 +61,12 @@
       "title": "Kassaflöde",
       "subtitle": "senaste {months} månaderna",
       "paid": "Betalt",
-      "outstanding": "Utestående"
+      "outstanding": "Utestående",
+      "periods": {
+        "6mo": "6 mån",
+        "12mo": "12 mån",
+        "ytd": "Hittills i år"
+      }
     },
     "dueThisWeek": {
       "title": "Förfaller denna vecka",

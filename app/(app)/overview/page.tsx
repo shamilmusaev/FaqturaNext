@@ -18,14 +18,31 @@ import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
-export default async function OverviewPage() {
+type CashflowPeriod = '6mo' | '12mo' | 'ytd'
+
+function periodToMonths(period: CashflowPeriod): number {
+  if (period === '12mo') return 12
+  if (period === 'ytd') return new Date().getUTCMonth() + 1
+  return 6
+}
+
+export default async function OverviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cashflowPeriod?: CashflowPeriod }>
+}) {
   const t = await getTranslations('overview')
   const tMetrics = await getTranslations('overview.metrics')
+
+  const sp = await searchParams
+  const period: CashflowPeriod =
+    sp.cashflowPeriod === '12mo' || sp.cashflowPeriod === 'ytd' ? sp.cashflowPeriod : '6mo'
+  const months = periodToMonths(period)
 
   const { email } = await requireUser()
   const [metrics, cashflow, due, activity] = await Promise.all([
     getOverviewMetrics(),
-    getCashflow(6),
+    getCashflow(months),
     getDueThisWeek(),
     getRecentActivity(8),
   ])
@@ -124,7 +141,7 @@ export default async function OverviewPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
-          <CashflowChart buckets={cashflow} currency={currency} />
+          <CashflowChart buckets={cashflow} currency={currency} period={period} />
         </div>
         <DueThisWeek items={due} />
       </div>

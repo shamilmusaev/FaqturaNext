@@ -61,7 +61,12 @@
       "title": "Cashflow",
       "subtitle": "last {months} months",
       "paid": "Paid",
-      "outstanding": "Outstanding"
+      "outstanding": "Outstanding",
+      "periods": {
+        "6mo": "6 mo",
+        "12mo": "12 mo",
+        "ytd": "YTD"
+      }
     },
     "dueThisWeek": {
       "title": "Due this week",
