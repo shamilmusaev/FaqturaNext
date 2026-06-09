@@ -11,31 +11,22 @@ import {
   TimeIcon,
 } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
-import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { APP_NAV, type NavKey, isNavActive } from './nav-config'
 import { SidebarLogoutButton } from './sidebar-logout-button'
 import { ThemeToggleStub } from './theme-toggle-stub'
 
-// `match` is what we compare against pathname for the active state — by
-// default the href itself, but for /settings we link directly to the default
-// subpage to skip the server-side /settings → /settings/account redirect,
-// while still highlighting on every /settings/* route.
-const nav = [
-  { href: '/overview', icon: OverviewIcon, key: 'overview' as const },
-  { href: '/invoices', icon: InvoiceIcon, key: 'invoices' as const },
-  { href: '/clients', icon: ClientsIcon, key: 'clients' as const },
-  { href: '/time', icon: TimeIcon, key: 'time' as const },
-  { href: '/expenses', icon: ExpensesIcon, key: 'expenses' as const },
-  { href: '/reports', icon: ReportsIcon, key: 'reports' as const },
-  {
-    href: '/settings/account',
-    match: '/settings',
-    icon: SettingsIcon,
-    key: 'settings' as const,
-  },
-]
+const ICONS: Record<NavKey, typeof OverviewIcon> = {
+  overview: OverviewIcon,
+  invoices: InvoiceIcon,
+  clients: ClientsIcon,
+  time: TimeIcon,
+  expenses: ExpensesIcon,
+  reports: ReportsIcon,
+  settings: SettingsIcon,
+}
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -44,13 +35,13 @@ export function Sidebar() {
     <aside className="hidden md:flex md:flex-col md:items-center md:w-[72px] md:shrink-0 bg-paper h-screen sticky top-0 py-6">
       <ThemeToggleStub />
       <nav className="flex flex-col items-center gap-1 rounded-[28px] border border-line-1 bg-card p-1.5">
-        {nav.map((item) => {
-          const { href, icon: Icon, key } = item
-          const active = pathname.startsWith('match' in item && item.match ? item.match : href)
+        {APP_NAV.map(({ href, key, match }) => {
+          const Icon = ICONS[key]
+          const active = isNavActive(pathname, href, match)
           return (
             <Link
-              key={href}
-              href={href as Route}
+              key={key}
+              href={href}
               aria-label={t(key)}
               title={t(key)}
               aria-current={active ? 'page' : undefined}
@@ -71,8 +62,8 @@ export function Sidebar() {
       <div className="flex flex-col items-center gap-2 px-2 pb-2">
         <button
           type="button"
-          aria-label="Help"
-          title="Help"
+          aria-label={t('help')}
+          title={t('help')}
           className="h-11 w-11 inline-flex items-center justify-center rounded-[14px] text-ink-3 hover:text-ink hover:bg-paper-2"
         >
           <HelpCircleIcon className="h-5 w-5" />

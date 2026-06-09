@@ -9,6 +9,7 @@ import { useActionState } from 'react'
 import type { TimeActionResult } from '../actions'
 import { formatHM } from '../duration'
 import type { ProjectRow } from '../queries'
+import { Field, SELECT_CLASS } from './form-field'
 
 interface ClientOption {
   id: string
@@ -41,7 +42,7 @@ export function ProjectForm({ mode, action, clients, initial }: Props) {
           name="clientId"
           required
           defaultValue={initial?.client_id ?? ''}
-          className="h-11 w-full rounded-[12px] border border-line-1 bg-card px-3 text-[15px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand"
+          className={SELECT_CLASS}
         >
           <option value="" disabled>
             {t('project.clientPlaceholder')}
@@ -72,11 +73,7 @@ export function ProjectForm({ mode, action, clients, initial }: Props) {
       </div>
 
       <Field label={t('project.status')}>
-        <select
-          name="status"
-          defaultValue={initial?.status ?? 'active'}
-          className="h-11 w-full rounded-[12px] border border-line-1 bg-card px-3 text-[15px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand"
-        >
+        <select name="status" defaultValue={initial?.status ?? 'active'} className={SELECT_CLASS}>
           <option value="active">{t('project.statusActive')}</option>
           <option value="closed">{t('project.statusClosed')}</option>
         </select>
@@ -93,27 +90,5 @@ export function ProjectForm({ mode, action, clients, initial }: Props) {
         </Link>
       </div>
     </form>
-  )
-}
-
-function Field({
-  label,
-  hint,
-  error,
-  children,
-}: {
-  label: string
-  hint?: string
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    // biome-ignore lint/a11y/noLabelWithoutControl: control is rendered via children
-    <label className="flex flex-col gap-1.5 text-sm">
-      <span className="text-ink/80">{label}</span>
-      {children}
-      {hint && !error && <span className="text-xs text-ink/40">{hint}</span>}
-      {error && <span className="text-xs text-neg">{error}</span>}
-    </label>
   )
 }

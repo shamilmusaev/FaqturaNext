@@ -1,18 +1,12 @@
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
-import { formatHM } from '../duration'
+import { formatHM, shortDate } from '../duration'
 import type { DashboardEntry } from '../queries'
 import { EntryDeleteButton } from './entry-delete-button'
 
 interface Props {
   entries: DashboardEntry[]
-}
-
-function shortDate(iso: string): string {
-  return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short' }).format(
-    new Date(`${iso}T00:00:00Z`),
-  )
 }
 
 export async function EntryList({ entries }: Props) {

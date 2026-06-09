@@ -8,10 +8,9 @@ import Link from 'next/link'
 import { useActionState } from 'react'
 import type { TimeActionResult } from '../actions'
 import type { TaskRow } from '../queries'
+import { Field, SELECT_CLASS } from './form-field'
 
 const initialState: TimeActionResult = {}
-const SELECT_CLASS =
-  'h-11 w-full rounded-[12px] border border-line-1 bg-card px-3 text-[15px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand'
 
 /** Minutes -> input value the user can re-edit ("20" or "5:30"). */
 function toInput(minutes: number | null): string {
@@ -73,24 +72,5 @@ export function TaskForm({
         </Link>
       </div>
     </form>
-  )
-}
-
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    // biome-ignore lint/a11y/noLabelWithoutControl: control is rendered via children
-    <label className="flex flex-col gap-1.5 text-sm">
-      <span className="text-ink/80">{label}</span>
-      {children}
-      {error && <span className="text-xs text-neg">{error}</span>}
-    </label>
   )
 }

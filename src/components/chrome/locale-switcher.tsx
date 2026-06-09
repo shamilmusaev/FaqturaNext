@@ -2,16 +2,18 @@
 
 import { setLocaleAction } from '@/i18n/actions'
 import { type Locale, locales } from '@/i18n/config'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 
 export function LocaleSwitcher({ current }: { current: Locale }) {
   const router = useRouter()
+  const t = useTranslations('chrome')
   const [, start] = useTransition()
   return (
     <select
       value={current}
-      aria-label="Language"
+      aria-label={t('language')}
       className="h-9 bg-card border border-line-1 rounded-[12px] px-2 text-sm"
       onChange={(e) => {
         const next = e.target.value

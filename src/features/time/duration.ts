@@ -60,3 +60,11 @@ export function formatRange(min: number | null, max: number | null): string {
   if (lo === hi) return formatHM(lo)
   return `${formatHM(lo)}-${formatHM(hi)}`
 }
+
+// Formats a YYYY-MM-DD entry date as "5 Jun". Parsed as UTC so the day never
+// shifts across timezones.
+export function shortDate(iso: string): string {
+  return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short' }).format(
+    new Date(`${iso}T00:00:00Z`),
+  )
+}

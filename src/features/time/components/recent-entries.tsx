@@ -1,16 +1,10 @@
-import { formatHM } from '../duration'
+import { formatHM, shortDate } from '../duration'
 import type { DashboardEntry } from '../queries'
 
 interface Props {
   title: string
   emptyLabel: string
   entries: DashboardEntry[]
-}
-
-function shortDate(iso: string): string {
-  return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short' }).format(
-    new Date(`${iso}T00:00:00Z`),
-  )
 }
 
 export function RecentEntries({ title, emptyLabel, entries }: Props) {

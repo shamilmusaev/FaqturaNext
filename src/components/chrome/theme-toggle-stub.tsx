@@ -1,6 +1,7 @@
 'use client'
 
 import { MoonIcon, SunIcon } from '@/components/ui/icons'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
 const COOKIE_NAME = 'theme-preference'
@@ -18,6 +19,7 @@ function writeCookie(name: string, value: string): void {
 }
 
 export function ThemeToggleStub() {
+  const t = useTranslations('chrome')
   const [pref, setPref] = useState<'light' | 'dark'>('light')
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export function ThemeToggleStub() {
     <div className="mb-3 flex flex-col gap-0.5 rounded-full border border-line-1 bg-card p-1">
       <button
         type="button"
-        aria-label="Light theme"
+        aria-label={t('lightTheme')}
         aria-pressed={pref === 'light'}
         onClick={() => select('light')}
         className="h-8 w-8 inline-flex items-center justify-center rounded-full bg-brand text-white"
@@ -43,9 +45,9 @@ export function ThemeToggleStub() {
       </button>
       <button
         type="button"
-        aria-label="Dark theme"
+        aria-label={t('darkTheme')}
         disabled
-        title="Dark theme coming soon"
+        title={t('darkThemeSoon')}
         className="h-8 w-8 inline-flex items-center justify-center rounded-full text-ink-3 opacity-40 cursor-not-allowed"
       >
         <MoonIcon className="h-3.5 w-3.5" />

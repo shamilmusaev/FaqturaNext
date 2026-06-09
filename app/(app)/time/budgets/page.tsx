@@ -63,6 +63,9 @@ export default async function BudgetsPage() {
         <ProjectProgressList
           title={t('sections.budget')}
           emptyLabel={t('sections.budgetEmpty')}
+          overLabel={t('overall.over').toLowerCase()}
+          leftLabel={t('overall.left').toLowerCase()}
+          noEstimateLabel={t('sections.noEstimate')}
           projects={budgeted}
           showEarned={projects.some((p) => p.rateCents != null)}
         />

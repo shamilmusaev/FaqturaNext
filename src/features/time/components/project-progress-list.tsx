@@ -6,11 +6,22 @@ import { ProgressBar } from './progress-bar'
 interface Props {
   title: string
   emptyLabel: string
+  overLabel: string
+  leftLabel: string
+  noEstimateLabel: string
   projects: ProjectStats[]
   showEarned: boolean
 }
 
-export function ProjectProgressList({ title, emptyLabel, projects, showEarned }: Props) {
+export function ProjectProgressList({
+  title,
+  emptyLabel,
+  overLabel,
+  leftLabel,
+  noEstimateLabel,
+  projects,
+  showEarned,
+}: Props) {
   return (
     <div className="bg-card border border-line-1 rounded-[24px] p-6">
       <h2 className="text-lg font-semibold mb-4">{title}</h2>
@@ -45,9 +56,9 @@ export function ProjectProgressList({ title, emptyLabel, projects, showEarned }:
                   <span className={over ? 'text-neg font-medium' : 'text-ink/50'}>
                     {left != null
                       ? over
-                        ? `${formatHM(-left)} over`
-                        : `${formatHM(left)} left`
-                      : 'No estimate'}
+                        ? `${formatHM(-left)} ${overLabel}`
+                        : `${formatHM(left)} ${leftLabel}`
+                      : noEstimateLabel}
                   </span>
                   {showEarned && p.earnedCents != null && (
                     <span className="tnum text-ink/50">{formatMoney(p.earnedCents, 'SEK')}</span>
