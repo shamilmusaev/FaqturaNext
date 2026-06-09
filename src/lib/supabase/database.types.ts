@@ -199,6 +199,165 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['invoice_number_sequences']['Insert']>
         Relationships: []
       }
+      projects: {
+        Row: {
+          client_id: string
+          created_at: string
+          estimate_minutes: number | null
+          id: string
+          name: string
+          organization_id: string
+          rate_cents: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          estimate_minutes?: number | null
+          id?: string
+          name: string
+          organization_id: string
+          rate_cents?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          estimate_minutes?: number | null
+          id?: string
+          name?: string
+          organization_id?: string
+          rate_cents?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_tasks: {
+        Row: {
+          actual_minutes: number | null
+          created_at: string
+          est_max_minutes: number | null
+          est_min_minutes: number | null
+          id: string
+          name: string
+          organization_id: string
+          position: number
+          project_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          actual_minutes?: number | null
+          created_at?: string
+          est_max_minutes?: number | null
+          est_min_minutes?: number | null
+          id?: string
+          name: string
+          organization_id: string
+          position?: number
+          project_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          actual_minutes?: number | null
+          created_at?: string
+          est_max_minutes?: number | null
+          est_min_minutes?: number | null
+          id?: string
+          name?: string
+          organization_id?: string
+          position?: number
+          project_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_tasks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_entries: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          entry_date: string
+          id: string
+          minutes: number
+          organization_id: string
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          entry_date: string
+          id?: string
+          minutes: number
+          organization_id: string
+          project_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          entry_date?: string
+          id?: string
+          minutes?: number
+          organization_id?: string
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {
