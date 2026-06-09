@@ -57,7 +57,7 @@ export async function RecentActivity({ items }: { items: RecentActivityItem[] })
                           {e.invoice.clientName ?? e.invoice.number}
                           <span className="text-ink/60"> · {tTimeline(e.type)}</span>
                         </div>
-                        <div className="text-xs text-ink/60 font-mono truncate">
+                        <div className="text-xs text-ink/55 truncate">
                           {e.invoice.number} · {dateFmt.format(new Date(e.createdAt))}
                         </div>
                       </div>
@@ -74,7 +74,7 @@ export async function RecentActivity({ items }: { items: RecentActivityItem[] })
                       <div className="font-medium truncate">
                         N/A<span className="text-ink/60"> · {tTimeline(e.type)}</span>
                       </div>
-                      <div className="text-xs text-ink/60 font-mono truncate">
+                      <div className="text-xs text-ink/55 truncate">
                         {dateFmt.format(new Date(e.createdAt))}
                       </div>
                     </div>

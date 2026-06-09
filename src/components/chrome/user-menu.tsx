@@ -98,7 +98,7 @@ export function UserMenu({
             <div className="h-px bg-line-1 mx-1" />
             <ul className="py-1">
               {items.map(({ href, label, icon: Icon }) => (
-                <li key={href}>
+                <li key={label}>
                   <Link
                     role="menuitem"
                     href={href}

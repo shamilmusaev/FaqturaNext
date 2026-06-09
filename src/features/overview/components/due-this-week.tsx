@@ -52,7 +52,7 @@ export async function DueThisWeek({ summary }: { summary: DueThisWeekSummary }) 
                   <Avatar name={inv.client?.name ?? '?'} className="h-9 w-9 text-xs shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{inv.client?.name ?? 'N/A'}</div>
-                    <div className="text-xs text-ink/60 font-mono truncate">
+                    <div className="text-xs text-ink/55 truncate">
                       {inv.number} · {relativeDay(inv.dueAt)}
                     </div>
                   </div>

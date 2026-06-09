@@ -57,13 +57,13 @@ export default async function ClientDetailPage({ params }: Props) {
         {client.org_number && (
           <>
             <dt className="text-ink/60">{t('fields.orgNumber')}</dt>
-            <dd className="font-mono">{client.org_number}</dd>
+            <dd>{client.org_number}</dd>
           </>
         )}
         {client.vat_number && (
           <>
             <dt className="text-ink/60">{t('fields.vatNumber')}</dt>
-            <dd className="font-mono">{client.vat_number}</dd>
+            <dd>{client.vat_number}</dd>
           </>
         )}
         {addressLines.length > 0 && (

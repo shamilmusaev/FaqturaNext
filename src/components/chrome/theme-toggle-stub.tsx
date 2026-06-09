@@ -37,7 +37,7 @@ export function ThemeToggleStub() {
         aria-label="Light theme"
         aria-pressed={pref === 'light'}
         onClick={() => select('light')}
-        className="h-8 w-8 inline-flex items-center justify-center rounded-full bg-ink text-brand"
+        className="h-8 w-8 inline-flex items-center justify-center rounded-full bg-brand text-white"
       >
         <SunIcon className="h-3.5 w-3.5" />
       </button>

@@ -57,7 +57,7 @@ function DesktopTable({
                 </Link>
               </td>
               <td className="px-6 py-3 text-ink/70">{c.email ?? 'N/A'}</td>
-              <td className="px-6 py-3 text-ink/70 font-mono text-xs">{c.vat_number ?? 'N/A'}</td>
+              <td className="px-6 py-3 text-ink/70 text-xs">{c.vat_number ?? 'N/A'}</td>
               <td className="px-6 py-3 text-right">
                 {c.archived_at && <Chip tone="neutral">{archivedLabel}</Chip>}
               </td>

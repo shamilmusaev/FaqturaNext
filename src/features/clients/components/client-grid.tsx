@@ -47,7 +47,7 @@ export async function ClientGrid({ clients }: { clients: ClientWithStats[] }) {
                     {c.name}
                   </Link>
                   {(meta || c.email) && (
-                    <div className="mt-0.5 truncate font-mono text-xs font-normal text-ink/45">
+                    <div className="mt-0.5 truncate text-xs font-normal text-ink/45">
                       {meta || c.email}
                     </div>
                   )}
@@ -72,7 +72,7 @@ export async function ClientGrid({ clients }: { clients: ClientWithStats[] }) {
                 {c.email && (
                   <>
                     <span aria-hidden="true">·</span>
-                    <span className="truncate font-mono text-[11px]">{c.email}</span>
+                    <span className="truncate text-[11px]">{c.email}</span>
                   </>
                 )}
               </div>
