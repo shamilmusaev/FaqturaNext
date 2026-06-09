@@ -12,6 +12,7 @@
     "overview": "Översikt",
     "invoices": "Fakturor",
     "clients": "Kunder",
+    "time": "Tid",
     "expenses": "Utgifter",
     "reports": "Rapporter",
     "settings": "Inställningar"
@@ -355,6 +356,141 @@
       "newInvoice": "Ny faktura",
       "viewInvoices": "Visa fakturor",
       "message": "Meddelande"
+    }
+  },
+  "time": {
+    "title": "Tid",
+    "newProject": "Nytt projekt",
+    "tabs": {
+      "dashboard": "Översikt",
+      "projects": "Projekt",
+      "log": "Logg",
+      "budgets": "Budget"
+    },
+    "kpi": {
+      "totalMonth": "Denna månad",
+      "totalAllTime": "Totalt",
+      "activeProjects": "Aktiva projekt",
+      "earnedMonth": "Intjänat denna månad",
+      "entriesMonth": "Poster denna månad",
+      "unit": "h",
+      "budgetLeft": "Budget kvar",
+      "overBudget": "Över budget",
+      "overBudgetHint": "projekt över estimat",
+      "totalWeek": "Denna vecka"
+    },
+    "sections": {
+      "budget": "Estimat vs faktiskt",
+      "budgetEmpty": "Inga projekt med estimat än.",
+      "byProject": "Per projekt denna månad",
+      "byProjectEmpty": "Inga timmar loggade denna månad.",
+      "recent": "Senaste aktivitet",
+      "recentEmpty": "Inga poster denna månad.",
+      "byCategory": "Per kategori denna månad",
+      "byCategoryEmpty": "Inga timmar loggade denna månad."
+    },
+    "quickAdd": {
+      "date": "Datum",
+      "project": "Projekt",
+      "description": "Beskrivning",
+      "descriptionPlaceholder": "Vad gjorde du?",
+      "hours": "Tid",
+      "add": "Lägg till",
+      "needProject": "Skapa ett projekt först för att logga tid.",
+      "category": "Kategori",
+      "categoryPlaceholder": "t.ex. Dashboard"
+    },
+    "project": {
+      "client": "Klient",
+      "clientPlaceholder": "Välj klient",
+      "name": "Namn",
+      "estimate": "Estimat",
+      "estimateHint": "T.ex. 100:00",
+      "rate": "Timpris",
+      "rateHint": "kr/timme (valfritt)",
+      "status": "Status",
+      "statusActive": "Aktiv",
+      "statusClosed": "Stängd",
+      "create": "Skapa projekt",
+      "save": "Spara",
+      "cancel": "Avbryt",
+      "close": "Stäng",
+      "reopen": "Öppna igen",
+      "edit": "Redigera",
+      "editTitle": "Redigera projekt",
+      "perHour": "/tim",
+      "needClientFirst": "Lägg till en klient först.",
+      "needProject": "Skapa ett projekt först."
+    },
+    "projects": {
+      "title": "Projekt",
+      "empty": "Inga projekt än.",
+      "filterActive": "Aktiva",
+      "filterClosed": "Stängda",
+      "filterAll": "Alla"
+    },
+    "log": {
+      "title": "Tidslogg",
+      "empty": "Inga poster än.",
+      "delete": "Ta bort",
+      "filterProject": "Projekt",
+      "filterMonth": "Månad",
+      "allProjects": "Alla projekt",
+      "allMonths": "Alla månader",
+      "edit": "Redigera",
+      "editTitle": "Redigera post",
+      "save": "Spara",
+      "cancel": "Avbryt"
+    },
+    "subtitle": "Följ timmar och budget för dina projekt.",
+    "addTime": "Lägg till tid",
+    "overall": {
+      "title": "Total budget",
+      "caption": "av budget använd",
+      "empty": "Sätt ett estimat på ett projekt för att följa budgeten.",
+      "used": "Använt",
+      "left": "Kvar",
+      "over": "Över"
+    },
+    "budgets": {
+      "title": "Budget",
+      "subtitle": "Estimat vs faktiskt för dina projekt.",
+      "kpiBudgeted": "Projekt med budget",
+      "kpiTotal": "Total budget",
+      "kpiUsed": "Använt",
+      "kpiLeft": "Kvar",
+      "overHint": "{count} över budget"
+    },
+    "board": {
+      "todo": "Att göra",
+      "inProgress": "Pågår",
+      "done": "Klart",
+      "emptyColumn": "Inget här",
+      "edit": "Redigera",
+      "estimate": "Estimat",
+      "tasksDone": "{done}/{total} klara",
+      "actual": "faktiskt",
+      "miniTitle": "Uppgiftstavla",
+      "miniEmpty": "Inga uppgifter än. Öppna ett projekt för att lägga till."
+    },
+    "taskForm": {
+      "name": "Uppgift",
+      "namePlaceholder": "Vad ska göras?",
+      "estMin": "Est min",
+      "estMax": "Est max",
+      "actual": "Faktiskt",
+      "status": "Status",
+      "statusTodo": "Att göra",
+      "statusInProgress": "Pågår",
+      "statusDone": "Klart",
+      "add": "Lägg till",
+      "save": "Spara",
+      "cancel": "Avbryt",
+      "editTitle": "Redigera uppgift"
+    },
+    "notifications": {
+      "title": "Budgetvarningar",
+      "empty": "Inga varningar. Du är inom budget."
     }
   }
 }

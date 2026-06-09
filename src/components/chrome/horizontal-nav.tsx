@@ -10,6 +10,7 @@ const appTabs = [
   { href: '/overview', key: 'overview' as const },
   { href: '/invoices', key: 'invoices' as const },
   { href: '/clients', key: 'clients' as const },
+  { href: '/time', key: 'time' as const },
   { href: '/expenses', key: 'expenses' as const },
   { href: '/reports', key: 'reports' as const },
 ]

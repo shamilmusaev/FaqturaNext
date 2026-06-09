@@ -12,6 +12,7 @@
     "overview": "Overview",
     "invoices": "Invoices",
     "clients": "Clients",
+    "time": "Time",
     "expenses": "Expenses",
     "reports": "Reports",
     "settings": "Settings"
@@ -355,6 +356,141 @@
       "newInvoice": "New invoice",
       "viewInvoices": "View invoices",
       "message": "Message"
+    }
+  },
+  "time": {
+    "title": "Time",
+    "newProject": "New project",
+    "tabs": {
+      "dashboard": "Dashboard",
+      "projects": "Projects",
+      "log": "Log",
+      "budgets": "Budgets"
+    },
+    "kpi": {
+      "totalMonth": "This month",
+      "totalAllTime": "All-time",
+      "activeProjects": "Active projects",
+      "earnedMonth": "Earned this month",
+      "entriesMonth": "Entries this month",
+      "unit": "h",
+      "budgetLeft": "Budget left",
+      "overBudget": "Over budget",
+      "overBudgetHint": "project over estimate",
+      "totalWeek": "This week"
+    },
+    "sections": {
+      "budget": "Estimate vs actual",
+      "budgetEmpty": "No projects with an estimate yet.",
+      "byProject": "By project this month",
+      "byProjectEmpty": "No hours logged this month.",
+      "recent": "Recent activity",
+      "recentEmpty": "No entries this month.",
+      "byCategory": "By category this month",
+      "byCategoryEmpty": "No hours logged this month."
+    },
+    "quickAdd": {
+      "date": "Date",
+      "project": "Project",
+      "description": "Description",
+      "descriptionPlaceholder": "What did you work on?",
+      "hours": "Time",
+      "add": "Add",
+      "needProject": "Create a project first to log time.",
+      "category": "Category",
+      "categoryPlaceholder": "e.g. Dashboard"
+    },
+    "project": {
+      "client": "Client",
+      "clientPlaceholder": "Select a client",
+      "name": "Name",
+      "estimate": "Estimate",
+      "estimateHint": "e.g. 100:00",
+      "rate": "Hourly rate",
+      "rateHint": "kr/hour (optional)",
+      "status": "Status",
+      "statusActive": "Active",
+      "statusClosed": "Closed",
+      "create": "Create project",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "reopen": "Reopen",
+      "edit": "Edit",
+      "editTitle": "Edit project",
+      "perHour": "/h",
+      "needClientFirst": "Add a client first.",
+      "needProject": "Create a project first."
+    },
+    "projects": {
+      "title": "Projects",
+      "empty": "No projects yet.",
+      "filterActive": "Active",
+      "filterClosed": "Closed",
+      "filterAll": "All"
+    },
+    "log": {
+      "title": "Time log",
+      "empty": "No entries yet.",
+      "delete": "Delete",
+      "filterProject": "Project",
+      "filterMonth": "Month",
+      "allProjects": "All projects",
+      "allMonths": "All months",
+      "edit": "Edit",
+      "editTitle": "Edit entry",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "subtitle": "Track hours and budgets across your projects.",
+    "addTime": "Add time",
+    "overall": {
+      "title": "Overall budget",
+      "caption": "of budget used",
+      "empty": "Set an estimate on a project to track budget.",
+      "used": "Used",
+      "left": "Left",
+      "over": "Over"
+    },
+    "budgets": {
+      "title": "Budgets",
+      "subtitle": "Estimate vs actual across your projects.",
+      "kpiBudgeted": "Budgeted projects",
+      "kpiTotal": "Total budget",
+      "kpiUsed": "Used",
+      "kpiLeft": "Left",
+      "overHint": "{count} over budget"
+    },
+    "board": {
+      "todo": "To do",
+      "inProgress": "In progress",
+      "done": "Done",
+      "emptyColumn": "Nothing here",
+      "edit": "Edit",
+      "estimate": "Estimate",
+      "tasksDone": "{done}/{total} done",
+      "actual": "actual",
+      "miniTitle": "Task board",
+      "miniEmpty": "No tasks yet. Open a project to add some."
+    },
+    "taskForm": {
+      "name": "Task",
+      "namePlaceholder": "What needs doing?",
+      "estMin": "Est min",
+      "estMax": "Est max",
+      "actual": "Actual",
+      "status": "Status",
+      "statusTodo": "To do",
+      "statusInProgress": "In progress",
+      "statusDone": "Done",
+      "add": "Add task",
+      "save": "Save",
+      "cancel": "Cancel",
+      "editTitle": "Edit task"
+    },
+    "notifications": {
+      "title": "Budget alerts",
+      "empty": "No alerts. You are within budget."
     }
   }
 }

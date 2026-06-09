@@ -38,6 +38,11 @@
   --info: #2c5f8d;
   --info-bg: #e0eaf4;
 
+  /* -------- Gradients (bold progress bars / gauges) -------- */
+  --grad-brand: linear-gradient(90deg, #f2774a 0%, #e0531f 100%);
+  --grad-pos: linear-gradient(90deg, #2a9d63 0%, #15803d 100%);
+  --grad-neg: linear-gradient(90deg, #d9533f 0%, #b43a2c 100%);
+
   /* -------- Type: families --------
      Hanken Grotesk: serious, neutral grotesque in the Söhne/GT America family.
      One family across UI and display, differentiated by weight + tracking.

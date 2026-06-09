@@ -8,6 +8,7 @@ import {
   OverviewIcon,
   ReportsIcon,
   SettingsIcon,
+  TimeIcon,
 } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import type { Route } from 'next'
@@ -25,6 +26,7 @@ const nav = [
   { href: '/overview', icon: OverviewIcon, key: 'overview' as const },
   { href: '/invoices', icon: InvoiceIcon, key: 'invoices' as const },
   { href: '/clients', icon: ClientsIcon, key: 'clients' as const },
+  { href: '/time', icon: TimeIcon, key: 'time' as const },
   { href: '/expenses', icon: ExpensesIcon, key: 'expenses' as const },
   { href: '/reports', icon: ReportsIcon, key: 'reports' as const },
   {
@@ -44,18 +46,22 @@ export function Sidebar() {
       <nav className="flex flex-col items-center gap-1 rounded-[28px] border border-line-1 bg-card p-1.5">
         {nav.map((item) => {
           const { href, icon: Icon, key } = item
-          const active = pathname.startsWith('match' in item ? item.match : href)
+          const active = pathname.startsWith('match' in item && item.match ? item.match : href)
           return (
             <Link
               key={href}
               href={href as Route}
               aria-label={t(key)}
               title={t(key)}
+              aria-current={active ? 'page' : undefined}
               className={cn(
-                'h-11 w-11 inline-flex items-center justify-center rounded-full transition-colors',
-                active ? 'bg-ink text-brand' : 'text-ink-3 hover:text-ink hover:bg-paper-2',
+                'relative h-11 w-11 inline-flex items-center justify-center rounded-full transition-colors',
+                active ? 'text-ink' : 'text-ink-3 hover:text-ink hover:bg-paper-2',
               )}
             >
+              {active && (
+                <span className="absolute -left-1.5 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-brand" />
+              )}
               <Icon className="h-5 w-5" />
             </Link>
           )

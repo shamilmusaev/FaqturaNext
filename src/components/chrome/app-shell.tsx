@@ -18,7 +18,7 @@ export function AppShell({
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar userEmail={userEmail} userName={userName} />
         <main className="flex-1 px-4 pt-4 pb-20 md:px-8 md:pt-5 md:pb-8">
-          <div className="w-full max-w-[1568px]">{children}</div>
+          <div className="mx-auto w-full max-w-[1568px]">{children}</div>
         </main>
       </div>
       <BottomTabs />

@@ -1,6 +1,6 @@
 'use client'
 
-import { ClientsIcon, HomeIcon, InvoiceIcon, SettingsIcon } from '@/components/ui/icons'
+import { ClientsIcon, HomeIcon, InvoiceIcon, SettingsIcon, TimeIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
@@ -13,6 +13,7 @@ const tabs = [
   { href: '/overview', icon: HomeIcon, key: 'overview' as const },
   { href: '/invoices', icon: InvoiceIcon, key: 'invoices' as const },
   { href: '/clients', icon: ClientsIcon, key: 'clients' as const },
+  { href: '/time', icon: TimeIcon, key: 'time' as const },
   {
     href: '/settings/account',
     match: '/settings',
@@ -28,7 +29,7 @@ export function BottomTabs() {
     <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t border-line-1 bg-card flex">
       {tabs.map((item) => {
         const { href, icon: Icon, key } = item
-        const active = pathname.startsWith('match' in item ? item.match : href)
+        const active = pathname.startsWith('match' in item && item.match ? item.match : href)
         return (
           <Link
             key={href}

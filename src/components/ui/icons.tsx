@@ -29,4 +29,6 @@ export {
   Copy as CopyIcon,
   Receipt as ExpensesIcon,
   LineChart as ReportsIcon,
+  Clock as TimeIcon,
+  ArrowUpRight,
 } from 'lucide-react'
