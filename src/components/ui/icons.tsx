@@ -30,5 +30,6 @@ export {
   Receipt as ExpensesIcon,
   LineChart as ReportsIcon,
   Clock as TimeIcon,
+  KanbanSquare as BoardIcon,
   ArrowUpRight,
 } from 'lucide-react'

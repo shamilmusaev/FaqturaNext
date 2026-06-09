@@ -15,7 +15,8 @@
     "time": "Tid",
     "expenses": "Utgifter",
     "reports": "Rapporter",
-    "settings": "Inställningar"
+    "settings": "Inställningar",
+    "help": "Hjälp"
   },
   "chrome": {
     "search": "Sök",
@@ -26,7 +27,11 @@
       "company": "Företag",
       "settings": "Inställningar",
       "signOut": "Logga ut"
-    }
+    },
+    "language": "Språk",
+    "lightTheme": "Ljust tema",
+    "darkTheme": "Mörkt tema",
+    "darkThemeSoon": "Mörkt tema kommer snart"
   },
   "auth": {
     "loginTitle": "Logga in",
@@ -387,7 +392,8 @@
       "recent": "Senaste aktivitet",
       "recentEmpty": "Inga poster denna månad.",
       "byCategory": "Per kategori denna månad",
-      "byCategoryEmpty": "Inga timmar loggade denna månad."
+      "byCategoryEmpty": "Inga timmar loggade denna månad.",
+      "noEstimate": "Ingen uppskattning"
     },
     "quickAdd": {
       "date": "Datum",
@@ -420,7 +426,10 @@
       "editTitle": "Redigera projekt",
       "perHour": "/tim",
       "needClientFirst": "Lägg till en klient först.",
-      "needProject": "Skapa ett projekt först."
+      "needProject": "Skapa ett projekt först.",
+      "board": "Tavla",
+      "delete": "Ta bort",
+      "deleteConfirm": "Ta bort projektet och all loggad tid? Detta kan inte ångras."
     },
     "projects": {
       "title": "Projekt",
@@ -471,7 +480,8 @@
       "tasksDone": "{done}/{total} klara",
       "actual": "faktiskt",
       "miniTitle": "Uppgiftstavla",
-      "miniEmpty": "Inga uppgifter än. Öppna ett projekt för att lägga till."
+      "miniEmpty": "Inga uppgifter än. Öppna ett projekt för att lägga till.",
+      "deleteTask": "Ta bort uppgift"
     },
     "taskForm": {
       "name": "Uppgift",

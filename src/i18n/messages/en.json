@@ -15,7 +15,8 @@
     "time": "Time",
     "expenses": "Expenses",
     "reports": "Reports",
-    "settings": "Settings"
+    "settings": "Settings",
+    "help": "Help"
   },
   "chrome": {
     "search": "Search",
@@ -26,7 +27,11 @@
       "company": "Company",
       "settings": "Settings",
       "signOut": "Sign out"
-    }
+    },
+    "language": "Language",
+    "lightTheme": "Light theme",
+    "darkTheme": "Dark theme",
+    "darkThemeSoon": "Dark theme coming soon"
   },
   "auth": {
     "loginTitle": "Sign in",
@@ -387,7 +392,8 @@
       "recent": "Recent activity",
       "recentEmpty": "No entries this month.",
       "byCategory": "By category this month",
-      "byCategoryEmpty": "No hours logged this month."
+      "byCategoryEmpty": "No hours logged this month.",
+      "noEstimate": "No estimate"
     },
     "quickAdd": {
       "date": "Date",
@@ -420,7 +426,10 @@
       "editTitle": "Edit project",
       "perHour": "/h",
       "needClientFirst": "Add a client first.",
-      "needProject": "Create a project first."
+      "needProject": "Create a project first.",
+      "board": "Board",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this project and all its logged time? This cannot be undone."
     },
     "projects": {
       "title": "Projects",
@@ -471,7 +480,8 @@
       "tasksDone": "{done}/{total} done",
       "actual": "actual",
       "miniTitle": "Task board",
-      "miniEmpty": "No tasks yet. Open a project to add some."
+      "miniEmpty": "No tasks yet. Open a project to add some.",
+      "deleteTask": "Delete task"
     },
     "taskForm": {
       "name": "Task",

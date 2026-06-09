@@ -165,6 +165,23 @@ export async function setProjectStatusAction(
   return { ok: true }
 }
 
+export async function deleteProjectAction(id: string): Promise<TimeActionResult> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+  // time_entries and project_tasks have ON DELETE CASCADE on project_id,
+  // so removing the project row also clears its logged time and tasks.
+  const { error } = await supabase
+    .from('projects')
+    .delete()
+    .eq('id', id)
+    .eq('organization_id', organizationId)
+  if (error) return { error: error.message }
+  revalidatePath('/time')
+  revalidatePath('/time/projects')
+  revalidatePath('/time/log')
+  return { ok: true }
+}
+
 export async function createTimeEntryAction(formData: FormData): Promise<TimeActionResult> {
   const { organizationId } = await requireUser()
 
@@ -341,6 +358,11 @@ export async function updateTaskAction(id: string, formData: FormData): Promise<
   if (!parsed.success) return { fieldErrors: flattenErrors(parsed.error.issues) }
 
   const supabase = await createServerClient()
+  // Validate the target project belongs to this org before using it for cache
+  // invalidation / redirect (same guard as createTaskAction).
+  if (!(await projectInOrg(supabase, parsed.data.projectId, organizationId))) {
+    return { fieldErrors: { projectId: 'Unknown project' } }
+  }
   const { error } = await supabase
     .from('project_tasks')
     .update({
@@ -359,19 +381,36 @@ export async function updateTaskAction(id: string, formData: FormData): Promise<
   redirect(`/time/projects/${parsed.data.projectId}` as Route)
 }
 
-export async function setTaskStatusAction(
-  id: string,
+// Persist a drag-and-drop move: the dragged task gets its new status, and every
+// task in the target column is renumbered to match the new visual order.
+export async function reorderTaskAction(
+  taskId: string,
   status: 'todo' | 'in_progress' | 'done',
+  orderedIds: string[],
 ): Promise<TimeActionResult> {
   const { organizationId } = await requireUser()
   const supabase = await createServerClient()
-  const { error } = await supabase
+
+  const { error: statusError } = await supabase
     .from('project_tasks')
     .update({ status })
-    .eq('id', id)
+    .eq('id', taskId)
     .eq('organization_id', organizationId)
-  if (error) return { error: error.message }
-  revalidatePath('/time')
+  if (statusError) return { error: statusError.message }
+
+  const results = await Promise.all(
+    orderedIds.map((id, position) =>
+      supabase
+        .from('project_tasks')
+        .update({ position })
+        .eq('id', id)
+        .eq('organization_id', organizationId),
+    ),
+  )
+  const failed = results.find((r) => r.error)
+  if (failed?.error) return { error: failed.error.message }
+
+  revalidatePath('/time', 'layout')
   return { ok: true }
 }
 

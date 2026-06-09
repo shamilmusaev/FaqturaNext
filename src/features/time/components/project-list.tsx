@@ -1,3 +1,4 @@
+import { BoardIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import { formatMoney } from '@/lib/money'
 import type { Route } from 'next'
@@ -6,6 +7,7 @@ import Link from 'next/link'
 import { formatHM, formatRange } from '../duration'
 import type { ProjectStats } from '../queries'
 import { ProgressBar } from './progress-bar'
+import { ProjectDeleteButton } from './project-delete-button'
 import { ProjectStatusButton } from './project-status-button'
 
 interface Props {
@@ -53,6 +55,14 @@ export async function ProjectList({ projects }: Props) {
                 {p.clientName && <span className="text-sm text-ink/50">{p.clientName}</span>}
               </div>
               <div className="flex items-center gap-4 shrink-0">
+                <Link
+                  href={`/time/projects/${p.id}` as Route}
+                  aria-label={t('project.board')}
+                  title={t('project.board')}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ink text-white hover:bg-ink/90"
+                >
+                  <BoardIcon className="h-4 w-4" />
+                </Link>
                 <ProjectStatusButton id={p.id} status={p.status} />
                 <Link
                   href={`/time/projects/${p.id}/edit` as Route}
@@ -60,6 +70,7 @@ export async function ProjectList({ projects }: Props) {
                 >
                   {t('project.edit')}
                 </Link>
+                <ProjectDeleteButton id={p.id} />
               </div>
             </div>
 
