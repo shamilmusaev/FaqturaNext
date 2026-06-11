@@ -31,7 +31,8 @@ const styles = StyleSheet.create({
   cols: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   colLeft: { width: '50%' },
   colRight: { width: '44%' },
-  fromBox: { backgroundColor: BEIGE, borderRadius: 10, padding: 13 },
+  // Offset the sender box down a line so "Kund:" sits higher than "Från:".
+  fromBox: { backgroundColor: BEIGE, borderRadius: 10, padding: 13, marginTop: 18 },
   label: { color: MUTED },
   strong: { color: INK },
   gap: { height: 7 },
@@ -82,6 +83,16 @@ function initials(name: string): string {
     .join('')
 }
 
+type Addr = { street?: string; postal?: string; city?: string; country?: string } | null | undefined
+
+/** Two display lines: "street, postal" and "city, country". */
+function addrTwoLines(a: Addr): [string, string] {
+  if (!a) return ['', '']
+  const l1 = [a.street, a.postal].filter(Boolean).join(', ')
+  const l2 = [a.city, a.country].filter(Boolean).join(', ')
+  return [l1, l2]
+}
+
 function daysBetween(a: string, b: string): number | null {
   const d1 = new Date(a)
   const d2 = new Date(b)
@@ -91,7 +102,7 @@ function daysBetween(a: string, b: string): number | null {
 
 export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
   const org = invoice.organization
-  const clientAddr = addressLines(invoice.client.address)
+  const [clientAddr1, clientAddr2] = addrTwoLines(invoice.client.address)
   const orgAddr = addressLines(org.address)
   const terms = daysBetween(invoice.issuedAt, invoice.dueAt)
 
@@ -140,7 +151,8 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
             <Text style={styles.label}>Kund:</Text>
             <Text style={styles.strong}>{invoice.client.name}</Text>
             {invoice.client.org_number && <Text>Org Nummer: {invoice.client.org_number}</Text>}
-            {clientAddr.length > 0 && <Text>Adress: {clientAddr.join(', ')}</Text>}
+            {clientAddr1 && <Text>Adress: {clientAddr1}</Text>}
+            {clientAddr2 && <Text>{clientAddr2}</Text>}
             <View style={styles.gap} />
             {hasNumber && <Text>Fakturanummer: {invoice.number}</Text>}
             <Text>Fakturadatum: {invoice.issuedAt}</Text>
