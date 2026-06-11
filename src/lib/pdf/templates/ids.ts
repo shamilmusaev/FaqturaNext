@@ -6,6 +6,7 @@ export const TEMPLATE_IDS = [
   'modern',
   'classic',
   'professional',
+  'minimal',
   'bold-red',
   'bold-blue',
   'bold-green',

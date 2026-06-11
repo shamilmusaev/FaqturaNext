@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import { BoldBlueTemplate, BoldGreenTemplate, BoldRedTemplate } from './bold'
 import { ClassicTemplate } from './classic'
 import type { TemplateId } from './ids'
+import { MinimalTemplate } from './minimal'
 import { ModernTemplate } from './modern'
 import { ProfessionalTemplate } from './professional'
 import type { InvoiceTemplateProps } from './types'
@@ -39,6 +40,12 @@ export const INVOICE_TEMPLATES: TemplateMeta[] = [
     name: 'Professional',
     description: 'Teal header band with an info strip — ported from the legacy design',
     Component: ProfessionalTemplate,
+  },
+  {
+    id: 'minimal',
+    name: 'Minimal',
+    description: 'Clean, airy invoice with a beige sender box and accent totals',
+    Component: MinimalTemplate,
   },
   {
     id: 'bold-red',
