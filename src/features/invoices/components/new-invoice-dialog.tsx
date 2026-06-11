@@ -6,6 +6,7 @@ import { InvoiceForm } from '@/features/invoices/components/invoice-form'
 import * as RadixDialog from '@radix-ui/react-dialog'
 import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 
@@ -65,18 +66,17 @@ export function NewInvoiceDialog({ clients, children }: DialogProps) {
   )
 }
 
-interface ButtonProps {
-  clients: ClientOption[]
-  label: string
-}
-
-/** Header-style primary button + dialog. */
-export function NewInvoiceDialogButton({ clients, label }: ButtonProps) {
+/**
+ * Header-style primary "New invoice" button. Navigates to the full-page
+ * split-view editor (`/invoices/new`) where the live preview + template picker
+ * have room to breathe — the cramped dialog can't fit the side-by-side preview.
+ */
+export function NewInvoiceDialogButton({ label }: { label: string }) {
   return (
-    <NewInvoiceDialog clients={clients}>
+    <Link href={'/invoices/new' as Route}>
       <Button>
         <PlusIcon className="h-4 w-4" /> {label}
       </Button>
-    </NewInvoiceDialog>
+    </Link>
   )
 }

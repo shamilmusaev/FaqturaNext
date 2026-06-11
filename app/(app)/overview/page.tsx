@@ -1,7 +1,6 @@
 import { AnimatedMoney, AnimatedNumber } from '@/components/ui/animated-number'
 import { Button } from '@/components/ui/button'
 import { DownloadIcon } from '@/components/ui/icons'
-import { listActiveClientOptions } from '@/features/clients/queries'
 import { NewInvoiceDialogButton } from '@/features/invoices/components/new-invoice-dialog'
 import { CashflowChart } from '@/features/overview/components/cashflow-chart'
 import { DueThisWeek } from '@/features/overview/components/due-this-week'
@@ -35,14 +34,12 @@ export default async function OverviewPage({
 
   // Fan-out everything in parallel: translations are file IO, auth + queries
   // are network. No reason for any of them to wait for the others.
-  const [t, tMetrics, user, { metrics, cashflow, due, activity }, clientOptions] =
-    await Promise.all([
-      getTranslations('overview'),
-      getTranslations('overview.metrics'),
-      requireUser(),
-      getOverviewData(months, 8),
-      listActiveClientOptions(),
-    ])
+  const [t, tMetrics, user, { metrics, cashflow, due, activity }] = await Promise.all([
+    getTranslations('overview'),
+    getTranslations('overview.metrics'),
+    requireUser(),
+    getOverviewData(months, 8),
+  ])
   const { email, displayName } = user
 
   const currency = 'SEK' as const
@@ -60,7 +57,7 @@ export default async function OverviewPage({
           <Button variant="secondary" type="button">
             <DownloadIcon className="h-4 w-4" /> {t('export')}
           </Button>
-          <NewInvoiceDialogButton clients={clientOptions} label={t('newInvoice')} />
+          <NewInvoiceDialogButton label={t('newInvoice')} />
         </div>
       </header>
 

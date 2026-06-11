@@ -1,15 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { DownloadIcon, PlusIcon } from '@/components/ui/icons'
-import { listActiveClientOptions } from '@/features/clients/queries'
 import { InvoiceFilters } from '@/features/invoices/components/invoice-filters'
 import { InvoiceList } from '@/features/invoices/components/invoice-list'
-import {
-  NewInvoiceDialog,
-  NewInvoiceDialogButton,
-} from '@/features/invoices/components/new-invoice-dialog'
+import { NewInvoiceDialogButton } from '@/features/invoices/components/new-invoice-dialog'
 import { listInvoices } from '@/features/invoices/queries'
 import { formatMoney } from '@/lib/money'
+import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 
 interface PageProps {
   searchParams: Promise<{ status?: string; q?: string }>
@@ -21,13 +19,12 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
   const { status, q } = await searchParams
   const normalised = status && VALID_STATUSES.has(status) ? status : 'all'
 
-  const [t, invoices, clientOptions] = await Promise.all([
+  const [t, invoices] = await Promise.all([
     getTranslations('invoices'),
     listInvoices({
       status: normalised as 'all' | 'draft' | 'sent' | 'paid' | 'overdue',
       search: q,
     }),
-    listActiveClientOptions(),
   ])
 
   const outstandingCents = invoices
@@ -54,7 +51,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
             <DownloadIcon className="h-4 w-4" />
             {t('exportCsv')}
           </Button>
-          <NewInvoiceDialogButton clients={clientOptions} label={t('newInvoice')} />
+          <NewInvoiceDialogButton label={t('newInvoice')} />
         </div>
       </div>
       <InvoiceFilters />
@@ -63,12 +60,12 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
           <h2 className="text-lg font-semibold tracking-tight">{t('empty')}</h2>
           <p className="mt-1 text-ink/60">{t('emptyHint')}</p>
           <div className="inline-block mt-6">
-            <NewInvoiceDialog clients={clientOptions}>
+            <Link href={'/invoices/new' as Route}>
               <Button>
                 <PlusIcon className="h-4 w-4" />
                 {t('createCta')}
               </Button>
-            </NewInvoiceDialog>
+            </Link>
           </div>
         </div>
       ) : (
