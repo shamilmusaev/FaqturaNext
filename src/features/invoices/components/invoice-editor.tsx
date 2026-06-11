@@ -4,6 +4,7 @@ import { cn } from '@/lib/cn'
 import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
+import dynamic from 'next/dynamic'
 import { useMemo, useState } from 'react'
 import {
   type EditorClient,
@@ -12,7 +13,12 @@ import {
   buildPreviewData,
 } from '../preview-data'
 import { InvoiceForm } from './invoice-form'
-import { InvoicePreview } from './invoice-preview'
+
+// @react-pdf's usePDF is a web-only API that throws during SSR, so the preview
+// must render client-side only.
+const InvoicePreview = dynamic(() => import('./invoice-preview').then((m) => m.InvoicePreview), {
+  ssr: false,
+})
 
 interface Props {
   clients: EditorClient[]
