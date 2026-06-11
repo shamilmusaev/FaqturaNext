@@ -5,6 +5,7 @@ export {
   Users as ClientsIcon,
   Settings as SettingsIcon,
   Plus as PlusIcon,
+  Minus as MinusIcon,
   Search as SearchIcon,
   Check as CheckIcon,
   X as CloseIcon,

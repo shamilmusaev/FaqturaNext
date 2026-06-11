@@ -217,7 +217,12 @@
       "open": "Förhandsvisa",
       "download": "Ladda ner",
       "view": "Öppna i ny flik",
-      "font": "Typsnitt"
+      "font": "Typsnitt",
+      "show": "Visa förhandsvisning",
+      "hide": "Dölj förhandsvisning",
+      "zoomOut": "Zooma ut",
+      "zoomIn": "Zooma in",
+      "resetZoom": "Återställ zoom"
     },
     "tabs": {
       "form": "Formulär",

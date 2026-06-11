@@ -1,6 +1,13 @@
 'use client'
 
-import { DownloadIcon, EyeIcon } from '@/components/ui/icons'
+import {
+  ChevronLeft,
+  ChevronRight,
+  DownloadIcon,
+  EyeIcon,
+  MinusIcon,
+  PlusIcon,
+} from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import {
   FONT_OPTIONS,
@@ -30,6 +37,8 @@ interface Props {
   data: InvoicePdfData
   templateId: TemplateId
   onTemplateChange?: (id: TemplateId) => void
+  collapsed?: boolean
+  onToggleCollapsed?: () => void
   showTemplatePicker?: boolean
   className?: string
 }
@@ -40,26 +49,28 @@ interface PreviewFrame {
 }
 
 const REVOKE_DELAY_MS = 800
-const QUICK_PREVIEW_SCALE = 1.25
-const SHARP_PREVIEW_SCALE = 1.75
-const QUICK_MAX_DEVICE_SCALE = 1.25
-const SHARP_MAX_DEVICE_SCALE = 2
-const SHARP_RENDER_DELAY_MS = 450
+const PREVIEW_SCALE = 1.75
+const MAX_DEVICE_SCALE = 2
+const MIN_ZOOM = 70
+const MAX_ZOOM = 150
+const ZOOM_STEP = 10
 
 export function InvoicePreview({
   data,
   templateId,
   onTemplateChange,
+  collapsed = false,
+  onToggleCollapsed,
   showTemplatePicker = true,
   className,
 }: Props) {
   const t = useTranslations('invoices.preview')
   const [font, setFont] = useState<FontId>('sans')
+  const [zoom, setZoom] = useState(100)
   const { Component } = getTemplate(templateId)
 
   const doc = useMemo(() => <Component invoice={{ ...data, font }} />, [Component, data, font])
   const renderId = useRef(0)
-  const sharpTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const revokeTimers = useRef<ReturnType<typeof setTimeout>[]>([])
   const framesRef = useRef<PreviewFrame[]>([])
   const [frames, setFrames] = useState<PreviewFrame[]>([])
@@ -71,14 +82,13 @@ export function InvoicePreview({
     const id = renderId.current
     setLoading(true)
     setError(null)
-    if (sharpTimer.current) clearTimeout(sharpTimer.current)
 
     pdf(doc)
       .toBlob()
       .then(async (blob) => {
         const pages = await renderPdfPages(blob, {
-          scale: QUICK_PREVIEW_SCALE,
-          maxDeviceScale: QUICK_MAX_DEVICE_SCALE,
+          scale: PREVIEW_SCALE,
+          maxDeviceScale: MAX_DEVICE_SCALE,
         })
         const url = URL.createObjectURL(blob)
         if (id !== renderId.current) {
@@ -89,21 +99,6 @@ export function InvoicePreview({
           scheduleRevoke(prev.map((frame) => frame.url))
           return [{ url, pages }]
         })
-        sharpTimer.current = setTimeout(() => {
-          renderPdfPages(blob, {
-            scale: SHARP_PREVIEW_SCALE,
-            maxDeviceScale: SHARP_MAX_DEVICE_SCALE,
-          })
-            .then((sharpPages) => {
-              if (id !== renderId.current) return
-              setFrames((prev) =>
-                prev.map((frame) => (frame.url === url ? { ...frame, pages: sharpPages } : frame)),
-              )
-            })
-            .catch((err: unknown) => {
-              if (id === renderId.current) setError(err)
-            })
-        }, SHARP_RENDER_DELAY_MS)
       })
       .catch((err: unknown) => {
         if (id === renderId.current) setError(err)
@@ -119,7 +114,6 @@ export function InvoicePreview({
 
   useEffect(() => {
     return () => {
-      if (sharpTimer.current) clearTimeout(sharpTimer.current)
       for (const timer of revokeTimers.current) clearTimeout(timer)
       for (const frame of framesRef.current) URL.revokeObjectURL(frame.url)
     }
@@ -141,11 +135,13 @@ export function InvoicePreview({
   const fileName = safeNumber ? `Faktura-${safeNumber}.pdf` : 'faktura.pdf'
   const toolBtn =
     'inline-flex h-8 w-8 items-center justify-center rounded-full text-ink/55 transition-colors hover:bg-card hover:text-ink aria-disabled:opacity-40 aria-disabled:pointer-events-none'
+  const canZoomOut = zoom > MIN_ZOOM
+  const canZoomIn = zoom < MAX_ZOOM
 
   return (
     <div className={cn('flex flex-col gap-3', className)}>
-      {showTemplatePicker && (
-        <div className="flex items-center gap-2">
+      {showTemplatePicker && !collapsed && (
+        <div className="flex items-center gap-2 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]">
           <span className="text-xs text-ink/50 mr-1">{t('template')}</span>
           <div className="flex flex-wrap gap-1 rounded-full bg-paper-2 p-1">
             {INVOICE_TEMPLATES.map((tpl) => {
@@ -171,47 +167,110 @@ export function InvoicePreview({
         </div>
       )}
 
-      {/* Toolbar (same pill style as templates): font + view + download */}
-      <div className="flex items-center gap-1 self-center rounded-full bg-paper-2 p-1">
-        <select
-          value={font}
-          onChange={(e) => setFont(e.target.value as FontId)}
-          aria-label={t('font')}
-          title={t('font')}
-          className="h-8 cursor-pointer appearance-none rounded-full bg-card pl-3 pr-7 text-xs font-medium text-ink shadow-soft outline-none"
-          style={FONT_SELECT_STYLE}
-        >
-          {FONT_OPTIONS.map((f) => (
-            <option key={f.id} value={f.id}>
-              {f.name}
-            </option>
-          ))}
-        </select>
-        <span className="mx-1 h-4 w-px bg-line-2/60" />
-        <a
-          href={currentUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-disabled={!currentUrl || !!error}
-          title={t('view')}
-          aria-label={t('view')}
-          className={toolBtn}
-        >
-          <EyeIcon className="h-4 w-4" />
-        </a>
-        <a
-          href={currentUrl}
-          download={fileName}
-          aria-disabled={!currentUrl || !!error}
-          title={t('download')}
-          aria-label={t('download')}
-          className={toolBtn}
-        >
-          <DownloadIcon className="h-4 w-4" />
-        </a>
+      {/* Toolbar (same pill style as templates): collapse + font + zoom + view + download */}
+      <div
+        className={cn(
+          'flex items-center gap-1 self-center rounded-full bg-paper-2 p-1 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+          collapsed && 'shadow-soft',
+        )}
+      >
+        {onToggleCollapsed && (
+          <>
+            <button
+              type="button"
+              onClick={onToggleCollapsed}
+              title={t(collapsed ? 'show' : 'hide')}
+              aria-label={t(collapsed ? 'show' : 'hide')}
+              className={toolBtn}
+            >
+              {collapsed ? (
+                <ChevronLeft className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+            {!collapsed && <span className="mx-1 h-4 w-px bg-line-2/60" />}
+          </>
+        )}
+        {!collapsed && (
+          <>
+            <select
+              value={font}
+              onChange={(e) => setFont(e.target.value as FontId)}
+              aria-label={t('font')}
+              title={t('font')}
+              className="h-8 cursor-pointer appearance-none rounded-full bg-card pl-3 pr-7 text-xs font-medium text-ink shadow-soft outline-none"
+              style={FONT_SELECT_STYLE}
+            >
+              {FONT_OPTIONS.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.name}
+                </option>
+              ))}
+            </select>
+            <span className="mx-1 h-4 w-px bg-line-2/60" />
+            <button
+              type="button"
+              onClick={() => setZoom((value) => Math.max(MIN_ZOOM, value - ZOOM_STEP))}
+              disabled={!canZoomOut}
+              title={t('zoomOut')}
+              aria-label={t('zoomOut')}
+              className={toolBtn}
+            >
+              <MinusIcon className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setZoom(100)}
+              title={t('resetZoom')}
+              aria-label={t('resetZoom')}
+              className="inline-flex h-8 min-w-12 items-center justify-center rounded-full px-2 text-xs font-medium tabular-nums text-ink/65 transition-colors hover:bg-card hover:text-ink"
+            >
+              {zoom}%
+            </button>
+            <button
+              type="button"
+              onClick={() => setZoom((value) => Math.min(MAX_ZOOM, value + ZOOM_STEP))}
+              disabled={!canZoomIn}
+              title={t('zoomIn')}
+              aria-label={t('zoomIn')}
+              className={toolBtn}
+            >
+              <PlusIcon className="h-4 w-4" />
+            </button>
+            <span className="mx-1 h-4 w-px bg-line-2/60" />
+            <a
+              href={currentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-disabled={!currentUrl || !!error}
+              title={t('view')}
+              aria-label={t('view')}
+              className={toolBtn}
+            >
+              <EyeIcon className="h-4 w-4" />
+            </a>
+            <a
+              href={currentUrl}
+              download={fileName}
+              aria-disabled={!currentUrl || !!error}
+              title={t('download')}
+              aria-label={t('download')}
+              className={toolBtn}
+            >
+              <DownloadIcon className="h-4 w-4" />
+            </a>
+          </>
+        )}
       </div>
 
-      <div className="relative flex-1 min-h-[420px] overflow-auto rounded-[16px] bg-transparent p-2">
+      <div
+        className={cn(
+          'relative flex-1 min-h-[420px] overflow-auto rounded-[16px] bg-transparent p-2 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+          collapsed &&
+            'min-h-0 flex-[0_1_0] translate-x-4 scale-[0.98] opacity-0 pointer-events-none',
+        )}
+      >
         {frames.length === 0 && (
           <div className="absolute inset-0 grid place-items-center p-6 text-center text-sm text-ink/45">
             {error ? t('error') : t('empty')}
@@ -219,7 +278,10 @@ export function InvoicePreview({
         )}
 
         {visibleFrame && (
-          <div className="mx-auto flex w-full max-w-[720px] flex-col gap-4">
+          <div
+            className="mx-auto flex w-full max-w-[720px] origin-top flex-col gap-4 transition-[width] duration-200 ease-out"
+            style={{ width: `${zoom}%` }}
+          >
             {visibleFrame.pages.map((src, idx) => (
               <img
                 key={`${visibleFrame.url}-${idx}`}

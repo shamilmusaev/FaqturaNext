@@ -217,7 +217,12 @@
       "open": "Preview",
       "download": "Download",
       "view": "Open in new tab",
-      "font": "Font"
+      "font": "Font",
+      "show": "Show preview",
+      "hide": "Hide preview",
+      "zoomOut": "Zoom out",
+      "zoomIn": "Zoom in",
+      "resetZoom": "Reset zoom"
     },
     "tabs": {
       "form": "Form",
