@@ -15,50 +15,50 @@ const BEIGE = '#F3F1E8'
 const PAD = 46
 
 const styles = StyleSheet.create({
-  page: { fontFamily: 'Helvetica', fontSize: 10, color: INK, padding: PAD, lineHeight: 1.45 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 40 },
+  page: { fontFamily: 'Helvetica', fontSize: 9.5, color: INK, padding: PAD, lineHeight: 1.3 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 22 },
   logoBox: {
-    width: 52,
-    height: 44,
+    width: 46,
+    height: 40,
     borderRadius: 6,
     backgroundColor: ACCENT,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoInitials: { color: '#FFFFFF', fontFamily: 'Helvetica-Bold', fontSize: 16, letterSpacing: 1 },
-  title: { fontFamily: 'Helvetica-Bold', fontSize: 28, color: INK, lineHeight: 1.1 },
-  subtitle: { fontFamily: 'Helvetica-Bold', fontSize: 13, color: INK, marginTop: 4, lineHeight: 1 },
-  cols: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 36 },
+  logoInitials: { color: '#FFFFFF', fontFamily: 'Helvetica-Bold', fontSize: 15, letterSpacing: 1 },
+  title: { fontFamily: 'Helvetica-Bold', fontSize: 26, color: INK, lineHeight: 1.1 },
+  subtitle: { fontFamily: 'Helvetica-Bold', fontSize: 12, color: INK, marginTop: 3, lineHeight: 1 },
+  cols: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   colLeft: { width: '50%' },
   colRight: { width: '44%' },
-  fromBox: { backgroundColor: BEIGE, borderRadius: 10, padding: 16 },
+  fromBox: { backgroundColor: BEIGE, borderRadius: 10, padding: 13 },
   label: { color: MUTED },
   strong: { color: INK },
-  gap: { height: 12 },
+  gap: { height: 7 },
   table: {},
-  thRow: { flexDirection: 'row', paddingBottom: 8, borderBottom: `1pt solid ${LINE}` },
-  th: { color: MUTED, fontSize: 8.5 },
-  row: { flexDirection: 'row', paddingVertical: 11, borderBottom: `1pt solid ${LINE}` },
-  totRow: { flexDirection: 'row', paddingVertical: 11 },
+  thRow: { flexDirection: 'row', paddingBottom: 6, borderBottom: `1pt solid ${LINE}` },
+  th: { color: MUTED, fontSize: 8 },
+  row: { flexDirection: 'row', borderBottom: `1pt solid ${LINE}`, alignItems: 'flex-start' },
+  totRow: { flexDirection: 'row' },
   cSpec: { flex: 3.2 },
   cQty: { flex: 1 },
   cPrice: { flex: 1 },
   cSum: { flex: 1.4, textAlign: 'right' },
   sumValue: { color: ACCENT, fontFamily: 'Helvetica-Bold' },
-  summary: { marginTop: 16 },
+  summary: { marginTop: 12 },
   summaryLine: { color: INK, marginBottom: 1 },
-  footer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 44 },
-  micro: { color: MUTED, fontSize: 8.5, letterSpacing: 1, marginBottom: 8 },
+  footer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 22 },
+  micro: { color: MUTED, fontSize: 8, letterSpacing: 1, marginBottom: 6 },
   bankLine: { marginBottom: 1 },
-  bigTotal: { color: ACCENT, fontFamily: 'Helvetica-Bold', fontSize: 30, textAlign: 'right' },
+  bigTotal: { color: ACCENT, fontFamily: 'Helvetica-Bold', fontSize: 28, textAlign: 'right' },
   contact: {
     position: 'absolute',
-    bottom: 28,
+    bottom: 20,
     left: PAD,
     right: PAD,
     textAlign: 'center',
     color: MUTED,
-    fontSize: 8.5,
+    fontSize: 8,
   },
 })
 
@@ -110,13 +110,19 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
   const rates = [...new Set(invoice.lineItems.map((l) => l.vatRate))]
   const momsPct = invoice.reverseVat ? 0 : rates.length === 1 ? rates[0] : null
 
+  // Keep the whole invoice on one A4 page: tighten row spacing as the item
+  // count grows.
+  const n = invoice.lineItems.length
+  const rowPad = n > 9 ? 3 : n > 6 ? 5 : n > 4 ? 7 : 10
+  const hasNumber = Boolean(invoice.number && invoice.number !== '—')
+
   return (
     <Document title={`Faktura ${invoice.number}`}>
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
           {org.logo_url ? (
-            <Image src={org.logo_url} style={{ width: 52, height: 44, objectFit: 'contain' }} />
+            <Image src={org.logo_url} style={{ width: 46, height: 40, objectFit: 'contain' }} />
           ) : (
             <View style={styles.logoBox}>
               <Text style={styles.logoInitials}>{initials(org.name)}</Text>
@@ -124,7 +130,7 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
           )}
           <View>
             <Text style={styles.title}>Faktura</Text>
-            <Text style={styles.subtitle}>#{invoice.number}</Text>
+            {hasNumber && <Text style={styles.subtitle}>#{invoice.number}</Text>}
           </View>
         </View>
 
@@ -136,7 +142,7 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
             {invoice.client.org_number && <Text>Org Nummer: {invoice.client.org_number}</Text>}
             {clientAddr.length > 0 && <Text>Adress: {clientAddr.join(', ')}</Text>}
             <View style={styles.gap} />
-            <Text>Fakturanummer: {invoice.number}</Text>
+            {hasNumber && <Text>Fakturanummer: {invoice.number}</Text>}
             <Text>Fakturadatum: {invoice.issuedAt}</Text>
             <View style={styles.gap} />
             {terms != null && <Text>Betalningsvillkor: {terms} dagar</Text>}
@@ -175,7 +181,7 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
           </View>
           {invoice.lineItems.map((li, idx) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: PDF render only, no reordering.
-            <View key={idx} style={styles.row}>
+            <View key={idx} style={[styles.row, { paddingVertical: rowPad }]}>
               <Text style={styles.cSpec}>
                 {li.description}
                 {li.discountPercent ? `  (−${li.discountPercent}%)` : ''}
@@ -188,7 +194,7 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
               <Text style={[styles.cSum, styles.sumValue]}>{kronor(li.amountCents)}</Text>
             </View>
           ))}
-          <View style={styles.totRow}>
+          <View style={[styles.totRow, { paddingVertical: rowPad }]}>
             <Text style={[styles.cSpec, styles.strong]}>Totalt</Text>
             <Text style={[styles.cQty, styles.strong]}>{totalQty}</Text>
             <Text style={styles.cPrice} />
