@@ -188,6 +188,19 @@
       "pickClient": "Välj en kund",
       "atLeastOneLine": "Lägg till minst en rad",
       "needClientFirst": "Du behöver minst en kund för att skapa en faktura."
+    },
+    "preview": {
+      "template": "Mall",
+      "title": "Förhandsvisning",
+      "updating": "Uppdaterar…",
+      "empty": "Fyll i formuläret för att se förhandsvisningen",
+      "error": "Kunde inte visa förhandsvisningen",
+      "open": "Förhandsvisa"
+    },
+    "tabs": {
+      "form": "Formulär",
+      "preview": "Förhandsvisning",
+      "detail": "Detaljer"
     }
   },
   "settings": {

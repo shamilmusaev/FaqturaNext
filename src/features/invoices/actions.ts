@@ -1,15 +1,41 @@
 'use server'
 
 import { requireUser } from '@/lib/auth'
+import type { InvoicePdfData } from '@/lib/pdf/templates'
+import { DEFAULT_TEMPLATE_ID, type TemplateId, isTemplateId } from '@/lib/pdf/templates/ids'
 import { createServerClient } from '@/lib/supabase/server'
 import type { Route } from 'next'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { PDF_ORG_COLUMNS, invoiceToPdfData } from './pdf-data'
 import { type InvoiceDetail, getInvoice } from './queries'
 import { type InvoiceInput, InvoiceInputSchema } from './schema'
 
 export async function fetchInvoiceForDialog(id: string): Promise<InvoiceDetail | null> {
   return await getInvoice(id)
+}
+
+export interface InvoicePreviewPayload {
+  data: InvoicePdfData
+  template: TemplateId
+}
+
+/** Build the react-pdf payload for an existing invoice, for the dialog preview. */
+export async function fetchInvoicePreviewData(id: string): Promise<InvoicePreviewPayload | null> {
+  const { organizationId } = await requireUser()
+  const invoice = await getInvoice(id)
+  if (!invoice) return null
+
+  const supabase = await createServerClient()
+  const { data: org } = await supabase
+    .from('organizations')
+    .select(PDF_ORG_COLUMNS)
+    .eq('id', organizationId)
+    .maybeSingle()
+  if (!org) return null
+
+  const template = isTemplateId(invoice.template) ? invoice.template : DEFAULT_TEMPLATE_ID
+  return { data: invoiceToPdfData(invoice, org), template }
 }
 
 export type InvoiceActionResult = { error?: string; fieldErrors?: Record<string, string> }
@@ -38,6 +64,7 @@ export async function createInvoiceAction(
     p_issued_at: parsed.data.issuedAt ?? null,
     p_currency: parsed.data.currency,
     p_notes: parsed.data.notes ?? null,
+    p_template: parsed.data.template,
     p_line_items: parsed.data.lineItems.map((li) => ({
       description: li.description,
       quantity: li.quantity,
@@ -62,7 +89,7 @@ export async function duplicateInvoiceAction(
 
   const { data: src, error: srcErr } = await supabase
     .from('invoices')
-    .select('client_id, currency, notes, due_at')
+    .select('client_id, currency, notes, due_at, template')
     .eq('id', id)
     .eq('organization_id', organizationId)
     .single()
@@ -86,6 +113,7 @@ export async function duplicateInvoiceAction(
     p_due_at: dueAt,
     p_currency: src.currency,
     p_notes: src.notes,
+    p_template: src.template ?? undefined,
     p_line_items: items.map((li) => ({
       description: li.description,
       quantity: Number(li.quantity),
@@ -98,6 +126,27 @@ export async function duplicateInvoiceAction(
 
   revalidatePath('/invoices')
   return { invoiceId: data.id }
+}
+
+export async function setInvoiceTemplateAction(
+  id: string,
+  template: string,
+): Promise<InvoiceActionResult> {
+  const { organizationId } = await requireUser()
+  if (!isTemplateId(template)) return { error: 'unknown template' }
+  const supabase = await createServerClient()
+
+  const { data, error } = await supabase
+    .from('invoices')
+    .update({ template })
+    .eq('id', id)
+    .eq('organization_id', organizationId)
+    .select('id')
+  if (error) return { error: error.message }
+  if (!data || data.length === 0) return { error: 'invoice not found' }
+
+  revalidatePath(`/invoices/${id}`)
+  return {}
 }
 
 export async function sendInvoiceAction(id: string): Promise<InvoiceActionResult> {

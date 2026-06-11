@@ -2,13 +2,26 @@
 
 import { Chip } from '@/components/ui/chip'
 import { CloseIcon } from '@/components/ui/icons'
-import { fetchInvoiceForDialog } from '@/features/invoices/actions'
+import {
+  type InvoicePreviewPayload,
+  fetchInvoiceForDialog,
+  fetchInvoicePreviewData,
+  setInvoiceTemplateAction,
+} from '@/features/invoices/actions'
 import type { InvoiceDetail } from '@/features/invoices/queries'
 import type { InvoiceStatus } from '@/features/invoices/schema'
 import { formatMoney } from '@/lib/money'
+import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import * as RadixDialog from '@radix-ui/react-dialog'
 import { useLocale, useTranslations } from 'next-intl'
+import dynamic from 'next/dynamic'
 import { type ReactNode, useEffect, useState } from 'react'
+
+// Lazy-loaded so @react-pdf is only fetched when the user opens the preview,
+// keeping it out of the invoice list bundle.
+const InvoicePreview = dynamic(() => import('./invoice-preview').then((m) => m.InvoicePreview), {
+  ssr: false,
+})
 
 const STATUS_TONE: Record<InvoiceStatus, 'neutral' | 'pos' | 'warn' | 'neg' | 'brand'> = {
   draft: 'neutral',
@@ -41,7 +54,12 @@ export function InvoiceDetailDialog({ invoiceId, children }: Props) {
   const [open, setOpen] = useState(false)
   const [invoice, setInvoice] = useState<InvoiceDetail | null>(null)
   const [loading, setLoading] = useState(false)
+  const [mode, setMode] = useState<'detail' | 'preview'>('detail')
+  const [preview, setPreview] = useState<InvoicePreviewPayload | null>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewTemplate, setPreviewTemplate] = useState<TemplateId>(DEFAULT_TEMPLATE_ID)
   const t = useTranslations('invoices')
+  const tPreview = useTranslations('invoices.preview')
   const tFields = useTranslations('invoices.fields')
   const tStatus = useTranslations('invoiceStatus')
   const tTimeline = useTranslations('invoices.timeline')
@@ -54,6 +72,28 @@ export function InvoiceDetailDialog({ invoiceId, children }: Props) {
       .then((res) => setInvoice(res))
       .finally(() => setLoading(false))
   }, [open, invoiceId, invoice, loading])
+
+  const openPreview = () => {
+    setMode('preview')
+    if (preview || previewLoading) return
+    setPreviewLoading(true)
+    fetchInvoicePreviewData(invoiceId)
+      .then((res) => {
+        if (res) {
+          setPreview(res)
+          setPreviewTemplate(res.template)
+        }
+      })
+      .finally(() => setPreviewLoading(false))
+  }
+
+  const onTemplateChange = (id: TemplateId) => {
+    setPreviewTemplate(id)
+    setPreview((prev) => (prev ? { ...prev, template: id } : prev))
+    // Persist the choice so the downloaded PDF matches; ignore failures (the
+    // preview already reflects the new template locally).
+    void setInvoiceTemplateAction(invoiceId, id)
+  }
 
   const currency = (invoice?.currency || 'SEK') as 'SEK'
   const dateTimeFmt = new Intl.DateTimeFormat(locale, {
@@ -81,10 +121,55 @@ export function InvoiceDetailDialog({ invoiceId, children }: Props) {
                 {invoice ? `${invoice.number} · ${invoice.client?.name ?? 'N/A'}` : t('newInvoice')}
               </RadixDialog.Title>
             </div>
+            {invoice && (
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1 rounded-full bg-paper-2 p-1">
+                  <button
+                    type="button"
+                    onClick={() => setMode('detail')}
+                    aria-pressed={mode === 'detail'}
+                    className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+                      mode === 'detail' ? 'bg-card text-ink shadow-soft' : 'text-ink/55'
+                    }`}
+                  >
+                    {t('tabs.detail')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openPreview}
+                    aria-pressed={mode === 'preview'}
+                    className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+                      mode === 'preview' ? 'bg-card text-ink shadow-soft' : 'text-ink/55'
+                    }`}
+                  >
+                    {tPreview('open')}
+                  </button>
+                </div>
+                <a
+                  href={`/api/invoices/${invoiceId}/pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:inline-flex h-9 items-center rounded-full border border-line-1 bg-card px-3.5 text-sm font-medium hover:bg-paper transition-colors"
+                >
+                  PDF
+                </a>
+              </div>
+            )}
           </div>
 
           <div className="p-7">
-            {loading && !invoice ? (
+            {invoice && mode === 'preview' ? (
+              preview ? (
+                <InvoicePreview
+                  data={preview.data}
+                  templateId={previewTemplate}
+                  onTemplateChange={onTemplateChange}
+                  className="h-[calc(100vh-9rem)]"
+                />
+              ) : (
+                <div className="h-[calc(100vh-9rem)] rounded-[16px] bg-paper-2 animate-pulse" />
+              )
+            ) : loading && !invoice ? (
               <div className="space-y-4">
                 <div className="h-24 rounded-[24px] bg-paper-2 animate-pulse" />
                 <div className="h-40 rounded-[24px] bg-paper-2 animate-pulse" />

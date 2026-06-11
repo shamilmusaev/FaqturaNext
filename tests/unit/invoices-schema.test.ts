@@ -108,6 +108,13 @@ describe('InvoiceInputSchema', () => {
     expect(InvoiceInputSchema.safeParse({ ...base, currency: 'sek' }).success).toBe(false)
     expect(InvoiceInputSchema.safeParse({ ...base, currency: 'SEK' }).success).toBe(true)
   })
+  it('defaults template to modern and rejects unknown templates', () => {
+    const base = { clientId: VALID_UUID, dueAt: '2026-06-30', lineItems: [baseLine] }
+    const def = InvoiceInputSchema.safeParse(base)
+    expect(def.success && def.data.template).toBe('modern')
+    expect(InvoiceInputSchema.safeParse({ ...base, template: 'classic' }).success).toBe(true)
+    expect(InvoiceInputSchema.safeParse({ ...base, template: 'nope' }).success).toBe(false)
+  })
 })
 
 describe('InvoiceStatusEnum', () => {

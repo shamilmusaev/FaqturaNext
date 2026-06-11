@@ -118,6 +118,7 @@ export type Database = {
           last_reminder_at: string | null
           created_at: string
           updated_at: string
+          template: string
         }
         Insert: {
           id?: string
@@ -139,6 +140,7 @@ export type Database = {
           last_reminder_at?: string | null
           created_at?: string
           updated_at?: string
+          template?: string
         }
         Update: Partial<Database['public']['Tables']['invoices']['Insert']>
         Relationships: []
@@ -378,6 +380,7 @@ export type Database = {
           p_notes?: string | null
           p_line_items?: unknown
           p_issued_at?: string | null
+          p_template?: string
         }
         Returns: Database['public']['Tables']['invoices']['Row']
       }

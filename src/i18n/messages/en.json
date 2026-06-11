@@ -188,6 +188,19 @@
       "pickClient": "Pick a client",
       "atLeastOneLine": "Add at least one line item",
       "needClientFirst": "You need at least one client to create an invoice."
+    },
+    "preview": {
+      "template": "Template",
+      "title": "Invoice preview",
+      "updating": "Updating…",
+      "empty": "Fill in the form to see the preview",
+      "error": "Couldn't render the preview",
+      "open": "Preview"
+    },
+    "tabs": {
+      "form": "Form",
+      "preview": "Preview",
+      "detail": "Details"
     }
   },
   "settings": {

@@ -1,3 +1,4 @@
+import { DEFAULT_TEMPLATE_ID, isTemplateId } from '@/lib/pdf/templates/ids'
 import { z } from 'zod'
 
 export const InvoiceStatusEnum = z.enum(['draft', 'sent', 'paid', 'overdue', 'cancelled'])
@@ -22,6 +23,10 @@ export const InvoiceInputSchema = z.object({
     .regex(/^[A-Z]{3}$/, 'Currency must be 3 uppercase ASCII letters (ISO 4217)')
     .default('SEK'),
   notes: z.string().max(2000).optional(),
+  template: z
+    .string()
+    .refine(isTemplateId, 'Unknown invoice template')
+    .default(DEFAULT_TEMPLATE_ID),
   lineItems: z.array(LineItemInputSchema).min(1, 'Add at least one line item'),
 })
 

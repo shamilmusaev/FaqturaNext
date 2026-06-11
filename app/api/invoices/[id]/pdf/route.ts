@@ -1,58 +1,14 @@
+import { PDF_ORG_COLUMNS, invoiceToPdfData } from '@/features/invoices/pdf-data'
 import { getInvoice } from '@/features/invoices/queries'
 import { requireUser } from '@/lib/auth'
-import { InvoiceDocument, type InvoicePdfData } from '@/lib/pdf/InvoiceDocument'
-import type { Database } from '@/lib/supabase/database.types'
+import { getTemplate } from '@/lib/pdf/templates'
 import { createServerClient } from '@/lib/supabase/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-type OrgRow = Pick<
-  Database['public']['Tables']['organizations']['Row'],
-  'name' | 'org_number' | 'vat_number' | 'address' | 'iban' | 'bankgiro'
->
-
 interface Context {
   params: Promise<{ id: string }>
-}
-
-function toPdfData(
-  invoice: NonNullable<Awaited<ReturnType<typeof getInvoice>>>,
-  org: OrgRow,
-): InvoicePdfData {
-  return {
-    number: invoice.number,
-    issuedAt: invoice.issued_at,
-    dueAt: invoice.due_at,
-    currency: invoice.currency,
-    subtotalCents: BigInt(invoice.subtotal_cents),
-    vatCents: BigInt(invoice.vat_cents),
-    totalCents: BigInt(invoice.total_cents),
-    notes: invoice.notes,
-    organization: {
-      name: org.name,
-      org_number: org.org_number,
-      vat_number: org.vat_number,
-      address: (org.address as InvoicePdfData['organization']['address']) ?? null,
-      iban: org.iban,
-      bankgiro: org.bankgiro,
-    },
-    client: {
-      name: invoice.client?.name ?? 'N/A',
-      email: invoice.client?.email ?? null,
-      org_number: invoice.client?.org_number ?? null,
-      vat_number: invoice.client?.vat_number ?? null,
-      address: (invoice.client?.address as InvoicePdfData['client']['address']) ?? null,
-    },
-    lineItems: invoice.line_items.map((li) => ({
-      description: li.description,
-      quantity: Number(li.quantity),
-      unit: li.unit,
-      unitPriceCents: BigInt(li.unit_price_cents),
-      vatRate: Number(li.vat_rate),
-      amountCents: BigInt(li.amount_cents),
-    })),
-  }
 }
 
 export async function GET(_req: NextRequest, ctx: Context) {
@@ -65,12 +21,13 @@ export async function GET(_req: NextRequest, ctx: Context) {
   const supabase = await createServerClient()
   const { data: org } = await supabase
     .from('organizations')
-    .select('name, org_number, vat_number, address, iban, bankgiro')
+    .select(PDF_ORG_COLUMNS)
     .eq('id', organizationId)
     .maybeSingle()
   if (!org) return new NextResponse('Organization not found', { status: 404 })
 
-  const pdfBuffer = await renderToBuffer(InvoiceDocument({ invoice: toPdfData(invoice, org) }))
+  const { Component } = getTemplate(invoice.template)
+  const pdfBuffer = await renderToBuffer(Component({ invoice: invoiceToPdfData(invoice, org) }))
   const body = new Uint8Array(pdfBuffer)
 
   return new NextResponse(body, {

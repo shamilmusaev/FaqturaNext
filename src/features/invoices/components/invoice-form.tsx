@@ -6,12 +6,14 @@ import { Input } from '@/components/ui/input'
 import { MoneyInput } from '@/components/ui/money-input'
 import { toast } from '@/components/ui/toast'
 import { addCents, formatMoney } from '@/lib/money'
+import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import { createInvoiceAction } from '../actions'
+import type { DraftLine, FormDraft } from '../preview-data'
 import type { InvoiceInput, LineItemInput } from '../schema'
 import { type SwedishVatRate, calcInvoiceTotals } from '../vat'
 
@@ -24,16 +26,12 @@ interface Props {
   clients: ClientOption[]
   cancelHref: Route
   defaultCurrency?: string
+  /** Currently selected template, submitted alongside the invoice. */
+  templateId?: TemplateId
+  /** Emits the live draft on every change so a sibling preview can render it. */
+  onDraftChange?: (draft: FormDraft) => void
   onCancel?: () => void
   onSuccess?: () => void
-}
-
-interface DraftLine {
-  description: string
-  quantity: number
-  unit: string
-  unitPriceCents: bigint
-  vatRate: SwedishVatRate
 }
 
 const VAT_RATES: SwedishVatRate[] = [25, 12, 6, 0]
@@ -52,6 +50,8 @@ export function InvoiceForm({
   clients,
   cancelHref,
   defaultCurrency = 'SEK',
+  templateId = DEFAULT_TEMPLATE_ID,
+  onDraftChange,
   onCancel,
   onSuccess,
 }: Props) {
@@ -79,6 +79,12 @@ export function InvoiceForm({
       })),
     )
   }, [lines])
+
+  // Mirror the live draft up to the editor so the preview can re-render. Effect
+  // (not inline) keeps render pure and runs after each committed state change.
+  useEffect(() => {
+    onDraftChange?.({ clientId, issuedAt, dueAt, currency, notes, lines })
+  }, [onDraftChange, clientId, issuedAt, dueAt, currency, notes, lines])
 
   const updateLine = (idx: number, patch: Partial<DraftLine>) => {
     setLines((prev) => prev.map((l, i) => (i === idx ? { ...l, ...patch } : l)))
@@ -116,6 +122,7 @@ export function InvoiceForm({
       dueAt,
       currency,
       notes: notes.trim() || undefined,
+      template: templateId,
       lineItems: validLines,
     }
 
