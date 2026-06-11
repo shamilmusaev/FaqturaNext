@@ -1,5 +1,6 @@
 import type { DocumentProps } from '@react-pdf/renderer'
 import type { ReactElement } from 'react'
+import { BoldBlueTemplate, BoldGreenTemplate, BoldRedTemplate } from './bold'
 import { ClassicTemplate } from './classic'
 import type { TemplateId } from './ids'
 import { ModernTemplate } from './modern'
@@ -38,6 +39,24 @@ export const INVOICE_TEMPLATES: TemplateMeta[] = [
     name: 'Professional',
     description: 'Teal header band with an info strip — ported from the legacy design',
     Component: ProfessionalTemplate,
+  },
+  {
+    id: 'bold-red',
+    name: 'Bold Red',
+    description: 'Dark header, filled red items table and a colour foot bar',
+    Component: BoldRedTemplate,
+  },
+  {
+    id: 'bold-blue',
+    name: 'Bold Blue',
+    description: 'Navy header, light table with row icons and a colour foot bar',
+    Component: BoldBlueTemplate,
+  },
+  {
+    id: 'bold-green',
+    name: 'Bold Green',
+    description: 'Dark-green header, light table with row icons and a colour foot bar',
+    Component: BoldGreenTemplate,
   },
 ]
 
