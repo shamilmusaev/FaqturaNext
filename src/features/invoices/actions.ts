@@ -64,6 +64,7 @@ export async function createInvoiceAction(
     p_issued_at: parsed.data.issuedAt ?? null,
     p_currency: parsed.data.currency,
     p_notes: parsed.data.notes ?? null,
+    p_number: parsed.data.number ?? null,
     p_template: parsed.data.template,
     p_reverse_vat: parsed.data.reverseVat,
     p_rot_rut_type: parsed.data.rotRutType ?? null,

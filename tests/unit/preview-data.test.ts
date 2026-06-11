@@ -28,6 +28,7 @@ function draft(lines: DraftLine[], overrides: Partial<InvoiceDraft> = {}): Invoi
     dueAt: '2026-07-01',
     currency: 'SEK',
     notes: '',
+    number: '',
     lines,
     reverseVat: false,
     rotRutType: null,

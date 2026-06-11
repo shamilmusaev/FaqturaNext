@@ -22,6 +22,8 @@ export interface InvoiceDraft {
   currency: string
   notes: string
   lines: DraftLine[]
+  /** Manual invoice number; blank means auto-generated on save. */
+  number: string
   // Swedish invoice fields (Phase 2).
   reverseVat: boolean
   rotRutType: RotRutType | null
@@ -90,8 +92,9 @@ export function buildPreviewData(
     { reverseVat: draft.reverseVat, rotRutCents: draft.rotRutCents },
   )
 
+  const num = draft.number.trim() || numberLabel
   return {
-    number: numberLabel,
+    number: num,
     issuedAt: draft.issuedAt,
     dueAt: draft.dueAt,
     currency: draft.currency,
@@ -101,7 +104,7 @@ export function buildPreviewData(
     notes: draft.notes.trim() || null,
     // OCR is assigned server-side from the final number; in the live preview we
     // derive it from the (placeholder) label, which yields null until saved.
-    ocrReference: generateOcrReference(numberLabel),
+    ocrReference: generateOcrReference(num),
     reverseVat: draft.reverseVat,
     rotRut:
       draft.rotRutType && draft.rotRutCents > 0n

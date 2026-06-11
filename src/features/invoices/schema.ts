@@ -27,6 +27,7 @@ export const InvoiceInputSchema = z.object({
     .regex(/^[A-Z]{3}$/, 'Currency must be 3 uppercase ASCII letters (ISO 4217)')
     .default('SEK'),
   notes: z.string().max(2000).optional(),
+  number: z.string().max(50).optional(),
   template: z
     .string()
     .refine(isTemplateId, 'Unknown invoice template')

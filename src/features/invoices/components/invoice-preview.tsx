@@ -40,8 +40,11 @@ interface PreviewFrame {
 }
 
 const REVOKE_DELAY_MS = 800
-const PREVIEW_SCALE = 1.75
-const MAX_DEVICE_SCALE = 2
+const QUICK_PREVIEW_SCALE = 1.25
+const SHARP_PREVIEW_SCALE = 1.75
+const QUICK_MAX_DEVICE_SCALE = 1.25
+const SHARP_MAX_DEVICE_SCALE = 2
+const SHARP_RENDER_DELAY_MS = 450
 
 export function InvoicePreview({
   data,
@@ -56,6 +59,7 @@ export function InvoicePreview({
 
   const doc = useMemo(() => <Component invoice={{ ...data, font }} />, [Component, data, font])
   const renderId = useRef(0)
+  const sharpTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const revokeTimers = useRef<ReturnType<typeof setTimeout>[]>([])
   const framesRef = useRef<PreviewFrame[]>([])
   const [frames, setFrames] = useState<PreviewFrame[]>([])
@@ -67,11 +71,15 @@ export function InvoicePreview({
     const id = renderId.current
     setLoading(true)
     setError(null)
+    if (sharpTimer.current) clearTimeout(sharpTimer.current)
 
     pdf(doc)
       .toBlob()
       .then(async (blob) => {
-        const pages = await renderPdfPages(blob)
+        const pages = await renderPdfPages(blob, {
+          scale: QUICK_PREVIEW_SCALE,
+          maxDeviceScale: QUICK_MAX_DEVICE_SCALE,
+        })
         const url = URL.createObjectURL(blob)
         if (id !== renderId.current) {
           URL.revokeObjectURL(url)
@@ -81,6 +89,21 @@ export function InvoicePreview({
           scheduleRevoke(prev.map((frame) => frame.url))
           return [{ url, pages }]
         })
+        sharpTimer.current = setTimeout(() => {
+          renderPdfPages(blob, {
+            scale: SHARP_PREVIEW_SCALE,
+            maxDeviceScale: SHARP_MAX_DEVICE_SCALE,
+          })
+            .then((sharpPages) => {
+              if (id !== renderId.current) return
+              setFrames((prev) =>
+                prev.map((frame) => (frame.url === url ? { ...frame, pages: sharpPages } : frame)),
+              )
+            })
+            .catch((err: unknown) => {
+              if (id === renderId.current) setError(err)
+            })
+        }, SHARP_RENDER_DELAY_MS)
       })
       .catch((err: unknown) => {
         if (id === renderId.current) setError(err)
@@ -96,6 +119,7 @@ export function InvoicePreview({
 
   useEffect(() => {
     return () => {
+      if (sharpTimer.current) clearTimeout(sharpTimer.current)
       for (const timer of revokeTimers.current) clearTimeout(timer)
       for (const frame of framesRef.current) URL.revokeObjectURL(frame.url)
     }
@@ -218,7 +242,10 @@ export function InvoicePreview({
   )
 }
 
-async function renderPdfPages(blob: Blob): Promise<string[]> {
+async function renderPdfPages(
+  blob: Blob,
+  options: { scale: number; maxDeviceScale: number },
+): Promise<string[]> {
   const pdfjs = await import('pdfjs-dist')
   pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.mjs',
@@ -232,8 +259,8 @@ async function renderPdfPages(blob: Blob): Promise<string[]> {
 
   for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
     const page = await document.getPage(pageNumber)
-    const viewport = page.getViewport({ scale: PREVIEW_SCALE })
-    const outputScale = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_SCALE)
+    const viewport = page.getViewport({ scale: options.scale })
+    const outputScale = Math.min(window.devicePixelRatio || 1, options.maxDeviceScale)
     const canvas = window.document.createElement('canvas')
     const context = canvas.getContext('2d')
     if (!context) continue

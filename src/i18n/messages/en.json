@@ -182,6 +182,8 @@
       "save": "Save draft",
       "create": "Create invoice",
       "duplicate": "Duplicate",
+      "showPreview": "Show preview",
+      "hidePreview": "Hide preview",
       "confirmSend": "Send this invoice to the client?",
       "confirmPaid": "Mark this invoice as paid?",
       "confirmCancel": "Cancel this invoice?"

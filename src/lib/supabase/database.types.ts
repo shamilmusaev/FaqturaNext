@@ -406,6 +406,7 @@ export type Database = {
           p_their_reference?: string | null
           p_order_number?: string | null
           p_payment_terms_days?: number | null
+          p_number?: string | null
         }
         Returns: Database['public']['Tables']['invoices']['Row']
       }

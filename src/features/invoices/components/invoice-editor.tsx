@@ -1,5 +1,6 @@
 'use client'
 
+import { ChevronLeft, ChevronRight } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import type { Route } from 'next'
@@ -58,8 +59,10 @@ type MobileTab = 'form' | 'preview'
 
 export function InvoiceEditor({ clients, org, cancelHref }: Props) {
   const tTabs = useTranslations('invoices.tabs')
+  const tActions = useTranslations('invoices.actions')
   const [templateId, setTemplateId] = useState<TemplateId>(DEFAULT_TEMPLATE_ID)
   const [tab, setTab] = useState<MobileTab>('form')
+  const [previewCollapsed, setPreviewCollapsed] = useState(false)
 
   // Seed with the form's initial state so the preview renders immediately; the
   // form's onDraftChange syncs it on mount and on every edit thereafter.
@@ -69,6 +72,7 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
     dueAt: todayPlusDays(30),
     currency: org.currency_default ?? 'SEK',
     notes: '',
+    number: '',
     lines: Array.from({ length: DEFAULT_LINE_COUNT }, emptyDraftLine),
     reverseVat: false,
     rotRutType: null,
@@ -111,7 +115,14 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div
+        className={cn(
+          'grid gap-6 transition-[grid-template-columns]',
+          previewCollapsed
+            ? 'lg:grid-cols-[minmax(0,1fr)_3.5rem]'
+            : 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+        )}
+      >
         <div className={cn(tab !== 'form' && 'hidden', 'lg:block')}>
           <InvoiceForm
             clients={clientOptions}
@@ -124,13 +135,32 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
         </div>
 
         <div className={cn(tab !== 'preview' && 'hidden', 'lg:block')}>
-          <div className="lg:sticky lg:top-6">
-            <InvoicePreview
-              data={previewData}
-              templateId={templateId}
-              onTemplateChange={setTemplateId}
-              className="lg:h-[calc(100vh-7rem)]"
-            />
+          <div className="relative lg:sticky lg:top-6">
+            <button
+              type="button"
+              onClick={() => setPreviewCollapsed((value) => !value)}
+              aria-label={tActions(previewCollapsed ? 'showPreview' : 'hidePreview')}
+              title={tActions(previewCollapsed ? 'showPreview' : 'hidePreview')}
+              className={cn(
+                'z-10 hidden h-11 w-11 items-center justify-center rounded-full bg-brand text-brand-ink shadow-soft transition-colors hover:bg-brand-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:inline-flex',
+                previewCollapsed ? 'mx-auto' : 'absolute -left-5 top-16',
+              )}
+            >
+              {previewCollapsed ? (
+                <ChevronLeft className="h-5 w-5" />
+              ) : (
+                <ChevronRight className="h-5 w-5" />
+              )}
+            </button>
+
+            {!previewCollapsed && (
+              <InvoicePreview
+                data={previewData}
+                templateId={templateId}
+                onTemplateChange={setTemplateId}
+                className="lg:h-[calc(100vh-7rem)]"
+              />
+            )}
           </div>
         </div>
       </div>

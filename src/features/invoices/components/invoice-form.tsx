@@ -91,6 +91,7 @@ export function InvoiceForm({
   const [dueAt, setDueAt] = useState(todayPlusDays(30))
   const [currency, setCurrency] = useState(defaultCurrency)
   const [notes, setNotes] = useState('')
+  const [number, setNumber] = useState('')
   const [lines, setLines] = useState<DraftLine[]>(() => Array.from({ length: 5 }, emptyLine))
   const [serverError, setServerError] = useState<string | null>(null)
   // Swedish invoice fields (Phase 2).
@@ -128,6 +129,7 @@ export function InvoiceForm({
       dueAt,
       currency,
       notes,
+      number,
       lines,
       reverseVat,
       rotRutType: rotRutType || null,
@@ -143,6 +145,7 @@ export function InvoiceForm({
     dueAt,
     currency,
     notes,
+    number,
     lines,
     reverseVat,
     rotRutType,
@@ -277,6 +280,7 @@ export function InvoiceForm({
       dueAt,
       currency,
       notes: notes.trim() || undefined,
+      number: number.trim() || undefined,
       template: templateId,
       reverseVat,
       rotRutType: rotRutType || null,
@@ -367,7 +371,12 @@ export function InvoiceForm({
         </label>
         <label className="flex flex-col gap-1.5 text-sm">
           <span className="text-ink/80">{tFields('number')}</span>
-          <Input value={numberPreview ?? '—'} readOnly disabled className="text-ink/60" />
+          <Input
+            value={number}
+            onChange={(e) => setNumber(e.target.value)}
+            placeholder={numberPreview}
+            maxLength={50}
+          />
         </label>
       </div>
 

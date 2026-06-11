@@ -182,6 +182,8 @@
       "save": "Spara utkast",
       "create": "Skapa faktura",
       "duplicate": "Duplicera",
+      "showPreview": "Visa förhandsvisning",
+      "hidePreview": "Dölj förhandsvisning",
       "confirmSend": "Skicka den här fakturan till kunden?",
       "confirmPaid": "Markera den här fakturan som betald?",
       "confirmCancel": "Avbryt den här fakturan?"
