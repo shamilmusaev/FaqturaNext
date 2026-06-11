@@ -1,5 +1,6 @@
 'use client'
 
+import { ChevronLeft } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import type { Route } from 'next'
@@ -58,6 +59,7 @@ type MobileTab = 'form' | 'preview'
 
 export function InvoiceEditor({ clients, org, cancelHref }: Props) {
   const tTabs = useTranslations('invoices.tabs')
+  const tActions = useTranslations('invoices.actions')
   const [templateId, setTemplateId] = useState<TemplateId>(DEFAULT_TEMPLATE_ID)
   const [tab, setTab] = useState<MobileTab>('form')
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
@@ -94,7 +96,7 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
   const numberPreview = useMemo(() => previewNumber(org.invoice_number_template), [org])
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="relative flex flex-col gap-4">
       {/* Mobile tab switch: form and preview don't fit side-by-side on phones. */}
       <div className="flex gap-1 rounded-full bg-paper-2 p-1 lg:hidden">
         {(['form', 'preview'] as const).map((key) => (
@@ -117,7 +119,7 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
         className={cn(
           'grid gap-6 transition-[grid-template-columns] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
           previewCollapsed
-            ? 'lg:grid-cols-[minmax(0,1fr)_3.25rem]'
+            ? 'lg:grid-cols-[minmax(0,1fr)_3rem]'
             : 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
         )}
       >
@@ -133,20 +135,38 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
         </div>
 
         <div className={cn(tab !== 'preview' && 'hidden', 'lg:block')}>
-          <div
-            className={cn(
-              'lg:sticky lg:top-6 transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
-              previewCollapsed ? 'origin-top scale-[0.98]' : 'scale-100',
-            )}
-          >
-            <InvoicePreview
-              data={previewData}
-              templateId={templateId}
-              onTemplateChange={setTemplateId}
-              collapsed={previewCollapsed}
-              onToggleCollapsed={() => setPreviewCollapsed((value) => !value)}
-              className="lg:h-[calc(100vh-7rem)]"
-            />
+          <div className="relative lg:sticky lg:top-6 lg:overflow-hidden">
+            {/* Reopen control: sits at the top of the thin rail (sticky, always
+                in view), fades in once the panel is collapsed. */}
+            <button
+              type="button"
+              onClick={() => setPreviewCollapsed(false)}
+              aria-label={tActions('showPreview')}
+              title={tActions('showPreview')}
+              className={cn(
+                'absolute left-1/2 top-0 z-10 hidden h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-paper-2 text-ink/60 shadow-soft transition-opacity duration-300 ease-out hover:bg-card hover:text-ink lg:flex',
+                previewCollapsed ? 'opacity-100 delay-200' : 'pointer-events-none opacity-0',
+              )}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+
+            {/* Content fades out fast (250ms) so the width close (500ms) never
+                shows the PDF reflowing — the fade masks it. */}
+            <div
+              className={cn(
+                'transition-opacity duration-[250ms] ease-out',
+                previewCollapsed && 'pointer-events-none opacity-0',
+              )}
+            >
+              <InvoicePreview
+                data={previewData}
+                templateId={templateId}
+                onTemplateChange={setTemplateId}
+                onToggleCollapsed={() => setPreviewCollapsed(true)}
+                className="lg:h-[calc(100vh-7rem)]"
+              />
+            </div>
           </div>
         </div>
       </div>
