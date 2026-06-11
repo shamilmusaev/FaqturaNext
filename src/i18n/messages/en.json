@@ -213,7 +213,9 @@
       "empty": "Fill in the form to see the preview",
       "error": "Couldn't render the preview",
       "open": "Preview",
-      "download": "Download"
+      "download": "Download",
+      "view": "Open in new tab",
+      "font": "Font"
     },
     "tabs": {
       "form": "Form",
@@ -276,6 +278,17 @@
     "company": {
       "title": "Company profile",
       "subtitle": "Shown on every invoice you send.",
+      "logo": {
+        "title": "Logo",
+        "subtitle": "Shown on invoice PDFs. Falls back to your initials.",
+        "upload": "Upload logo",
+        "uploading": "Uploading…",
+        "remove": "Remove",
+        "hint": "PNG, JPG or SVG, max 2 MB.",
+        "errType": "Please choose an image file.",
+        "errSize": "File is too large (max 2 MB).",
+        "errUpload": "Upload failed. Please try again."
+      },
       "identityTitle": "Identity",
       "identitySubtitle": "Legal name and registration numbers.",
       "addressTitle": "Address",

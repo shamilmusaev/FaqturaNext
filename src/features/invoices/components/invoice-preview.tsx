@@ -1,5 +1,6 @@
 'use client'
 
+import { DownloadIcon, EyeIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import {
   INVOICE_TEMPLATES,
@@ -19,9 +20,9 @@ interface Props {
   className?: string
 }
 
-// Re-rendering a PDF on every keystroke is expensive, so we coalesce changes
-// into one render per quiet window.
-const DEBOUNCE_MS = 300
+// Re-rendering a PDF reloads the iframe (a brief flash), so coalesce edits into
+// one render per quiet window. Longer window = calmer preview while typing.
+const DEBOUNCE_MS = 800
 
 export function InvoicePreview({
   data,
@@ -49,47 +50,62 @@ export function InvoicePreview({
   const safeNumber = data.number.replace(/[^\w-]/g, '').trim()
   const fileName = safeNumber ? `Faktura-${safeNumber}.pdf` : 'faktura.pdf'
 
+  const ready = Boolean(instance.url && !instance.error)
+  const toolBtn =
+    'inline-flex h-8 w-8 items-center justify-center rounded-full text-ink/55 transition-colors hover:bg-card hover:text-ink aria-disabled:opacity-40 aria-disabled:pointer-events-none'
+
   return (
     <div className={cn('flex flex-col gap-3', className)}>
-      <div className="flex items-center justify-between gap-2">
-        {showTemplatePicker ? (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-ink/50 mr-1">{t('template')}</span>
-            <div className="flex flex-wrap gap-1 rounded-full bg-paper-2 p-1">
-              {INVOICE_TEMPLATES.map((tpl) => {
-                const active = tpl.id === templateId
-                return (
-                  <button
-                    key={tpl.id}
-                    type="button"
-                    onClick={() => onTemplateChange?.(tpl.id)}
-                    aria-pressed={active}
-                    className={cn(
-                      'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                      active
-                        ? 'bg-card text-ink shadow-soft'
-                        : 'text-ink/55 hover:text-ink hover:bg-card/60',
-                    )}
-                  >
-                    {tpl.name}
-                  </button>
-                )
-              })}
-            </div>
+      {showTemplatePicker && (
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-ink/50 mr-1">{t('template')}</span>
+          <div className="flex flex-wrap gap-1 rounded-full bg-paper-2 p-1">
+            {INVOICE_TEMPLATES.map((tpl) => {
+              const active = tpl.id === templateId
+              return (
+                <button
+                  key={tpl.id}
+                  type="button"
+                  onClick={() => onTemplateChange?.(tpl.id)}
+                  aria-pressed={active}
+                  className={cn(
+                    'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                    active
+                      ? 'bg-card text-ink shadow-soft'
+                      : 'text-ink/55 hover:text-ink hover:bg-card/60',
+                  )}
+                >
+                  {tpl.name}
+                </button>
+              )
+            })}
           </div>
-        ) : (
-          <span />
-        )}
+        </div>
+      )}
 
-        {instance.url && !instance.error && (
-          <a
-            href={instance.url}
-            download={fileName}
-            className="shrink-0 inline-flex h-9 items-center gap-1.5 rounded-full bg-ink px-4 text-xs font-medium text-white hover:bg-ink/90 transition-colors"
-          >
-            {t('download')}
-          </a>
-        )}
+      {/* Toolbar (same pill style as templates): view + download */}
+      <div className="flex items-center gap-1 self-start rounded-full bg-paper-2 p-1">
+        <a
+          href={instance.url ?? undefined}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-disabled={!ready}
+          title={t('view')}
+          aria-label={t('view')}
+          className={toolBtn}
+        >
+          <EyeIcon className="h-4 w-4" />
+        </a>
+        <a
+          href={instance.url ?? undefined}
+          download={fileName}
+          aria-disabled={!ready}
+          title={t('download')}
+          aria-label={t('download')}
+          className={toolBtn}
+        >
+          <DownloadIcon className="h-4 w-4" />
+        </a>
       </div>
 
       <div className="relative flex-1 min-h-[420px] overflow-hidden rounded-[16px] border border-line-1 bg-paper-2">

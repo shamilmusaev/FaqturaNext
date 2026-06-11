@@ -15,6 +15,7 @@ export {
   Send as SendIcon,
   Mail as MailIcon,
   Download as DownloadIcon,
+  Eye as EyeIcon,
   AlertCircle as AlertIcon,
   Calendar as CalendarIcon,
   ArrowRight,

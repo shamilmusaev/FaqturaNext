@@ -80,6 +80,28 @@ export async function updateCompanyAction(
   return { ok: true }
 }
 
+/**
+ * Persist the organization logo URL after a client-side upload to Storage.
+ * Pass an empty string to clear it (the RPC coalesces nulls, so we store '' and
+ * treat empty as "no logo" in the templates).
+ */
+export async function setOrgLogoAction(logoUrl: string): Promise<SettingsActionResult> {
+  const { organizationId, role } = await requireUser()
+  const block = requireOwnerOrAdmin(role)
+  if (block) return block
+
+  const supabase = await createServerClient()
+  const { error } = await supabase.rpc('update_organization', {
+    p_org_id: organizationId,
+    p_logo_url: logoUrl,
+  })
+  if (error) return { error: error.message }
+
+  revalidatePath('/settings', 'layout')
+  revalidatePath('/invoices', 'layout')
+  return { ok: true }
+}
+
 export async function updatePaymentAction(
   _prev: SettingsActionResult,
   formData: FormData,

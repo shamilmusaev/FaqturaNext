@@ -213,7 +213,9 @@
       "empty": "Fyll i formuläret för att se förhandsvisningen",
       "error": "Kunde inte visa förhandsvisningen",
       "open": "Förhandsvisa",
-      "download": "Ladda ner"
+      "download": "Ladda ner",
+      "view": "Öppna i ny flik",
+      "font": "Typsnitt"
     },
     "tabs": {
       "form": "Formulär",
@@ -276,6 +278,17 @@
     "company": {
       "title": "Företagsprofil",
       "subtitle": "Visas på varje faktura du skickar.",
+      "logo": {
+        "title": "Logotyp",
+        "subtitle": "Visas på faktura-PDF:er. Annars visas dina initialer.",
+        "upload": "Ladda upp logotyp",
+        "uploading": "Laddar upp…",
+        "remove": "Ta bort",
+        "hint": "PNG, JPG eller SVG, max 2 MB.",
+        "errType": "Välj en bildfil.",
+        "errSize": "Filen är för stor (max 2 MB).",
+        "errUpload": "Uppladdningen misslyckades. Försök igen."
+      },
       "identityTitle": "Identitet",
       "identitySubtitle": "Företagsnamn och registreringsnummer.",
       "addressTitle": "Adress",
