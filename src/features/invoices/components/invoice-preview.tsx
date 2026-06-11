@@ -11,9 +11,9 @@ import {
   getTemplate,
 } from '@/lib/pdf/templates'
 import { registerInvoiceFonts } from '@/lib/pdf/templates/register-fonts'
-import { usePDF } from '@react-pdf/renderer'
+import { pdf } from '@react-pdf/renderer'
 import { useTranslations } from 'next-intl'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Bundled fonts are client-only; this module only loads in the browser.
 registerInvoiceFonts()
@@ -34,9 +34,14 @@ interface Props {
   className?: string
 }
 
-// Re-rendering a PDF reloads the iframe (a brief flash), so coalesce edits into
-// one render per quiet window. Longer window = calmer preview while typing.
-const DEBOUNCE_MS = 1000
+interface PreviewFrame {
+  url: string
+  pages: string[]
+}
+
+const REVOKE_DELAY_MS = 800
+const PREVIEW_SCALE = 1.75
+const MAX_DEVICE_SCALE = 2
 
 export function InvoicePreview({
   data,
@@ -49,38 +54,64 @@ export function InvoicePreview({
   const [font, setFont] = useState<FontId>('sans')
   const { Component } = getTemplate(templateId)
 
-  // The document element only changes when the data, template or font actually
-  // changes — NOT on every render. This is what keeps the preview from
-  // re-rendering in a loop (usePDF's `update` identity is unstable).
   const doc = useMemo(() => <Component invoice={{ ...data, font }} />, [Component, data, font])
-  const [instance, update] = usePDF({ document: doc })
-  const isFirst = useRef(true)
+  const renderId = useRef(0)
+  const revokeTimers = useRef<ReturnType<typeof setTimeout>[]>([])
+  const framesRef = useRef<PreviewFrame[]>([])
+  const [frames, setFrames] = useState<PreviewFrame[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<unknown>(null)
 
-  // `update` is intentionally excluded from deps: its identity changes every
-  // render, and including it would re-fire this effect in a loop.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: see note above
   useEffect(() => {
-    if (isFirst.current) {
-      isFirst.current = false
-      return
-    }
-    const id = setTimeout(() => update(doc), DEBOUNCE_MS)
-    return () => clearTimeout(id)
+    renderId.current += 1
+    const id = renderId.current
+    setLoading(true)
+    setError(null)
+
+    pdf(doc)
+      .toBlob()
+      .then(async (blob) => {
+        const pages = await renderPdfPages(blob)
+        const url = URL.createObjectURL(blob)
+        if (id !== renderId.current) {
+          URL.revokeObjectURL(url)
+          return
+        }
+        setFrames((prev) => {
+          scheduleRevoke(prev.map((frame) => frame.url))
+          return [{ url, pages }]
+        })
+      })
+      .catch((err: unknown) => {
+        if (id === renderId.current) setError(err)
+      })
+      .finally(() => {
+        if (id === renderId.current) setLoading(false)
+      })
   }, [doc])
 
-  // Double-buffer the iframe to avoid the white flash on every re-render: keep
-  // the last two blob URLs mounted and only reveal the new one once it has
-  // finished loading, so the visible frame never blanks out.
-  const [stack, setStack] = useState<string[]>([])
-  const [loaded, setLoaded] = useState<string[]>([])
   useEffect(() => {
-    const u = instance.url
-    if (!u || instance.error) return
-    setStack((prev) => (prev[prev.length - 1] === u ? prev : [...prev, u].slice(-2)))
-  }, [instance.url, instance.error])
+    framesRef.current = frames
+  }, [frames])
 
-  const top = stack[stack.length - 1]
-  const visible = top && loaded.includes(top) ? top : (stack[0] ?? top)
+  useEffect(() => {
+    return () => {
+      for (const timer of revokeTimers.current) clearTimeout(timer)
+      for (const frame of framesRef.current) URL.revokeObjectURL(frame.url)
+    }
+  }, [])
+
+  const scheduleRevoke = useCallback((urls: string[]) => {
+    if (urls.length === 0) return
+    const timer = setTimeout(() => {
+      for (const url of urls) URL.revokeObjectURL(url)
+      revokeTimers.current = revokeTimers.current.filter((t) => t !== timer)
+    }, REVOKE_DELAY_MS)
+    revokeTimers.current.push(timer)
+  }, [])
+
+  const visibleFrame = frames.at(-1)
+  const currentUrl = visibleFrame?.url
 
   const safeNumber = data.number.replace(/[^\w-]/g, '').trim()
   const fileName = safeNumber ? `Faktura-${safeNumber}.pdf` : 'faktura.pdf'
@@ -134,10 +165,10 @@ export function InvoicePreview({
         </select>
         <span className="mx-1 h-4 w-px bg-line-2/60" />
         <a
-          href={instance.url ?? undefined}
+          href={currentUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-disabled={!instance.url || !!instance.error}
+          aria-disabled={!currentUrl || !!error}
           title={t('view')}
           aria-label={t('view')}
           className={toolBtn}
@@ -145,9 +176,9 @@ export function InvoicePreview({
           <EyeIcon className="h-4 w-4" />
         </a>
         <a
-          href={instance.url ?? undefined}
+          href={currentUrl}
           download={fileName}
-          aria-disabled={!instance.url || !!instance.error}
+          aria-disabled={!currentUrl || !!error}
           title={t('download')}
           aria-label={t('download')}
           className={toolBtn}
@@ -156,25 +187,28 @@ export function InvoicePreview({
         </a>
       </div>
 
-      <div className="relative flex-1 min-h-[420px] overflow-hidden rounded-[16px] border border-line-1 bg-paper-2">
-        {stack.length === 0 && (
+      <div className="relative flex-1 min-h-[420px] overflow-auto rounded-[16px] bg-transparent p-2">
+        {frames.length === 0 && (
           <div className="absolute inset-0 grid place-items-center p-6 text-center text-sm text-ink/45">
-            {instance.error ? t('error') : t('empty')}
+            {error ? t('error') : t('empty')}
           </div>
         )}
 
-        {stack.map((u) => (
-          <iframe
-            key={u}
-            title={t('title')}
-            src={`${u}#toolbar=0&navpanes=0&view=FitH`}
-            onLoad={() => setLoaded((prev) => (prev.includes(u) ? prev : [...prev, u]))}
-            className="absolute inset-0 h-full w-full"
-            style={{ opacity: u === visible ? 1 : 0 }}
-          />
-        ))}
+        {visibleFrame && (
+          <div className="mx-auto flex w-full max-w-[720px] flex-col gap-4">
+            {visibleFrame.pages.map((src, idx) => (
+              <img
+                key={`${visibleFrame.url}-${idx}`}
+                src={src}
+                alt={`${t('title')} ${idx + 1}`}
+                className="h-auto w-full bg-white shadow-soft"
+                draggable={false}
+              />
+            ))}
+          </div>
+        )}
 
-        {instance.loading && (
+        {loading && frames.length > 0 && (
           <div className="absolute right-3 top-3 rounded-full bg-ink/80 px-2.5 py-1 text-xs text-white">
             {t('updating')}
           </div>
@@ -182,4 +216,39 @@ export function InvoicePreview({
       </div>
     </div>
   )
+}
+
+async function renderPdfPages(blob: Blob): Promise<string[]> {
+  const pdfjs = await import('pdfjs-dist')
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.mjs',
+    import.meta.url,
+  ).toString()
+
+  const bytes = new Uint8Array(await blob.arrayBuffer())
+  const loadingTask = pdfjs.getDocument({ data: bytes })
+  const document = await loadingTask.promise
+  const pages: string[] = []
+
+  for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
+    const page = await document.getPage(pageNumber)
+    const viewport = page.getViewport({ scale: PREVIEW_SCALE })
+    const outputScale = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_SCALE)
+    const canvas = window.document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    if (!context) continue
+
+    canvas.width = Math.ceil(viewport.width * outputScale)
+    canvas.height = Math.ceil(viewport.height * outputScale)
+    canvas.style.width = `${Math.ceil(viewport.width)}px`
+    canvas.style.height = `${Math.ceil(viewport.height)}px`
+
+    context.setTransform(outputScale, 0, 0, outputScale, 0, 0)
+    await page.render({ canvasContext: context, viewport }).promise
+    pages.push(canvas.toDataURL('image/png'))
+    page.cleanup()
+  }
+
+  await loadingTask.destroy()
+  return pages
 }

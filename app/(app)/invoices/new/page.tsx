@@ -34,6 +34,7 @@ export default async function NewInvoicePage() {
     swish_number: org.swish_number,
     logo_url: org.logo_url,
     currency_default: org.currency,
+    invoice_number_template: org.invoice_number_template,
   }
 
   return (

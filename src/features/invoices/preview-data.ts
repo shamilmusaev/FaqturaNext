@@ -50,6 +50,8 @@ export interface PreviewOrganization {
   logo_url?: string | null
   /** Org's default invoice currency, used to seed the form. */
   currency_default?: string | null
+  /** Number template like "INV-{YYYY}-{NNNN}", for the read-only number preview. */
+  invoice_number_template?: string | null
 }
 
 export interface PreviewClient {

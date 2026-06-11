@@ -28,6 +28,8 @@ interface Props {
   defaultCurrency?: string
   /** Currently selected template, submitted alongside the invoice. */
   templateId?: TemplateId
+  /** Read-only preview of the auto-generated invoice number. */
+  numberPreview?: string
   /** Emits the live draft on every change so a sibling preview can render it. */
   onDraftChange?: (draft: FormDraft) => void
   onCancel?: () => void
@@ -72,6 +74,7 @@ export function InvoiceForm({
   cancelHref,
   defaultCurrency = 'SEK',
   templateId = DEFAULT_TEMPLATE_ID,
+  numberPreview,
   onDraftChange,
   onCancel,
   onSuccess,
@@ -88,7 +91,7 @@ export function InvoiceForm({
   const [dueAt, setDueAt] = useState(todayPlusDays(30))
   const [currency, setCurrency] = useState(defaultCurrency)
   const [notes, setNotes] = useState('')
-  const [lines, setLines] = useState<DraftLine[]>([emptyLine()])
+  const [lines, setLines] = useState<DraftLine[]>(() => Array.from({ length: 5 }, emptyLine))
   const [serverError, setServerError] = useState<string | null>(null)
   // Swedish invoice fields (Phase 2).
   const [paymentTermsDays, setPaymentTermsDays] = useState(30)
@@ -362,6 +365,10 @@ export function InvoiceForm({
             ))}
           </select>
         </label>
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="text-ink/80">{tFields('number')}</span>
+          <Input value={numberPreview ?? '—'} readOnly disabled className="text-ink/60" />
+        </label>
       </div>
 
       <section className="flex flex-col gap-3">
@@ -483,7 +490,7 @@ export function InvoiceForm({
         </div>
       </section>
 
-      <section className="rounded-[24px] border border-line-1 bg-card p-4 md:max-w-sm md:ml-auto">
+      <section className="rounded-[24px] border border-line-1 bg-card p-5 md:max-w-md md:ml-auto">
         <dl className="grid grid-cols-[1fr_auto] gap-x-6 gap-y-1 text-sm">
           <dt className="text-ink/60">{tFields('subtotal')}</dt>
           <dd className="tnum font-mono text-right">

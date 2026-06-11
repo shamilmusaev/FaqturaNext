@@ -32,6 +32,28 @@ function todayPlusDays(days: number): string {
   return d.toISOString().slice(0, 10)
 }
 
+const DEFAULT_LINE_COUNT = 5
+
+function emptyDraftLine() {
+  return {
+    description: '',
+    quantity: 1,
+    unit: '',
+    unitPriceCents: 0n,
+    vatRate: 25 as const,
+    discountPercent: 0,
+  }
+}
+
+// Read-only preview of the auto-generated invoice number from the org template.
+function previewNumber(tpl?: string | null): string {
+  const year = new Date().getFullYear()
+  return (tpl || 'INV-{YYYY}-{NNNN}')
+    .replace(/\{YYYY\}/g, String(year))
+    .replace(/\{YY\}/g, String(year).slice(-2))
+    .replace(/\{N+\}/g, 'XXXX')
+}
+
 type MobileTab = 'form' | 'preview'
 
 export function InvoiceEditor({ clients, org, cancelHref }: Props) {
@@ -47,16 +69,7 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
     dueAt: todayPlusDays(30),
     currency: org.currency_default ?? 'SEK',
     notes: '',
-    lines: [
-      {
-        description: '',
-        quantity: 1,
-        unit: '',
-        unitPriceCents: 0n,
-        vatRate: 25,
-        discountPercent: 0,
-      },
-    ],
+    lines: Array.from({ length: DEFAULT_LINE_COUNT }, emptyDraftLine),
     reverseVat: false,
     rotRutType: null,
     rotRutCents: 0n,
@@ -76,6 +89,7 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
   )
 
   const clientOptions = useMemo(() => clients.map((c) => ({ id: c.id, name: c.name })), [clients])
+  const numberPreview = useMemo(() => previewNumber(org.invoice_number_template), [org])
 
   return (
     <div className="flex flex-col gap-4">
@@ -104,6 +118,7 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
             cancelHref={cancelHref}
             defaultCurrency={org.currency_default ?? 'SEK'}
             templateId={templateId}
+            numberPreview={numberPreview}
             onDraftChange={setDraft}
           />
         </div>
