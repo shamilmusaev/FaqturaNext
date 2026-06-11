@@ -49,6 +49,18 @@ function emptyLine(): DraftLine {
 
 const PAYMENT_TERMS = [10, 14, 30, 45, 60] as const
 
+// Shared <select> styling: custom chevron with comfortable right padding so the
+// arrow never crowds the border or the text.
+const SELECT_CLASS =
+  'h-11 w-full appearance-none rounded-[12px] border border-line-1 bg-card pl-3 pr-9 text-[15px]'
+const SELECT_STYLE: React.CSSProperties = {
+  backgroundImage:
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b8579' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 0.75rem center',
+  backgroundSize: '16px',
+}
+
 function todayPlusDays(days: number): string {
   const d = new Date()
   d.setDate(d.getDate() + days)
@@ -303,7 +315,8 @@ export function InvoiceForm({
             value={clientId}
             onChange={(e) => setClientId(e.target.value)}
             required
-            className="h-11 rounded-[12px] border border-line-1 bg-card px-3 text-[15px]"
+            className={SELECT_CLASS}
+            style={SELECT_STYLE}
           >
             {clients.length === 0 && <option value="">No clients</option>}
             {clients.map((c) => (
@@ -339,7 +352,8 @@ export function InvoiceForm({
           <select
             value={paymentTermsDays}
             onChange={(e) => applyPaymentTerms(Number(e.target.value))}
-            className="h-11 rounded-[12px] border border-line-1 bg-card px-3 text-[15px]"
+            className={SELECT_CLASS}
+            style={SELECT_STYLE}
           >
             {PAYMENT_TERMS.map((d) => (
               <option key={d} value={d}>
@@ -369,7 +383,7 @@ export function InvoiceForm({
               key={idx}
               className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3"
             >
-              <div className="grid grid-cols-1 md:grid-cols-[2fr_repeat(5,1fr)_auto] gap-3 items-end">
+              <div className="grid grid-cols-1 md:grid-cols-[1.7fr_0.6fr_0.6fr_1.2fr_0.7fr_0.95fr_auto] gap-2 items-end">
                 <label className="flex flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('description')}
                   <Input
@@ -384,6 +398,7 @@ export function InvoiceForm({
                     type="number"
                     step="0.001"
                     min="0"
+                    className="px-2"
                     value={line.quantity}
                     onChange={(e) => updateLine(idx, { quantity: Number(e.target.value) || 0 })}
                   />
@@ -401,6 +416,7 @@ export function InvoiceForm({
                   {tFields('unitPrice')}
                   <MoneyInput
                     key={`price-${idx}-${seedVersion}`}
+                    className="px-2"
                     defaultValueCents={line.unitPriceCents}
                     onValueChange={(v) => updateLine(idx, { unitPriceCents: v })}
                   />
@@ -412,6 +428,7 @@ export function InvoiceForm({
                     step="1"
                     min="0"
                     max="100"
+                    className="px-2"
                     value={line.discountPercent}
                     onChange={(e) =>
                       updateLine(idx, {
@@ -427,7 +444,8 @@ export function InvoiceForm({
                     onChange={(e) =>
                       updateLine(idx, { vatRate: Number(e.target.value) as SwedishVatRate })
                     }
-                    className="h-11 rounded-[12px] border border-line-1 bg-card px-3 text-[15px]"
+                    className={SELECT_CLASS}
+                    style={SELECT_STYLE}
                   >
                     {VAT_RATES.map((r) => (
                       <option key={r} value={r}>
@@ -466,13 +484,17 @@ export function InvoiceForm({
       </section>
 
       <section className="rounded-[24px] border border-line-1 bg-card p-4 md:max-w-sm md:ml-auto">
-        <dl className="grid grid-cols-[1fr_auto] gap-y-1 text-sm">
+        <dl className="grid grid-cols-[1fr_auto] gap-x-6 gap-y-1 text-sm">
           <dt className="text-ink/60">{tFields('subtotal')}</dt>
-          <dd className="tnum font-mono">{formatMoney(totals.subtotalCents, currency as 'SEK')}</dd>
+          <dd className="tnum font-mono text-right">
+            {formatMoney(totals.subtotalCents, currency as 'SEK')}
+          </dd>
           <dt className="text-ink/60">{tFields('vatTotal')}</dt>
-          <dd className="tnum font-mono">{formatMoney(totals.vatCents, currency as 'SEK')}</dd>
+          <dd className="tnum font-mono text-right">
+            {formatMoney(totals.vatCents, currency as 'SEK')}
+          </dd>
           <dt className="font-semibold pt-2 border-t border-line-1 mt-1">{tFields('total')}</dt>
-          <dd className="tnum font-mono font-semibold pt-2 border-t border-line-1 mt-1">
+          <dd className="tnum font-mono font-semibold text-right pt-2 border-t border-line-1 mt-1">
             {formatMoney(totals.totalCents, currency as 'SEK')}
           </dd>
         </dl>
@@ -496,7 +518,8 @@ export function InvoiceForm({
               <select
                 value={rotRutType}
                 onChange={(e) => setRotRutType(e.target.value as RotRutType | '')}
-                className="h-11 rounded-[12px] border border-line-1 bg-card px-3 text-[15px]"
+                className={SELECT_CLASS}
+                style={SELECT_STYLE}
               >
                 <option value="">{t('options.none')}</option>
                 <option value="ROT">ROT</option>

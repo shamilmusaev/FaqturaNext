@@ -10,9 +10,21 @@ import {
   type TemplateId,
   getTemplate,
 } from '@/lib/pdf/templates'
+import { registerInvoiceFonts } from '@/lib/pdf/templates/register-fonts'
 import { usePDF } from '@react-pdf/renderer'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
+
+// Bundled fonts are client-only; this module only loads in the browser.
+registerInvoiceFonts()
+
+const FONT_SELECT_STYLE: React.CSSProperties = {
+  backgroundImage:
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238b8579' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 0.5rem center',
+  backgroundSize: '12px',
+}
 
 interface Props {
   data: InvoicePdfData
@@ -24,7 +36,7 @@ interface Props {
 
 // Re-rendering a PDF reloads the iframe (a brief flash), so coalesce edits into
 // one render per quiet window. Longer window = calmer preview while typing.
-const DEBOUNCE_MS = 800
+const DEBOUNCE_MS = 1000
 
 export function InvoicePreview({
   data,
@@ -106,26 +118,20 @@ export function InvoicePreview({
 
       {/* Toolbar (same pill style as templates): font + view + download */}
       <div className="flex items-center gap-1 self-center rounded-full bg-paper-2 p-1">
-        {FONT_OPTIONS.map((f) => {
-          const active = f.id === font
-          return (
-            <button
-              key={f.id}
-              type="button"
-              onClick={() => setFont(f.id)}
-              aria-pressed={active}
-              title={`${t('font')}: ${f.name}`}
-              className={cn(
-                'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                active
-                  ? 'bg-card text-ink shadow-soft'
-                  : 'text-ink/55 hover:text-ink hover:bg-card/60',
-              )}
-            >
+        <select
+          value={font}
+          onChange={(e) => setFont(e.target.value as FontId)}
+          aria-label={t('font')}
+          title={t('font')}
+          className="h-8 cursor-pointer appearance-none rounded-full bg-card pl-3 pr-7 text-xs font-medium text-ink shadow-soft outline-none"
+          style={FONT_SELECT_STYLE}
+        >
+          {FONT_OPTIONS.map((f) => (
+            <option key={f.id} value={f.id}>
               {f.name}
-            </button>
-          )
-        })}
+            </option>
+          ))}
+        </select>
         <span className="mx-1 h-4 w-px bg-line-2/60" />
         <a
           href={instance.url ?? undefined}
@@ -163,7 +169,7 @@ export function InvoicePreview({
             title={t('title')}
             src={`${u}#toolbar=0&navpanes=0&view=FitH`}
             onLoad={() => setLoaded((prev) => (prev.includes(u) ? prev : [...prev, u]))}
-            className="absolute inset-0 h-full w-full transition-opacity duration-200"
+            className="absolute inset-0 h-full w-full"
             style={{ opacity: u === visible ? 1 : 0 }}
           />
         ))}

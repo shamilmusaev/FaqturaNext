@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/lib/cn'
 import { parseMoney } from '@/lib/money'
 import { type InputHTMLAttributes, forwardRef, useState } from 'react'
 import { Input } from './input'
@@ -23,13 +24,13 @@ function defaultText(value: bigint | number | undefined, locale: string): string
 }
 
 export const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(
-  ({ defaultValueCents, onValueChange, locale = 'sv-SE', ...props }, ref) => {
+  ({ defaultValueCents, onValueChange, locale = 'sv-SE', className, ...props }, ref) => {
     const [text, setText] = useState(defaultText(defaultValueCents, locale))
     return (
       <Input
         ref={ref}
         inputMode="decimal"
-        className="tnum text-right font-mono"
+        className={cn('tnum text-right font-mono', className)}
         value={text}
         onChange={(e) => {
           const v = e.target.value
