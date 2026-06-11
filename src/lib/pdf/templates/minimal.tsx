@@ -29,10 +29,11 @@ const styles = StyleSheet.create({
   title: { fontFamily: 'Helvetica-Bold', fontSize: 26, color: INK, lineHeight: 1.1 },
   subtitle: { fontFamily: 'Helvetica-Bold', fontSize: 12, color: INK, marginTop: 3, lineHeight: 1 },
   cols: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  colLeft: { width: '50%' },
+  // paddingTop matches the Från box's inner padding so "Kund:" and "Från:" sit
+  // on the same baseline.
+  colLeft: { width: '50%', paddingTop: 13 },
   colRight: { width: '44%' },
-  // Offset the sender box down a line so "Kund:" sits higher than "Från:".
-  fromBox: { backgroundColor: BEIGE, borderRadius: 10, padding: 13, marginTop: 18 },
+  fromBox: { backgroundColor: BEIGE, borderRadius: 10, padding: 13 },
   label: { color: MUTED },
   strong: { color: INK },
   gap: { height: 7 },
