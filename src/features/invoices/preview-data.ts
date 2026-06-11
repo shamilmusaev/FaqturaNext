@@ -1,4 +1,6 @@
 import type { InvoicePdfData } from '@/lib/pdf/templates'
+import { generateOcrReference } from './ocr'
+import type { RotRutType } from './schema'
 import { type SwedishVatRate, calcInvoiceTotals, calcLineTotal } from './vat'
 
 // Client-side draft shapes shared by the form and the live preview. These mirror
@@ -11,6 +13,7 @@ export interface DraftLine {
   unit: string
   unitPriceCents: bigint
   vatRate: SwedishVatRate
+  discountPercent: number
 }
 
 export interface InvoiceDraft {
@@ -19,6 +22,13 @@ export interface InvoiceDraft {
   currency: string
   notes: string
   lines: DraftLine[]
+  // Swedish invoice fields (Phase 2).
+  reverseVat: boolean
+  rotRutType: RotRutType | null
+  rotRutCents: bigint
+  ourReference: string
+  theirReference: string
+  orderNumber: string
 }
 
 /** Draft emitted by the form, including the selected client id. */
@@ -73,7 +83,9 @@ export function buildPreviewData(
       quantity: Number(l.quantity) || 0,
       unitPriceCents: l.unitPriceCents,
       vatRate: l.vatRate,
+      discountPercent: l.discountPercent,
     })),
+    { reverseVat: draft.reverseVat, rotRutCents: draft.rotRutCents },
   )
 
   return {
@@ -85,6 +97,17 @@ export function buildPreviewData(
     vatCents: totals.vatCents,
     totalCents: totals.totalCents,
     notes: draft.notes.trim() || null,
+    // OCR is assigned server-side from the final number; in the live preview we
+    // derive it from the (placeholder) label, which yields null until saved.
+    ocrReference: generateOcrReference(numberLabel),
+    reverseVat: draft.reverseVat,
+    rotRut:
+      draft.rotRutType && draft.rotRutCents > 0n
+        ? { type: draft.rotRutType, cents: draft.rotRutCents }
+        : null,
+    ourReference: draft.ourReference.trim() || null,
+    theirReference: draft.theirReference.trim() || null,
+    orderNumber: draft.orderNumber.trim() || null,
     organization: {
       name: org.name,
       org_number: org.org_number ?? null,
@@ -108,6 +131,7 @@ export function buildPreviewData(
         quantity: Number(l.quantity) || 0,
         unitPriceCents: l.unitPriceCents,
         vatRate: l.vatRate,
+        discountPercent: l.discountPercent,
       })
       return {
         description: l.description.trim() || '—',
@@ -116,6 +140,7 @@ export function buildPreviewData(
         unitPriceCents: l.unitPriceCents,
         vatRate: l.vatRate,
         amountCents,
+        discountPercent: l.discountPercent || 0,
       }
     }),
   }

@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { createInvoiceAction } from '../actions'
 import type { DraftLine, FormDraft } from '../preview-data'
-import type { InvoiceInput, LineItemInput } from '../schema'
+import type { InvoiceInput, LineItemInput, RotRutType } from '../schema'
 import { type SwedishVatRate, calcInvoiceTotals } from '../vat'
 
 interface ClientOption {
@@ -37,8 +37,17 @@ interface Props {
 const VAT_RATES: SwedishVatRate[] = [25, 12, 6, 0]
 
 function emptyLine(): DraftLine {
-  return { description: '', quantity: 1, unit: '', unitPriceCents: 0n, vatRate: 25 }
+  return {
+    description: '',
+    quantity: 1,
+    unit: '',
+    unitPriceCents: 0n,
+    vatRate: 25,
+    discountPercent: 0,
+  }
 }
+
+const PAYMENT_TERMS = [10, 14, 30, 45, 60] as const
 
 function todayPlusDays(days: number): string {
   const d = new Date()
@@ -69,6 +78,16 @@ export function InvoiceForm({
   const [notes, setNotes] = useState('')
   const [lines, setLines] = useState<DraftLine[]>([emptyLine()])
   const [serverError, setServerError] = useState<string | null>(null)
+  // Swedish invoice fields (Phase 2).
+  const [paymentTermsDays, setPaymentTermsDays] = useState(30)
+  const [reverseVat, setReverseVat] = useState(false)
+  const [rotRutType, setRotRutType] = useState<RotRutType | ''>('')
+  const [rotRutCents, setRotRutCents] = useState(0n)
+  const [ourReference, setOurReference] = useState('')
+  const [theirReference, setTheirReference] = useState('')
+  const [orderNumber, setOrderNumber] = useState('')
+
+  const rotRutActive = rotRutType !== '' && rotRutCents > 0n
 
   const totals = useMemo(() => {
     return calcInvoiceTotals(
@@ -76,15 +95,55 @@ export function InvoiceForm({
         quantity: Number(l.quantity) || 0,
         unitPriceCents: l.unitPriceCents,
         vatRate: l.vatRate,
+        discountPercent: l.discountPercent,
       })),
+      { reverseVat, rotRutCents: rotRutActive ? rotRutCents : 0n },
     )
-  }, [lines])
+  }, [lines, reverseVat, rotRutActive, rotRutCents])
 
   // Mirror the live draft up to the editor so the preview can re-render. Effect
   // (not inline) keeps render pure and runs after each committed state change.
   useEffect(() => {
-    onDraftChange?.({ clientId, issuedAt, dueAt, currency, notes, lines })
-  }, [onDraftChange, clientId, issuedAt, dueAt, currency, notes, lines])
+    onDraftChange?.({
+      clientId,
+      issuedAt,
+      dueAt,
+      currency,
+      notes,
+      lines,
+      reverseVat,
+      rotRutType: rotRutType || null,
+      rotRutCents: rotRutActive ? rotRutCents : 0n,
+      ourReference,
+      theirReference,
+      orderNumber,
+    })
+  }, [
+    onDraftChange,
+    clientId,
+    issuedAt,
+    dueAt,
+    currency,
+    notes,
+    lines,
+    reverseVat,
+    rotRutType,
+    rotRutActive,
+    rotRutCents,
+    ourReference,
+    theirReference,
+    orderNumber,
+  ])
+
+  // Keep the due date in step with the payment-terms shortcut.
+  const applyPaymentTerms = (days: number) => {
+    setPaymentTermsDays(days)
+    const base = new Date(issuedAt)
+    if (!Number.isNaN(base.getTime())) {
+      base.setDate(base.getDate() + days)
+      setDueAt(base.toISOString().slice(0, 10))
+    }
+  }
 
   const updateLine = (idx: number, patch: Partial<DraftLine>) => {
     setLines((prev) => prev.map((l, i) => (i === idx ? { ...l, ...patch } : l)))
@@ -110,6 +169,7 @@ export function InvoiceForm({
         unit: l.unit.trim() || undefined,
         unitPriceCents: l.unitPriceCents,
         vatRate: l.vatRate as 0 | 6 | 12 | 25,
+        discountPercent: l.discountPercent || 0,
       }))
     if (validLines.length === 0) {
       setServerError(tErrors('atLeastOneLine'))
@@ -123,6 +183,13 @@ export function InvoiceForm({
       currency,
       notes: notes.trim() || undefined,
       template: templateId,
+      reverseVat,
+      rotRutType: rotRutType || null,
+      rotRutCents: rotRutActive ? rotRutCents : 0n,
+      ourReference: ourReference.trim() || undefined,
+      theirReference: theirReference.trim() || undefined,
+      orderNumber: orderNumber.trim() || undefined,
+      paymentTermsDays,
       lineItems: validLines,
     }
 
@@ -182,6 +249,20 @@ export function InvoiceForm({
           <span className="text-ink/80">{tFields('dueAt')}</span>
           <Input type="date" value={dueAt} onChange={(e) => setDueAt(e.target.value)} required />
         </label>
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="text-ink/80">{tFields('paymentTerms')}</span>
+          <select
+            value={paymentTermsDays}
+            onChange={(e) => applyPaymentTerms(Number(e.target.value))}
+            className="h-11 rounded-[12px] border border-line-1 bg-card px-3 text-[15px]"
+          >
+            {PAYMENT_TERMS.map((d) => (
+              <option key={d} value={d}>
+                {tFields('netDays', { days: d })}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
       <section className="flex flex-col gap-3">
@@ -203,7 +284,7 @@ export function InvoiceForm({
               key={idx}
               className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3"
             >
-              <div className="grid grid-cols-1 md:grid-cols-[2fr_repeat(4,1fr)_auto] gap-3 items-end">
+              <div className="grid grid-cols-1 md:grid-cols-[2fr_repeat(5,1fr)_auto] gap-3 items-end">
                 <label className="flex flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('description')}
                   <Input
@@ -239,6 +320,21 @@ export function InvoiceForm({
                   />
                 </label>
                 <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+                  {tFields('discount')}
+                  <Input
+                    type="number"
+                    step="1"
+                    min="0"
+                    max="100"
+                    value={line.discountPercent}
+                    onChange={(e) =>
+                      updateLine(idx, {
+                        discountPercent: Math.min(100, Math.max(0, Number(e.target.value) || 0)),
+                      })
+                    }
+                  />
+                </label>
+                <label className="flex flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('vat')}
                   <select
                     value={line.vatRate}
@@ -266,7 +362,15 @@ export function InvoiceForm({
               </div>
               <div className="text-right text-sm text-ink/60 tnum font-mono">
                 {formatMoney(
-                  addCents([BigInt(Math.round(line.quantity * Number(line.unitPriceCents)))]),
+                  addCents([
+                    BigInt(
+                      Math.round(
+                        line.quantity *
+                          Number(line.unitPriceCents) *
+                          (1 - (line.discountPercent || 0) / 100),
+                      ),
+                    ),
+                  ]),
                   currency as 'SEK',
                 )}
               </div>
@@ -286,6 +390,71 @@ export function InvoiceForm({
             {formatMoney(totals.totalCents, currency as 'SEK')}
           </dd>
         </dl>
+      </section>
+
+      <section className="grid md:grid-cols-2 gap-5">
+        <div className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3">
+          <h3 className="text-sm font-semibold">{t('options.title')}</h3>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={reverseVat}
+              onChange={(e) => setReverseVat(e.target.checked)}
+              className="h-4 w-4 accent-brand"
+            />
+            {t('options.reverseVat')}
+          </label>
+          <div className="grid grid-cols-2 gap-3 items-end">
+            <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+              {t('options.rotRut')}
+              <select
+                value={rotRutType}
+                onChange={(e) => setRotRutType(e.target.value as RotRutType | '')}
+                className="h-11 rounded-[12px] border border-line-1 bg-card px-3 text-[15px]"
+              >
+                <option value="">{t('options.none')}</option>
+                <option value="ROT">ROT</option>
+                <option value="RUT">RUT</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+              {t('options.rotRutAmount')}
+              <MoneyInput
+                defaultValueCents={rotRutCents}
+                onValueChange={setRotRutCents}
+                disabled={rotRutType === ''}
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3">
+          <h3 className="text-sm font-semibold">{t('references.title')}</h3>
+          <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+            {tFields('ourReference')}
+            <Input
+              value={ourReference}
+              onChange={(e) => setOurReference(e.target.value)}
+              maxLength={200}
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+            {tFields('theirReference')}
+            <Input
+              value={theirReference}
+              onChange={(e) => setTheirReference(e.target.value)}
+              maxLength={200}
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+            {tFields('orderNumber')}
+            <Input
+              value={orderNumber}
+              onChange={(e) => setOrderNumber(e.target.value)}
+              maxLength={100}
+            />
+          </label>
+        </div>
       </section>
 
       <label className="flex flex-col gap-1.5 text-sm">

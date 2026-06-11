@@ -119,6 +119,14 @@ export type Database = {
           created_at: string
           updated_at: string
           template: string
+          ocr_reference: string | null
+          reverse_vat: boolean
+          rot_rut_type: string | null
+          rot_rut_cents: number
+          our_reference: string | null
+          their_reference: string | null
+          order_number: string | null
+          payment_terms_days: number | null
         }
         Insert: {
           id?: string
@@ -141,6 +149,14 @@ export type Database = {
           created_at?: string
           updated_at?: string
           template?: string
+          ocr_reference?: string | null
+          reverse_vat?: boolean
+          rot_rut_type?: string | null
+          rot_rut_cents?: number
+          our_reference?: string | null
+          their_reference?: string | null
+          order_number?: string | null
+          payment_terms_days?: number | null
         }
         Update: Partial<Database['public']['Tables']['invoices']['Insert']>
         Relationships: []
@@ -157,6 +173,7 @@ export type Database = {
           vat_rate: number
           amount_cents: number
           created_at: string
+          discount_percent: number
         }
         Insert: {
           id?: string
@@ -169,6 +186,7 @@ export type Database = {
           vat_rate?: number
           amount_cents: number
           created_at?: string
+          discount_percent?: number
         }
         Update: Partial<Database['public']['Tables']['invoice_line_items']['Insert']>
         Relationships: []
@@ -381,6 +399,13 @@ export type Database = {
           p_line_items?: unknown
           p_issued_at?: string | null
           p_template?: string
+          p_reverse_vat?: boolean
+          p_rot_rut_type?: string | null
+          p_rot_rut_cents?: number
+          p_our_reference?: string | null
+          p_their_reference?: string | null
+          p_order_number?: string | null
+          p_payment_terms_days?: number | null
         }
         Returns: Database['public']['Tables']['invoices']['Row']
       }

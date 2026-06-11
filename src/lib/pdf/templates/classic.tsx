@@ -123,6 +123,18 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
                 <Text style={styles.metaLabel}>Förfaller</Text>
                 <Text style={styles.metaValue}>{invoice.dueAt}</Text>
               </View>
+              {invoice.ocrReference && (
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>OCR</Text>
+                  <Text style={styles.metaValue}>{invoice.ocrReference}</Text>
+                </View>
+              )}
+              {invoice.orderNumber && (
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Ordernr</Text>
+                  <Text style={styles.metaValue}>{invoice.orderNumber}</Text>
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -136,6 +148,9 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
                 {line}
               </Text>
             ))}
+            {invoice.ourReference && (
+              <Text style={styles.partyLine}>Vår referens: {invoice.ourReference}</Text>
+            )}
           </View>
           <View style={styles.partyBox}>
             <Text style={styles.partyTitle}>Mottagare</Text>
@@ -150,6 +165,9 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
             )}
             {invoice.client.vat_number && (
               <Text style={styles.partyLine}>VAT {invoice.client.vat_number}</Text>
+            )}
+            {invoice.theirReference && (
+              <Text style={styles.partyLine}>Er referens: {invoice.theirReference}</Text>
             )}
           </View>
         </View>
@@ -168,6 +186,7 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
               <Text style={styles.colDesc}>
                 {li.description}
                 {li.unit ? ` (${li.unit})` : ''}
+                {li.discountPercent ? ` −${li.discountPercent}%` : ''}
               </Text>
               <Text style={styles.colQty}>{li.quantity}</Text>
               <Text style={styles.colPrice}>
@@ -193,6 +212,14 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
                 {formatMoney(invoice.vatCents, invoice.currency)}
               </Text>
             </View>
+            {invoice.rotRut && (
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>{invoice.rotRut.type}-avdrag</Text>
+                <Text style={styles.totalValue}>
+                  -{formatMoney(invoice.rotRut.cents, invoice.currency)}
+                </Text>
+              </View>
+            )}
             <View style={styles.grandRow}>
               <Text style={styles.grandLabel}>Att betala</Text>
               <Text style={styles.grandValue}>
@@ -207,6 +234,12 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
             <Text style={[styles.partyTitle, { marginBottom: 4 }]}>Anteckningar</Text>
             <Text style={{ fontSize: 9 }}>{invoice.notes}</Text>
           </View>
+        )}
+
+        {invoice.reverseVat && (
+          <Text style={{ marginTop: 12, fontSize: 9, color: COLOR.ink2 }}>
+            Omvänd skattskyldighet — moms redovisas av köparen.
+          </Text>
         )}
 
         <View style={styles.payInfo}>

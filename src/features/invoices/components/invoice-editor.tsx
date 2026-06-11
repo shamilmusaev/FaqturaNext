@@ -47,7 +47,22 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
     dueAt: todayPlusDays(30),
     currency: org.currency_default ?? 'SEK',
     notes: '',
-    lines: [{ description: '', quantity: 1, unit: '', unitPriceCents: 0n, vatRate: 25 }],
+    lines: [
+      {
+        description: '',
+        quantity: 1,
+        unit: '',
+        unitPriceCents: 0n,
+        vatRate: 25,
+        discountPercent: 0,
+      },
+    ],
+    reverseVat: false,
+    rotRutType: null,
+    rotRutCents: 0n,
+    ourReference: '',
+    theirReference: '',
+    orderNumber: '',
   }))
 
   const selectedClient = useMemo(

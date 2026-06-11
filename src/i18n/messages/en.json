@@ -153,11 +153,27 @@
       "unit": "Unit",
       "unitPrice": "Unit price",
       "vat": "VAT %",
+      "discount": "Disc. %",
       "status": "Status",
       "amount": "Amount",
       "subtotal": "Subtotal",
       "vatTotal": "VAT",
-      "total": "Total"
+      "total": "Total",
+      "paymentTerms": "Payment terms",
+      "netDays": "Net {days} days",
+      "ourReference": "Our reference",
+      "theirReference": "Your reference",
+      "orderNumber": "Order number"
+    },
+    "options": {
+      "title": "Options",
+      "reverseVat": "Reverse charge (omvänd moms)",
+      "rotRut": "ROT/RUT deduction",
+      "rotRutAmount": "Deduction amount",
+      "none": "None"
+    },
+    "references": {
+      "title": "References"
     },
     "actions": {
       "addLine": "Add line",

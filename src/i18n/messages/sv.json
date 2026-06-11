@@ -153,11 +153,27 @@
       "unit": "Enhet",
       "unitPrice": "À-pris",
       "vat": "Moms %",
+      "discount": "Rabatt %",
       "status": "Status",
       "amount": "Belopp",
       "subtotal": "Delsumma",
       "vatTotal": "Moms",
-      "total": "Summa"
+      "total": "Summa",
+      "paymentTerms": "Betalningsvillkor",
+      "netDays": "Netto {days} dagar",
+      "ourReference": "Vår referens",
+      "theirReference": "Er referens",
+      "orderNumber": "Ordernummer"
+    },
+    "options": {
+      "title": "Alternativ",
+      "reverseVat": "Omvänd skattskyldighet",
+      "rotRut": "ROT/RUT-avdrag",
+      "rotRutAmount": "Avdragsbelopp",
+      "none": "Ingen"
+    },
+    "references": {
+      "title": "Referenser"
     },
     "actions": {
       "addLine": "Lägg till rad",

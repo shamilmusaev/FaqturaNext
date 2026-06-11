@@ -13,6 +13,13 @@ export interface InvoicePdfData {
   vatCents: bigint | number
   totalCents: bigint | number
   notes?: string | null
+  // Swedish invoice fields (Phase 2).
+  ocrReference?: string | null
+  reverseVat?: boolean
+  rotRut?: { type: 'ROT' | 'RUT'; cents: bigint | number } | null
+  ourReference?: string | null
+  theirReference?: string | null
+  orderNumber?: string | null
   organization: {
     name: string
     org_number?: string | null
@@ -38,6 +45,7 @@ export interface InvoicePdfData {
     unitPriceCents: bigint | number
     vatRate: number
     amountCents: bigint | number
+    discountPercent?: number
   }>
 }
 

@@ -1,4 +1,5 @@
 import {
+  type DraftLine,
   type InvoiceDraft,
   type PreviewClient,
   type PreviewOrganization,
@@ -9,14 +10,39 @@ import { describe, expect, it } from 'vitest'
 const org: PreviewOrganization = { name: 'Acme AB', currency_default: 'SEK' }
 const client: PreviewClient = { name: 'Client AB', address: { city: 'Stockholm' } }
 
-function draft(lines: InvoiceDraft['lines']): InvoiceDraft {
-  return { issuedAt: '2026-06-01', dueAt: '2026-07-01', currency: 'SEK', notes: '', lines }
+function line(partial: Partial<DraftLine>): DraftLine {
+  return {
+    description: '',
+    quantity: 1,
+    unit: '',
+    unitPriceCents: 0n,
+    vatRate: 25,
+    discountPercent: 0,
+    ...partial,
+  }
+}
+
+function draft(lines: DraftLine[], overrides: Partial<InvoiceDraft> = {}): InvoiceDraft {
+  return {
+    issuedAt: '2026-06-01',
+    dueAt: '2026-07-01',
+    currency: 'SEK',
+    notes: '',
+    lines,
+    reverseVat: false,
+    rotRutType: null,
+    rotRutCents: 0n,
+    ourReference: '',
+    theirReference: '',
+    orderNumber: '',
+    ...overrides,
+  }
 }
 
 describe('buildPreviewData', () => {
   it('computes totals from renderable lines', () => {
     const data = buildPreviewData(
-      draft([{ description: 'Work', quantity: 2, unit: 'h', unitPriceCents: 10000n, vatRate: 25 }]),
+      draft([line({ description: 'Work', quantity: 2, unit: 'h', unitPriceCents: 10000n })]),
       org,
       client,
       '—',
@@ -31,8 +57,8 @@ describe('buildPreviewData', () => {
   it('drops empty lines (no description and zero price)', () => {
     const data = buildPreviewData(
       draft([
-        { description: 'Real', quantity: 1, unit: '', unitPriceCents: 5000n, vatRate: 25 },
-        { description: '', quantity: 1, unit: '', unitPriceCents: 0n, vatRate: 25 },
+        line({ description: 'Real', unitPriceCents: 5000n }),
+        line({ description: '', unitPriceCents: 0n }),
       ]),
       org,
       client,
@@ -44,7 +70,7 @@ describe('buildPreviewData', () => {
 
   it('keeps a priced line even without a description', () => {
     const data = buildPreviewData(
-      draft([{ description: '', quantity: 1, unit: '', unitPriceCents: 1000n, vatRate: 25 }]),
+      draft([line({ description: '', unitPriceCents: 1000n })]),
       org,
       client,
       '—',
@@ -59,11 +85,40 @@ describe('buildPreviewData', () => {
     expect(data.lineItems).toHaveLength(0)
   })
 
-  it('passes the number label and notes through', () => {
-    const d = draft([{ description: 'X', quantity: 1, unit: '', unitPriceCents: 100n, vatRate: 0 }])
-    d.notes = '  thanks  '
-    const data = buildPreviewData(d, org, client, 'INV-2026-0001')
+  it('passes the number label and notes through, and derives OCR', () => {
+    const data = buildPreviewData(
+      draft([line({ description: 'X', unitPriceCents: 100n, vatRate: 0 })], {
+        notes: '  thanks  ',
+      }),
+      org,
+      client,
+      'INV-2026-0001',
+    )
     expect(data.number).toBe('INV-2026-0001')
     expect(data.notes).toBe('thanks')
+    expect(data.ocrReference).toBe('202600011')
+  })
+
+  it('reflects reverse VAT and ROT/RUT in totals and metadata', () => {
+    const lines = [
+      line({ description: 'A', quantity: 2, unitPriceCents: 10000n }),
+      line({ description: 'B', unitPriceCents: 10000n, discountPercent: 10 }),
+    ]
+    const reverse = buildPreviewData(draft(lines, { reverseVat: true }), org, client, '—')
+    expect([reverse.subtotalCents, reverse.vatCents, reverse.totalCents]).toEqual([
+      29000n,
+      0n,
+      29000n,
+    ])
+    expect(reverse.reverseVat).toBe(true)
+
+    const rot = buildPreviewData(
+      draft(lines, { rotRutType: 'ROT', rotRutCents: 5000n }),
+      org,
+      client,
+      '—',
+    )
+    expect(rot.totalCents).toBe(31250n)
+    expect(rot.rotRut).toEqual({ type: 'ROT', cents: 5000n })
   })
 })

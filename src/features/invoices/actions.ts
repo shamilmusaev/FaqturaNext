@@ -65,12 +65,21 @@ export async function createInvoiceAction(
     p_currency: parsed.data.currency,
     p_notes: parsed.data.notes ?? null,
     p_template: parsed.data.template,
+    p_reverse_vat: parsed.data.reverseVat,
+    p_rot_rut_type: parsed.data.rotRutType ?? null,
+    // bigint isn't JSON-serializable in rpc args; deduction fits in a safe int.
+    p_rot_rut_cents: Number(parsed.data.rotRutCents),
+    p_our_reference: parsed.data.ourReference ?? null,
+    p_their_reference: parsed.data.theirReference ?? null,
+    p_order_number: parsed.data.orderNumber ?? null,
+    p_payment_terms_days: parsed.data.paymentTermsDays ?? null,
     p_line_items: parsed.data.lineItems.map((li) => ({
       description: li.description,
       quantity: li.quantity,
       unit: li.unit ?? null,
       unit_price_cents: li.unitPriceCents.toString(),
       vat_rate: li.vatRate,
+      discount_percent: li.discountPercent,
     })),
   })
   if (error) return { error: error.message }
@@ -89,7 +98,9 @@ export async function duplicateInvoiceAction(
 
   const { data: src, error: srcErr } = await supabase
     .from('invoices')
-    .select('client_id, currency, notes, due_at, template')
+    .select(
+      'client_id, currency, notes, due_at, template, reverse_vat, rot_rut_type, rot_rut_cents, our_reference, their_reference, order_number, payment_terms_days',
+    )
     .eq('id', id)
     .eq('organization_id', organizationId)
     .single()
@@ -97,7 +108,7 @@ export async function duplicateInvoiceAction(
 
   const { data: items, error: itemsErr } = await supabase
     .from('invoice_line_items')
-    .select('description, quantity, unit, unit_price_cents, vat_rate')
+    .select('description, quantity, unit, unit_price_cents, vat_rate, discount_percent')
     .eq('invoice_id', id)
     .order('position')
   if (itemsErr) return { error: itemsErr.message }
@@ -114,12 +125,20 @@ export async function duplicateInvoiceAction(
     p_currency: src.currency,
     p_notes: src.notes,
     p_template: src.template ?? undefined,
+    p_reverse_vat: src.reverse_vat ?? false,
+    p_rot_rut_type: src.rot_rut_type ?? null,
+    p_rot_rut_cents: Number(src.rot_rut_cents ?? 0),
+    p_our_reference: src.our_reference ?? null,
+    p_their_reference: src.their_reference ?? null,
+    p_order_number: src.order_number ?? null,
+    p_payment_terms_days: src.payment_terms_days ?? null,
     p_line_items: items.map((li) => ({
       description: li.description,
       quantity: Number(li.quantity),
       unit: li.unit,
       unit_price_cents: String(li.unit_price_cents),
       vat_rate: Number(li.vat_rate),
+      discount_percent: Number(li.discount_percent ?? 0),
     })),
   })
   if (error || !data) return { error: error?.message ?? 'duplicate failed' }

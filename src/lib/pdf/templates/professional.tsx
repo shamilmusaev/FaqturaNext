@@ -163,6 +163,9 @@ export function ProfessionalTemplate({ invoice }: InvoiceTemplateProps) {
           {invoice.client.vat_number && (
             <Text style={styles.clientLine}>VAT {invoice.client.vat_number}</Text>
           )}
+          {invoice.theirReference && (
+            <Text style={styles.clientLine}>Er referens: {invoice.theirReference}</Text>
+          )}
         </View>
 
         <View style={styles.table}>
@@ -179,6 +182,7 @@ export function ProfessionalTemplate({ invoice }: InvoiceTemplateProps) {
               <Text style={styles.colDesc}>
                 {li.description}
                 {li.unit ? ` (${li.unit})` : ''}
+                {li.discountPercent ? ` −${li.discountPercent}%` : ''}
               </Text>
               <Text style={styles.colQty}>{li.quantity}</Text>
               <Text style={styles.colPrice}>
@@ -204,6 +208,14 @@ export function ProfessionalTemplate({ invoice }: InvoiceTemplateProps) {
                 {formatMoney(invoice.vatCents, invoice.currency)}
               </Text>
             </View>
+            {invoice.rotRut && (
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>{invoice.rotRut.type}-avdrag</Text>
+                <Text style={styles.totalValue}>
+                  -{formatMoney(invoice.rotRut.cents, invoice.currency)}
+                </Text>
+              </View>
+            )}
             <View style={styles.grandBar}>
               <Text style={styles.grandLabel}>ATT BETALA</Text>
               <Text style={styles.grandValue}>
@@ -223,10 +235,22 @@ export function ProfessionalTemplate({ invoice }: InvoiceTemplateProps) {
             </View>
             <View style={styles.payCol}>
               {org.swish_number && <Text style={styles.payLine}>Swish: {org.swish_number}</Text>}
+              {invoice.ocrReference && (
+                <Text style={styles.payLine}>OCR: {invoice.ocrReference}</Text>
+              )}
+              {invoice.ourReference && (
+                <Text style={styles.payLine}>Vår ref: {invoice.ourReference}</Text>
+              )}
               <Text style={styles.payLine}>Förfaller: {invoice.dueAt}</Text>
             </View>
           </View>
         </View>
+
+        {invoice.reverseVat && (
+          <Text style={{ marginTop: 12, fontSize: 9, color: GRAY[500] }}>
+            Omvänd skattskyldighet — moms redovisas av köparen.
+          </Text>
+        )}
 
         {invoice.notes && (
           <View style={styles.notes}>

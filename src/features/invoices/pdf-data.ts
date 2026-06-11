@@ -36,6 +36,18 @@ export function invoiceToPdfData(invoice: InvoiceDetail, org: PdfOrgRow): Invoic
     vatCents: BigInt(invoice.vat_cents),
     totalCents: BigInt(invoice.total_cents),
     notes: invoice.notes,
+    ocrReference: invoice.ocr_reference,
+    reverseVat: invoice.reverse_vat,
+    rotRut:
+      invoice.rot_rut_type && BigInt(invoice.rot_rut_cents) > 0n
+        ? {
+            type: invoice.rot_rut_type as 'ROT' | 'RUT',
+            cents: BigInt(invoice.rot_rut_cents),
+          }
+        : null,
+    ourReference: invoice.our_reference,
+    theirReference: invoice.their_reference,
+    orderNumber: invoice.order_number,
     organization: {
       name: org.name,
       org_number: org.org_number,
@@ -61,6 +73,7 @@ export function invoiceToPdfData(invoice: InvoiceDetail, org: PdfOrgRow): Invoic
       unitPriceCents: BigInt(li.unit_price_cents),
       vatRate: Number(li.vat_rate),
       amountCents: BigInt(li.amount_cents),
+      discountPercent: Number(li.discount_percent ?? 0),
     })),
   }
 }
