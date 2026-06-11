@@ -56,6 +56,20 @@ export function InvoicePreview({
     return () => clearTimeout(id)
   }, [doc])
 
+  // Double-buffer the iframe to avoid the white flash on every re-render: keep
+  // the last two blob URLs mounted and only reveal the new one once it has
+  // finished loading, so the visible frame never blanks out.
+  const [stack, setStack] = useState<string[]>([])
+  const [loaded, setLoaded] = useState<string[]>([])
+  useEffect(() => {
+    const u = instance.url
+    if (!u || instance.error) return
+    setStack((prev) => (prev[prev.length - 1] === u ? prev : [...prev, u].slice(-2)))
+  }, [instance.url, instance.error])
+
+  const top = stack[stack.length - 1]
+  const visible = top && loaded.includes(top) ? top : (stack[0] ?? top)
+
   const safeNumber = data.number.replace(/[^\w-]/g, '').trim()
   const fileName = safeNumber ? `Faktura-${safeNumber}.pdf` : 'faktura.pdf'
   const toolBtn =
@@ -137,17 +151,22 @@ export function InvoicePreview({
       </div>
 
       <div className="relative flex-1 min-h-[420px] overflow-hidden rounded-[16px] border border-line-1 bg-paper-2">
-        {instance.url && !instance.error ? (
-          <iframe
-            title={t('title')}
-            src={`${instance.url}#toolbar=0&navpanes=0&view=FitH`}
-            className="h-full w-full"
-          />
-        ) : (
+        {stack.length === 0 && (
           <div className="absolute inset-0 grid place-items-center p-6 text-center text-sm text-ink/45">
             {instance.error ? t('error') : t('empty')}
           </div>
         )}
+
+        {stack.map((u) => (
+          <iframe
+            key={u}
+            title={t('title')}
+            src={`${u}#toolbar=0&navpanes=0&view=FitH`}
+            onLoad={() => setLoaded((prev) => (prev.includes(u) ? prev : [...prev, u]))}
+            className="absolute inset-0 h-full w-full transition-opacity duration-200"
+            style={{ opacity: u === visible ? 1 : 0 }}
+          />
+        ))}
 
         {instance.loading && (
           <div className="absolute right-3 top-3 rounded-full bg-ink/80 px-2.5 py-1 text-xs text-white">
