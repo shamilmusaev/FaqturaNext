@@ -212,7 +212,8 @@
       "updating": "Updating…",
       "empty": "Fill in the form to see the preview",
       "error": "Couldn't render the preview",
-      "open": "Preview"
+      "open": "Preview",
+      "download": "Download"
     },
     "tabs": {
       "form": "Form",

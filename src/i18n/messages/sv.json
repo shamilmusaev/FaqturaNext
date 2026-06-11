@@ -212,7 +212,8 @@
       "updating": "Uppdaterar…",
       "empty": "Fyll i formuläret för att se förhandsvisningen",
       "error": "Kunde inte visa förhandsvisningen",
-      "open": "Förhandsvisa"
+      "open": "Förhandsvisa",
+      "download": "Ladda ner"
     },
     "tabs": {
       "form": "Formulär",

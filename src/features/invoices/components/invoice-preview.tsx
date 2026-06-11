@@ -46,34 +46,51 @@ export function InvoicePreview({
     return () => clearTimeout(id)
   }, [data, Component, update])
 
+  const safeNumber = data.number.replace(/[^\w-]/g, '').trim()
+  const fileName = safeNumber ? `Faktura-${safeNumber}.pdf` : 'faktura.pdf'
+
   return (
     <div className={cn('flex flex-col gap-3', className)}>
-      {showTemplatePicker && (
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-ink/50 mr-1">{t('template')}</span>
-          <div className="flex flex-wrap gap-1 rounded-full bg-paper-2 p-1">
-            {INVOICE_TEMPLATES.map((tpl) => {
-              const active = tpl.id === templateId
-              return (
-                <button
-                  key={tpl.id}
-                  type="button"
-                  onClick={() => onTemplateChange?.(tpl.id)}
-                  aria-pressed={active}
-                  className={cn(
-                    'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                    active
-                      ? 'bg-card text-ink shadow-soft'
-                      : 'text-ink/55 hover:text-ink hover:bg-card/60',
-                  )}
-                >
-                  {tpl.name}
-                </button>
-              )
-            })}
+      <div className="flex items-center justify-between gap-2">
+        {showTemplatePicker ? (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-ink/50 mr-1">{t('template')}</span>
+            <div className="flex flex-wrap gap-1 rounded-full bg-paper-2 p-1">
+              {INVOICE_TEMPLATES.map((tpl) => {
+                const active = tpl.id === templateId
+                return (
+                  <button
+                    key={tpl.id}
+                    type="button"
+                    onClick={() => onTemplateChange?.(tpl.id)}
+                    aria-pressed={active}
+                    className={cn(
+                      'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                      active
+                        ? 'bg-card text-ink shadow-soft'
+                        : 'text-ink/55 hover:text-ink hover:bg-card/60',
+                    )}
+                  >
+                    {tpl.name}
+                  </button>
+                )
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <span />
+        )}
+
+        {instance.url && !instance.error && (
+          <a
+            href={instance.url}
+            download={fileName}
+            className="shrink-0 inline-flex h-9 items-center gap-1.5 rounded-full bg-ink px-4 text-xs font-medium text-white hover:bg-ink/90 transition-colors"
+          >
+            {t('download')}
+          </a>
+        )}
+      </div>
 
       <div className="relative flex-1 min-h-[420px] overflow-hidden rounded-[16px] border border-line-1 bg-paper-2">
         {instance.url && !instance.error ? (
