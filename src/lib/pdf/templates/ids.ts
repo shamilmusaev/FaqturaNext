@@ -2,7 +2,7 @@
 // and server actions depend on this so they never pull the heavy renderer into
 // their bundles; only the preview/registry imports the actual components.
 
-export const TEMPLATE_IDS = ['modern', 'classic'] as const
+export const TEMPLATE_IDS = ['modern', 'classic', 'professional'] as const
 
 export type TemplateId = (typeof TEMPLATE_IDS)[number]
 

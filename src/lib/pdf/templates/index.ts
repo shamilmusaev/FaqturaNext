@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import { ClassicTemplate } from './classic'
 import type { TemplateId } from './ids'
 import { ModernTemplate } from './modern'
+import { ProfessionalTemplate } from './professional'
 import type { InvoiceTemplateProps } from './types'
 
 export { DEFAULT_TEMPLATE_ID, TEMPLATE_IDS, isTemplateId } from './ids'
@@ -31,6 +32,12 @@ export const INVOICE_TEMPLATES: TemplateMeta[] = [
     name: 'Classic',
     description: 'Strict, neutral Swedish invoice with ruled boxes',
     Component: ClassicTemplate,
+  },
+  {
+    id: 'professional',
+    name: 'Professional',
+    description: 'Teal header band with an info strip — ported from the legacy design',
+    Component: ProfessionalTemplate,
   },
 ]
 
