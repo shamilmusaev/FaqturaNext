@@ -3,8 +3,11 @@
 // the downloaded PDF (server) stay byte-for-byte identical.
 
 export type { TemplateId } from './ids'
+import type { FontId } from './fonts'
 
 export interface InvoicePdfData {
+  /** Selected font family for the document (presentation, defaults to sans). */
+  font?: FontId
   number: string
   issuedAt: string
   dueAt: string

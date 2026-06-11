@@ -1,4 +1,5 @@
 import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
+import { type FontStack, fontStack } from './fonts'
 import { addressLines } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
@@ -14,55 +15,56 @@ const LINE = '#ECE9E1'
 const BEIGE = '#F3F1E8'
 const PAD = 46
 
-const styles = StyleSheet.create({
-  page: { fontFamily: 'Helvetica', fontSize: 9.5, color: INK, padding: PAD, lineHeight: 1.3 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 22 },
-  logoBox: {
-    width: 46,
-    height: 40,
-    borderRadius: 6,
-    backgroundColor: ACCENT,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoInitials: { color: '#FFFFFF', fontFamily: 'Helvetica-Bold', fontSize: 15, letterSpacing: 1 },
-  title: { fontFamily: 'Helvetica-Bold', fontSize: 26, color: INK, lineHeight: 1.1 },
-  subtitle: { fontFamily: 'Helvetica-Bold', fontSize: 12, color: INK, marginTop: 3, lineHeight: 1 },
-  cols: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  // paddingTop matches the Från box's inner padding so "Kund:" and "Från:" sit
-  // on the same baseline.
-  colLeft: { width: '50%', paddingTop: 13 },
-  colRight: { width: '44%' },
-  fromBox: { backgroundColor: BEIGE, borderRadius: 10, padding: 13 },
-  label: { color: MUTED },
-  strong: { color: INK },
-  gap: { height: 7 },
-  table: {},
-  thRow: { flexDirection: 'row', paddingBottom: 6, borderBottom: `1pt solid ${LINE}` },
-  th: { color: MUTED, fontSize: 8 },
-  row: { flexDirection: 'row', borderBottom: `1pt solid ${LINE}`, alignItems: 'flex-start' },
-  totRow: { flexDirection: 'row' },
-  cSpec: { flex: 3.2 },
-  cQty: { flex: 1 },
-  cPrice: { flex: 1 },
-  cSum: { flex: 1.4, textAlign: 'right' },
-  sumValue: { color: ACCENT, fontFamily: 'Helvetica-Bold' },
-  summary: { marginTop: 12 },
-  summaryLine: { color: INK, marginBottom: 1 },
-  footer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 22 },
-  micro: { color: MUTED, fontSize: 8, letterSpacing: 1, marginBottom: 6 },
-  bankLine: { marginBottom: 1 },
-  bigTotal: { color: ACCENT, fontFamily: 'Helvetica-Bold', fontSize: 28, textAlign: 'right' },
-  contact: {
-    position: 'absolute',
-    bottom: 20,
-    left: PAD,
-    right: PAD,
-    textAlign: 'center',
-    color: MUTED,
-    fontSize: 8,
-  },
-})
+const makeStyles = (f: FontStack) =>
+  StyleSheet.create({
+    page: { fontFamily: f.base, fontSize: 9.5, color: INK, padding: PAD, lineHeight: 1.3 },
+    header: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 22 },
+    logoBox: {
+      width: 46,
+      height: 40,
+      borderRadius: 6,
+      backgroundColor: ACCENT,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    logoInitials: { color: '#FFFFFF', fontFamily: f.bold, fontSize: 15, letterSpacing: 1 },
+    title: { fontFamily: f.bold, fontSize: 26, color: INK, lineHeight: 1.1 },
+    subtitle: { fontFamily: f.bold, fontSize: 12, color: INK, marginTop: 3, lineHeight: 1 },
+    cols: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
+    // paddingTop matches the Från box's inner padding so "Kund:" and "Från:" sit
+    // on the same baseline.
+    colLeft: { width: '50%', paddingTop: 13 },
+    colRight: { width: '44%' },
+    fromBox: { backgroundColor: BEIGE, borderRadius: 10, padding: 13 },
+    label: { color: MUTED },
+    strong: { color: INK },
+    gap: { height: 7 },
+    table: {},
+    thRow: { flexDirection: 'row', paddingBottom: 6, borderBottom: `1pt solid ${LINE}` },
+    th: { color: MUTED, fontSize: 8 },
+    row: { flexDirection: 'row', borderBottom: `1pt solid ${LINE}`, alignItems: 'flex-start' },
+    totRow: { flexDirection: 'row' },
+    cSpec: { flex: 3.2 },
+    cQty: { flex: 1 },
+    cPrice: { flex: 1 },
+    cSum: { flex: 1.4, textAlign: 'right' },
+    sumValue: { color: ACCENT, fontFamily: f.bold },
+    summary: { marginTop: 12 },
+    summaryLine: { color: INK, marginBottom: 1 },
+    footer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 22 },
+    micro: { color: MUTED, fontSize: 8, letterSpacing: 1, marginBottom: 6 },
+    bankLine: { marginBottom: 1 },
+    bigTotal: { color: ACCENT, fontFamily: f.bold, fontSize: 28, textAlign: 'right' },
+    contact: {
+      position: 'absolute',
+      bottom: 20,
+      left: PAD,
+      right: PAD,
+      textAlign: 'center',
+      color: MUTED,
+      fontSize: 8,
+    },
+  })
 
 /** Whole kronor with space thousands; öre only when non-zero. No currency suffix. */
 function kronor(value: bigint | number): string {
@@ -102,6 +104,7 @@ function daysBetween(a: string, b: string): number | null {
 }
 
 export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
+  const styles = makeStyles(fontStack(invoice.font))
   const org = invoice.organization
   const [clientAddr1, clientAddr2] = addrTwoLines(invoice.client.address)
   const orgAddr = addressLines(org.address)

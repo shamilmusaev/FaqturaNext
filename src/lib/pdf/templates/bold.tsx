@@ -9,6 +9,7 @@ import {
   Text,
   View,
 } from '@react-pdf/renderer'
+import { type FontStack, fontStack } from './fonts'
 import { addressLines, formatMoney } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
@@ -78,96 +79,97 @@ const GREEN: Scheme = {
 const PADX = 34
 const GRAY = { box: '#F2F1ED', boxLine: '#E2DED4', ink: '#1A1A1A', muted: '#6B6B66' }
 
-const styles = StyleSheet.create({
-  page: { fontFamily: 'Helvetica', fontSize: 9, color: GRAY.ink },
-  header: {
-    paddingHorizontal: PADX,
-    paddingTop: 28,
-    paddingBottom: 30,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  hLeft: { width: '52%' },
-  hRight: { width: '44%' },
-  faktura: { fontFamily: 'Helvetica-Bold', fontSize: 34, letterSpacing: -0.5 },
-  pill: {
-    alignSelf: 'flex-start',
-    marginTop: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 3,
-  },
-  pillText: { fontFamily: 'Helvetica-Bold', fontSize: 8, letterSpacing: 0.5 },
-  senderName: { fontFamily: 'Helvetica-Bold', fontSize: 13, marginTop: 12 },
-  contactRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 6 },
-  rightCols: { flexDirection: 'row', gap: 16 },
-  rightCol: { flex: 1 },
-  capLabel: { fontFamily: 'Helvetica-Bold', fontSize: 7, letterSpacing: 0.6 },
-  rLine: { fontSize: 8, marginTop: 2 },
-  dateBlock: { marginTop: 14 },
-  badgeWrap: { alignItems: 'center', marginTop: -16, marginBottom: -4, zIndex: 10 },
-  table: { paddingHorizontal: PADX },
-  thRow: { flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 10 },
-  th: { fontFamily: 'Helvetica-Bold', fontSize: 8, color: '#FFFFFF' },
-  row: { flexDirection: 'row', paddingVertical: 7, paddingHorizontal: 10, alignItems: 'center' },
-  cDesc: { flex: 3, flexDirection: 'row', alignItems: 'center', gap: 6 },
-  cPrice: { flex: 1.6, textAlign: 'right', fontFamily: 'Helvetica' },
-  cQty: { flex: 0.9, textAlign: 'center' },
-  cDisc: { flex: 1, textAlign: 'center' },
-  cSum: { flex: 1.6, textAlign: 'right', fontFamily: 'Helvetica' },
-  rTitle: { fontFamily: 'Helvetica-Bold', fontSize: 9 },
-  rSub: { fontSize: 7, marginTop: 1 },
-  lower: { flexDirection: 'row', paddingHorizontal: PADX, marginTop: 18, gap: 18 },
-  lowerLeft: { width: '50%' },
-  lowerRight: { width: '50%' },
-  dueBox: { backgroundColor: GRAY.box, borderRadius: 4, padding: 10, marginBottom: 12 },
-  sectionTag: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 3,
-    marginBottom: 6,
-  },
-  sectionTagText: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 7,
-    color: '#FFFFFF',
-    letterSpacing: 0.4,
-  },
-  payGrid: { flexDirection: 'row', marginBottom: 2 },
-  payKey: { width: 70, color: GRAY.muted, fontSize: 8 },
-  payVal: { fontSize: 8 },
-  terms: { fontSize: 8, color: GRAY.muted, lineHeight: 1.4, marginTop: 2 },
-  totalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
-  totalLabel: { color: GRAY.muted, fontSize: 9 },
-  totalVal: { fontSize: 9 },
-  payBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  payBarBody: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 9,
-    paddingHorizontal: 12,
-  },
-  payBarLabel: { fontFamily: 'Helvetica-Bold', fontSize: 10, color: '#FFFFFF' },
-  payBarVal: { fontFamily: 'Helvetica-Bold', fontSize: 11, color: '#FFFFFF' },
-  regards: { marginTop: 16, alignItems: 'flex-end' },
-  bottomBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    flexDirection: 'row',
-    height: 12,
-  },
-})
+const makeStyles = (f: FontStack) =>
+  StyleSheet.create({
+    page: { fontFamily: f.base, fontSize: 9, color: GRAY.ink },
+    header: {
+      paddingHorizontal: PADX,
+      paddingTop: 28,
+      paddingBottom: 30,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    hLeft: { width: '52%' },
+    hRight: { width: '44%' },
+    faktura: { fontFamily: f.bold, fontSize: 34, letterSpacing: -0.5 },
+    pill: {
+      alignSelf: 'flex-start',
+      marginTop: 10,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 3,
+    },
+    pillText: { fontFamily: f.bold, fontSize: 8, letterSpacing: 0.5 },
+    senderName: { fontFamily: f.bold, fontSize: 13, marginTop: 12 },
+    contactRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 6 },
+    rightCols: { flexDirection: 'row', gap: 16 },
+    rightCol: { flex: 1 },
+    capLabel: { fontFamily: f.bold, fontSize: 7, letterSpacing: 0.6 },
+    rLine: { fontSize: 8, marginTop: 2 },
+    dateBlock: { marginTop: 14 },
+    badgeWrap: { alignItems: 'center', marginTop: -16, marginBottom: -4, zIndex: 10 },
+    table: { paddingHorizontal: PADX },
+    thRow: { flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 10 },
+    th: { fontFamily: f.bold, fontSize: 8, color: '#FFFFFF' },
+    row: { flexDirection: 'row', paddingVertical: 7, paddingHorizontal: 10, alignItems: 'center' },
+    cDesc: { flex: 3, flexDirection: 'row', alignItems: 'center', gap: 6 },
+    cPrice: { flex: 1.6, textAlign: 'right', fontFamily: f.base },
+    cQty: { flex: 0.9, textAlign: 'center' },
+    cDisc: { flex: 1, textAlign: 'center' },
+    cSum: { flex: 1.6, textAlign: 'right', fontFamily: f.base },
+    rTitle: { fontFamily: f.bold, fontSize: 9 },
+    rSub: { fontSize: 7, marginTop: 1 },
+    lower: { flexDirection: 'row', paddingHorizontal: PADX, marginTop: 18, gap: 18 },
+    lowerLeft: { width: '50%' },
+    lowerRight: { width: '50%' },
+    dueBox: { backgroundColor: GRAY.box, borderRadius: 4, padding: 10, marginBottom: 12 },
+    sectionTag: {
+      alignSelf: 'flex-start',
+      paddingHorizontal: 7,
+      paddingVertical: 2,
+      borderRadius: 3,
+      marginBottom: 6,
+    },
+    sectionTagText: {
+      fontFamily: f.bold,
+      fontSize: 7,
+      color: '#FFFFFF',
+      letterSpacing: 0.4,
+    },
+    payGrid: { flexDirection: 'row', marginBottom: 2 },
+    payKey: { width: 70, color: GRAY.muted, fontSize: 8 },
+    payVal: { fontSize: 8 },
+    terms: { fontSize: 8, color: GRAY.muted, lineHeight: 1.4, marginTop: 2 },
+    totalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
+    totalLabel: { color: GRAY.muted, fontSize: 9 },
+    totalVal: { fontSize: 9 },
+    payBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 8,
+      borderRadius: 4,
+      overflow: 'hidden',
+    },
+    payBarBody: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 9,
+      paddingHorizontal: 12,
+    },
+    payBarLabel: { fontFamily: f.bold, fontSize: 10, color: '#FFFFFF' },
+    payBarVal: { fontFamily: f.bold, fontSize: 11, color: '#FFFFFF' },
+    regards: { marginTop: 16, alignItems: 'flex-end' },
+    bottomBar: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      flexDirection: 'row',
+      height: 12,
+    },
+  })
 
 function Icon({ d, color, size = 9 }: { d: string; color: string; size?: number }) {
   return (
@@ -200,6 +202,8 @@ function money(cents: bigint | number, currency: string): string {
 }
 
 function BoldTemplate({ invoice, scheme }: InvoiceTemplateProps & { scheme: Scheme }) {
+  const f = fontStack(invoice.font)
+  const styles = makeStyles(f)
   const org = invoice.organization
   const cur = invoice.currency
   const orgAddr = addressLines(org.address)
@@ -266,9 +270,7 @@ function BoldTemplate({ invoice, scheme }: InvoiceTemplateProps & { scheme: Sche
             <View style={styles.rightCols}>
               <View style={styles.rightCol}>
                 <Text style={[styles.capLabel, { color: scheme.headerInk }]}>FAKTURERAS TILL:</Text>
-                <Text
-                  style={[styles.rLine, { color: scheme.headerInk, fontFamily: 'Helvetica-Bold' }]}
-                >
+                <Text style={[styles.rLine, { color: scheme.headerInk, fontFamily: f.bold }]}>
                   {invoice.client.name}
                 </Text>
                 {clientAddr.map((l) => (
@@ -377,7 +379,7 @@ function BoldTemplate({ invoice, scheme }: InvoiceTemplateProps & { scheme: Sche
           <View style={styles.lowerLeft}>
             <View style={styles.dueBox}>
               <Text style={{ fontSize: 8, color: GRAY.muted }}>Att betala senast:</Text>
-              <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 11, marginTop: 2 }}>
+              <Text style={{ fontFamily: f.bold, fontSize: 11, marginTop: 2 }}>
                 {invoice.dueAt}
               </Text>
             </View>
@@ -460,16 +462,14 @@ function BoldTemplate({ invoice, scheme }: InvoiceTemplateProps & { scheme: Sche
 
             <View style={styles.regards}>
               <Text style={{ fontSize: 8, color: GRAY.muted }}>Med vänlig hälsning,</Text>
-              <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9, marginTop: 2 }}>
-                {org.name}
-              </Text>
+              <Text style={{ fontFamily: f.bold, fontSize: 9, marginTop: 2 }}>{org.name}</Text>
               {org.logo_url ? (
                 <Image
                   src={org.logo_url}
                   style={{ height: 26, marginTop: 8, objectFit: 'contain' }}
                 />
               ) : null}
-              <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 9, marginTop: 10 }}>
+              <Text style={{ fontFamily: f.bold, fontSize: 9, marginTop: 10 }}>
                 Tack för förtroendet!
               </Text>
             </View>

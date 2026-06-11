@@ -1,4 +1,5 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
+import { type FontStack, fontStack } from './fonts'
 import { COLOR, addressLines, formatMoney } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
@@ -6,88 +7,90 @@ import type { InvoiceTemplateProps } from './types'
 // table with a shaded header row, no brand colour — looks like a traditional
 // faktura printed from accounting software.
 
-const styles = StyleSheet.create({
-  page: {
-    fontFamily: 'Helvetica',
-    fontSize: 10,
-    color: COLOR.ink,
-    padding: 44,
-  },
-  topRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
-  orgName: { fontSize: 14, fontWeight: 600 },
-  orgLine: { color: COLOR.ink2, marginBottom: 1, fontSize: 9 },
-  title: { fontSize: 26, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' },
-  metaTable: { marginTop: 6 },
-  metaRow: { flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 2 },
-  metaLabel: { color: COLOR.ink2, fontSize: 9, width: 70, textAlign: 'right', marginRight: 8 },
-  metaValue: { fontFamily: 'Courier', fontSize: 9, width: 90, textAlign: 'right' },
-  parties: { flexDirection: 'row', gap: 12, marginBottom: 24 },
-  partyBox: {
-    flex: 1,
-    border: `1pt solid ${COLOR.line2}`,
-    padding: 10,
-  },
-  partyTitle: {
-    fontSize: 8,
-    color: COLOR.ink2,
-    marginBottom: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  partyName: { fontSize: 11, fontWeight: 600, marginBottom: 2 },
-  partyLine: { color: COLOR.ink2, marginBottom: 1, fontSize: 9 },
-  table: { border: `1pt solid ${COLOR.line2}` },
-  headRow: {
-    flexDirection: 'row',
-    backgroundColor: COLOR.paper2,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderBottom: `1pt solid ${COLOR.line2}`,
-  },
-  bodyRow: {
-    flexDirection: 'row',
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderBottom: `1pt solid ${COLOR.line}`,
-  },
-  th: { color: COLOR.ink2, fontSize: 8, textTransform: 'uppercase', fontWeight: 600 },
-  colDesc: { flex: 3 },
-  colQty: { flex: 1, textAlign: 'right' },
-  colPrice: { flex: 1.5, textAlign: 'right', fontFamily: 'Courier' },
-  colVat: { width: 40, textAlign: 'right' },
-  colAmount: { flex: 1.5, textAlign: 'right', fontFamily: 'Courier' },
-  totalsWrap: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 16 },
-  totalsBox: { width: 250, border: `1pt solid ${COLOR.line2}` },
-  totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderBottom: `1pt solid ${COLOR.line}`,
-  },
-  totalLabel: { color: COLOR.ink2 },
-  totalValue: { fontFamily: 'Courier' },
-  grandRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 7,
-    paddingHorizontal: 10,
-    backgroundColor: COLOR.paper2,
-  },
-  grandLabel: { fontWeight: 600, fontSize: 11 },
-  grandValue: { fontFamily: 'Courier', fontWeight: 600, fontSize: 11 },
-  notes: { marginTop: 20, border: `1pt solid ${COLOR.line}`, padding: 10 },
-  payInfo: {
-    marginTop: 20,
-    flexDirection: 'row',
-    gap: 16,
-    paddingTop: 10,
-    borderTop: `1pt solid ${COLOR.line2}`,
-  },
-  payCol: { flex: 1 },
-})
+const makeStyles = (f: FontStack) =>
+  StyleSheet.create({
+    page: {
+      fontFamily: f.base,
+      fontSize: 10,
+      color: COLOR.ink,
+      padding: 44,
+    },
+    topRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
+    orgName: { fontSize: 14, fontWeight: 600 },
+    orgLine: { color: COLOR.ink2, marginBottom: 1, fontSize: 9 },
+    title: { fontSize: 26, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' },
+    metaTable: { marginTop: 6 },
+    metaRow: { flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 2 },
+    metaLabel: { color: COLOR.ink2, fontSize: 9, width: 70, textAlign: 'right', marginRight: 8 },
+    metaValue: { fontFamily: f.mono, fontSize: 9, width: 90, textAlign: 'right' },
+    parties: { flexDirection: 'row', gap: 12, marginBottom: 24 },
+    partyBox: {
+      flex: 1,
+      border: `1pt solid ${COLOR.line2}`,
+      padding: 10,
+    },
+    partyTitle: {
+      fontSize: 8,
+      color: COLOR.ink2,
+      marginBottom: 4,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    partyName: { fontSize: 11, fontWeight: 600, marginBottom: 2 },
+    partyLine: { color: COLOR.ink2, marginBottom: 1, fontSize: 9 },
+    table: { border: `1pt solid ${COLOR.line2}` },
+    headRow: {
+      flexDirection: 'row',
+      backgroundColor: COLOR.paper2,
+      paddingVertical: 6,
+      paddingHorizontal: 8,
+      borderBottom: `1pt solid ${COLOR.line2}`,
+    },
+    bodyRow: {
+      flexDirection: 'row',
+      paddingVertical: 6,
+      paddingHorizontal: 8,
+      borderBottom: `1pt solid ${COLOR.line}`,
+    },
+    th: { color: COLOR.ink2, fontSize: 8, textTransform: 'uppercase', fontWeight: 600 },
+    colDesc: { flex: 3 },
+    colQty: { flex: 1, textAlign: 'right' },
+    colPrice: { flex: 1.5, textAlign: 'right', fontFamily: f.mono },
+    colVat: { width: 40, textAlign: 'right' },
+    colAmount: { flex: 1.5, textAlign: 'right', fontFamily: f.mono },
+    totalsWrap: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 16 },
+    totalsBox: { width: 250, border: `1pt solid ${COLOR.line2}` },
+    totalRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      borderBottom: `1pt solid ${COLOR.line}`,
+    },
+    totalLabel: { color: COLOR.ink2 },
+    totalValue: { fontFamily: f.mono },
+    grandRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: 7,
+      paddingHorizontal: 10,
+      backgroundColor: COLOR.paper2,
+    },
+    grandLabel: { fontWeight: 600, fontSize: 11 },
+    grandValue: { fontFamily: f.mono, fontWeight: 600, fontSize: 11 },
+    notes: { marginTop: 20, border: `1pt solid ${COLOR.line}`, padding: 10 },
+    payInfo: {
+      marginTop: 20,
+      flexDirection: 'row',
+      gap: 16,
+      paddingTop: 10,
+      borderTop: `1pt solid ${COLOR.line2}`,
+    },
+    payCol: { flex: 1 },
+  })
 
 export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
+  const styles = makeStyles(fontStack(invoice.font))
   const orgAddr = addressLines(invoice.organization.address)
   const clientAddr = addressLines(invoice.client.address)
   return (

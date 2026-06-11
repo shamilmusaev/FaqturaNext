@@ -9,6 +9,7 @@ import { ProfessionalTemplate } from './professional'
 import type { InvoiceTemplateProps } from './types'
 
 export { DEFAULT_TEMPLATE_ID, TEMPLATE_IDS, isTemplateId } from './ids'
+export { FONT_OPTIONS, fontStack, type FontId } from './fonts'
 export type { InvoicePdfData, TemplateId, InvoiceTemplateProps } from './types'
 
 // Function components returning a react-pdf <Document>. Typed as a plain

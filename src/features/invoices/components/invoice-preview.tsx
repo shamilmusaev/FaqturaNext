@@ -3,6 +3,8 @@
 import { DownloadIcon, EyeIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import {
+  FONT_OPTIONS,
+  type FontId,
   INVOICE_TEMPLATES,
   type InvoicePdfData,
   type TemplateId,
@@ -10,7 +12,7 @@ import {
 } from '@/lib/pdf/templates'
 import { usePDF } from '@react-pdf/renderer'
 import { useTranslations } from 'next-intl'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 interface Props {
   data: InvoicePdfData
@@ -32,25 +34,30 @@ export function InvoicePreview({
   className,
 }: Props) {
   const t = useTranslations('invoices.preview')
+  const [font, setFont] = useState<FontId>('sans')
   const { Component } = getTemplate(templateId)
-  const [instance, update] = usePDF({ document: <Component invoice={data} /> })
+
+  // The document element only changes when the data, template or font actually
+  // changes — NOT on every render. This is what keeps the preview from
+  // re-rendering in a loop (usePDF's `update` identity is unstable).
+  const doc = useMemo(() => <Component invoice={{ ...data, font }} />, [Component, data, font])
+  const [instance, update] = usePDF({ document: doc })
   const isFirst = useRef(true)
 
+  // `update` is intentionally excluded from deps: its identity changes every
+  // render, and including it would re-fire this effect in a loop.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: see note above
   useEffect(() => {
-    // The first render already rendered via usePDF's initial document; only
-    // debounce subsequent edits and template switches.
     if (isFirst.current) {
       isFirst.current = false
       return
     }
-    const id = setTimeout(() => update(<Component invoice={data} />), DEBOUNCE_MS)
+    const id = setTimeout(() => update(doc), DEBOUNCE_MS)
     return () => clearTimeout(id)
-  }, [data, Component, update])
+  }, [doc])
 
   const safeNumber = data.number.replace(/[^\w-]/g, '').trim()
   const fileName = safeNumber ? `Faktura-${safeNumber}.pdf` : 'faktura.pdf'
-
-  const ready = Boolean(instance.url && !instance.error)
   const toolBtn =
     'inline-flex h-8 w-8 items-center justify-center rounded-full text-ink/55 transition-colors hover:bg-card hover:text-ink aria-disabled:opacity-40 aria-disabled:pointer-events-none'
 
@@ -83,13 +90,34 @@ export function InvoicePreview({
         </div>
       )}
 
-      {/* Toolbar (same pill style as templates): view + download */}
-      <div className="flex items-center gap-1 self-start rounded-full bg-paper-2 p-1">
+      {/* Toolbar (same pill style as templates): font + view + download */}
+      <div className="flex items-center gap-1 self-center rounded-full bg-paper-2 p-1">
+        {FONT_OPTIONS.map((f) => {
+          const active = f.id === font
+          return (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => setFont(f.id)}
+              aria-pressed={active}
+              title={`${t('font')}: ${f.name}`}
+              className={cn(
+                'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                active
+                  ? 'bg-card text-ink shadow-soft'
+                  : 'text-ink/55 hover:text-ink hover:bg-card/60',
+              )}
+            >
+              {f.name}
+            </button>
+          )
+        })}
+        <span className="mx-1 h-4 w-px bg-line-2/60" />
         <a
           href={instance.url ?? undefined}
           target="_blank"
           rel="noopener noreferrer"
-          aria-disabled={!ready}
+          aria-disabled={!instance.url || !!instance.error}
           title={t('view')}
           aria-label={t('view')}
           className={toolBtn}
@@ -99,7 +127,7 @@ export function InvoicePreview({
         <a
           href={instance.url ?? undefined}
           download={fileName}
-          aria-disabled={!ready}
+          aria-disabled={!instance.url || !!instance.error}
           title={t('download')}
           aria-label={t('download')}
           className={toolBtn}

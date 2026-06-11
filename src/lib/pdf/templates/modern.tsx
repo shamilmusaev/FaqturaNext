@@ -1,4 +1,5 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
+import { type FontStack, fontStack } from './fonts'
 import { COLOR, addressLines, formatMoney } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
@@ -6,73 +7,75 @@ import type { InvoiceTemplateProps } from './types'
 // Uses react-pdf's built-in Helvetica / Courier — branded fonts will be bundled
 // in a follow-up once the Edge Function ships with pre-warmed font files.
 
-const styles = StyleSheet.create({
-  page: {
-    fontFamily: 'Helvetica',
-    fontSize: 10,
-    color: COLOR.ink,
-    padding: 48,
-  },
-  accentBar: {
-    height: 4,
-    backgroundColor: COLOR.brand,
-    marginBottom: 28,
-    marginHorizontal: -48,
-    marginTop: -48,
-  },
-  header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 36 },
-  brand: { fontSize: 22, fontWeight: 600, letterSpacing: -0.5, color: COLOR.ink },
-  meta: { textAlign: 'right' },
-  metaLabel: { color: COLOR.muted, fontSize: 8 },
-  metaValue: { fontFamily: 'Courier', fontSize: 10 },
-  parties: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32 },
-  partyTitle: {
-    fontSize: 8,
-    color: COLOR.muted,
-    marginBottom: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  partyName: { fontSize: 12, fontWeight: 600, marginBottom: 2 },
-  partyLine: { color: COLOR.muted, marginBottom: 1 },
-  table: { borderTop: `1pt solid ${COLOR.line}` },
-  tableRow: {
-    flexDirection: 'row',
-    paddingVertical: 8,
-    borderBottom: `1pt solid ${COLOR.line}`,
-  },
-  tableHeader: { color: COLOR.muted, fontSize: 8, textTransform: 'uppercase' },
-  colDesc: { flex: 3 },
-  colQty: { flex: 1, textAlign: 'right' },
-  colPrice: { flex: 1.5, textAlign: 'right', fontFamily: 'Courier' },
-  colVat: { width: 40, textAlign: 'right' },
-  colAmount: { flex: 1.5, textAlign: 'right', fontFamily: 'Courier' },
-  totalsBlock: { marginTop: 24, alignSelf: 'flex-end', width: 240 },
-  totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
-  totalLabel: { color: COLOR.muted },
-  totalValue: { fontFamily: 'Courier' },
-  grandTotal: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-    paddingTop: 8,
-    borderTop: `2pt solid ${COLOR.brand}`,
-  },
-  grandLabel: { fontWeight: 600 },
-  grandValue: { fontFamily: 'Courier', fontWeight: 600 },
-  footer: {
-    position: 'absolute',
-    bottom: 32,
-    left: 48,
-    right: 48,
-    color: COLOR.muted,
-    fontSize: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-})
+const makeStyles = (f: FontStack) =>
+  StyleSheet.create({
+    page: {
+      fontFamily: f.base,
+      fontSize: 10,
+      color: COLOR.ink,
+      padding: 48,
+    },
+    accentBar: {
+      height: 4,
+      backgroundColor: COLOR.brand,
+      marginBottom: 28,
+      marginHorizontal: -48,
+      marginTop: -48,
+    },
+    header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 36 },
+    brand: { fontSize: 22, fontWeight: 600, letterSpacing: -0.5, color: COLOR.ink },
+    meta: { textAlign: 'right' },
+    metaLabel: { color: COLOR.muted, fontSize: 8 },
+    metaValue: { fontFamily: f.mono, fontSize: 10 },
+    parties: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32 },
+    partyTitle: {
+      fontSize: 8,
+      color: COLOR.muted,
+      marginBottom: 4,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    partyName: { fontSize: 12, fontWeight: 600, marginBottom: 2 },
+    partyLine: { color: COLOR.muted, marginBottom: 1 },
+    table: { borderTop: `1pt solid ${COLOR.line}` },
+    tableRow: {
+      flexDirection: 'row',
+      paddingVertical: 8,
+      borderBottom: `1pt solid ${COLOR.line}`,
+    },
+    tableHeader: { color: COLOR.muted, fontSize: 8, textTransform: 'uppercase' },
+    colDesc: { flex: 3 },
+    colQty: { flex: 1, textAlign: 'right' },
+    colPrice: { flex: 1.5, textAlign: 'right', fontFamily: f.mono },
+    colVat: { width: 40, textAlign: 'right' },
+    colAmount: { flex: 1.5, textAlign: 'right', fontFamily: f.mono },
+    totalsBlock: { marginTop: 24, alignSelf: 'flex-end', width: 240 },
+    totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
+    totalLabel: { color: COLOR.muted },
+    totalValue: { fontFamily: f.mono },
+    grandTotal: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 8,
+      paddingTop: 8,
+      borderTop: `2pt solid ${COLOR.brand}`,
+    },
+    grandLabel: { fontWeight: 600 },
+    grandValue: { fontFamily: f.mono, fontWeight: 600 },
+    footer: {
+      position: 'absolute',
+      bottom: 32,
+      left: 48,
+      right: 48,
+      color: COLOR.muted,
+      fontSize: 8,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+  })
 
 export function ModernTemplate({ invoice }: InvoiceTemplateProps) {
+  const styles = makeStyles(fontStack(invoice.font))
   const orgAddr = addressLines(invoice.organization.address)
   const clientAddr = addressLines(invoice.client.address)
   return (
