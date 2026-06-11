@@ -177,6 +177,7 @@
     },
     "actions": {
       "addLine": "Lägg till rad",
+      "fillMock": "Exempeldata",
       "removeLine": "Ta bort",
       "save": "Spara utkast",
       "create": "Skapa faktura",

@@ -177,6 +177,7 @@
     },
     "actions": {
       "addLine": "Add line",
+      "fillMock": "Sample data",
       "removeLine": "Remove",
       "save": "Save draft",
       "create": "Create invoice",

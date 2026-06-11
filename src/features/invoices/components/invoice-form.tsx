@@ -86,6 +86,9 @@ export function InvoiceForm({
   const [ourReference, setOurReference] = useState('')
   const [theirReference, setTheirReference] = useState('')
   const [orderNumber, setOrderNumber] = useState('')
+  // Bumped by fillMockData to remount the uncontrolled MoneyInputs so they pick
+  // up the new defaultValueCents.
+  const [seedVersion, setSeedVersion] = useState(0)
 
   const rotRutActive = rotRutType !== '' && rotRutCents > 0n
 
@@ -153,6 +156,83 @@ export function InvoiceForm({
     setLines((prev) => prev.filter((_, i) => i !== idx))
   }
 
+  // Dev convenience: fill every field with realistic sample data so the preview
+  // shows a complete invoice in one click.
+  const fillMockData = () => {
+    setClientId(clients[0]?.id ?? '')
+    setIssuedAt(todayPlusDays(0))
+    setDueAt(todayPlusDays(30))
+    setPaymentTermsDays(30)
+    setCurrency('SEK')
+    setNotes('Tack för förtroendet! Betalning inom 30 dagar.')
+    setOurReference('Anna Lind')
+    setTheirReference('Erik Svensson')
+    setOrderNumber('PO-2026-077')
+    setReverseVat(false)
+    setRotRutType('')
+    setRotRutCents(0n)
+    setLines([
+      {
+        description: 'Webbdesign & UI/UX',
+        quantity: 1,
+        unit: 'st',
+        unitPriceCents: 1000000n,
+        vatRate: 25,
+        discountPercent: 0,
+      },
+      {
+        description: 'Frontend-utveckling',
+        quantity: 1,
+        unit: 'st',
+        unitPriceCents: 1500000n,
+        vatRate: 25,
+        discountPercent: 0,
+      },
+      {
+        description: 'Backend-utveckling',
+        quantity: 1,
+        unit: 'st',
+        unitPriceCents: 1800000n,
+        vatRate: 25,
+        discountPercent: 10,
+      },
+      {
+        description: 'CMS-integration',
+        quantity: 1,
+        unit: 'st',
+        unitPriceCents: 700000n,
+        vatRate: 25,
+        discountPercent: 0,
+      },
+      {
+        description: 'Testing & QA',
+        quantity: 1,
+        unit: 'st',
+        unitPriceCents: 500000n,
+        vatRate: 25,
+        discountPercent: 0,
+      },
+      {
+        description: 'Lansering & Support',
+        quantity: 1,
+        unit: 'st',
+        unitPriceCents: 500000n,
+        vatRate: 25,
+        discountPercent: 0,
+      },
+      {
+        description: 'Konsulttid',
+        quantity: 8,
+        unit: 'h',
+        unitPriceCents: 95000n,
+        vatRate: 25,
+        discountPercent: 0,
+      },
+    ])
+    setServerError(null)
+    setSeedVersion((v) => v + 1)
+  }
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setServerError(null)
@@ -211,6 +291,11 @@ export function InvoiceForm({
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-6">
+      <div className="flex justify-end">
+        <Button type="button" variant="secondary" size="sm" onClick={fillMockData}>
+          {tActions('fillMock')}
+        </Button>
+      </div>
       <div className="grid md:grid-cols-2 gap-5">
         <label className="flex flex-col gap-1.5 text-sm">
           <span className="text-ink/80">{tFields('client')}</span>
@@ -315,6 +400,7 @@ export function InvoiceForm({
                 <label className="flex flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('unitPrice')}
                   <MoneyInput
+                    key={`price-${idx}-${seedVersion}`}
                     defaultValueCents={line.unitPriceCents}
                     onValueChange={(v) => updateLine(idx, { unitPriceCents: v })}
                   />
@@ -420,6 +506,7 @@ export function InvoiceForm({
             <label className="flex flex-col gap-1.5 text-xs text-ink/60">
               {t('options.rotRutAmount')}
               <MoneyInput
+                key={`rotrut-${seedVersion}`}
                 defaultValueCents={rotRutCents}
                 onValueChange={setRotRutCents}
                 disabled={rotRutType === ''}
