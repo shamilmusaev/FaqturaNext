@@ -17,9 +17,10 @@ const config: NextConfig = {
     ],
   },
   // react-pdf ships with CommonJS internals + native-ish font parsing that
-  // Turbopack/webpack can't bundle reliably for server runtimes. Mark it as
-  // external so Node loads it from node_modules at request time.
-  serverExternalPackages: ['@react-pdf/renderer'],
+  // Turbopack/webpack can't bundle reliably for server runtimes. The thumbnail
+  // route also rasterizes via pdf-to-img + the native @napi-rs/canvas binding.
+  // Mark them external so Node loads them from node_modules at request time.
+  serverExternalPackages: ['@react-pdf/renderer', 'pdf-to-img', '@napi-rs/canvas'],
 }
 
 export default withNextIntl(config)

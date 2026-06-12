@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { DownloadIcon, PlusIcon } from '@/components/ui/icons'
+import { InvoiceCards } from '@/features/invoices/components/invoice-cards'
 import { InvoiceFilters } from '@/features/invoices/components/invoice-filters'
 import { InvoiceList } from '@/features/invoices/components/invoice-list'
 import { NewInvoiceDialogButton } from '@/features/invoices/components/new-invoice-dialog'
@@ -10,14 +11,15 @@ import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
 interface PageProps {
-  searchParams: Promise<{ status?: string; q?: string }>
+  searchParams: Promise<{ status?: string; q?: string; view?: string }>
 }
 
 const VALID_STATUSES = new Set(['draft', 'sent', 'paid', 'overdue', 'all'])
 
 export default async function InvoicesPage({ searchParams }: PageProps) {
-  const { status, q } = await searchParams
+  const { status, q, view } = await searchParams
   const normalised = status && VALID_STATUSES.has(status) ? status : 'all'
+  const cardsView = view === 'cards'
 
   const [t, invoices] = await Promise.all([
     getTranslations('invoices'),
@@ -68,6 +70,8 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
             </Link>
           </div>
         </div>
+      ) : cardsView ? (
+        <InvoiceCards invoices={invoices} />
       ) : (
         <InvoiceList invoices={invoices} />
       )}

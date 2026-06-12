@@ -117,6 +117,10 @@
     "title": "Invoices",
     "newInvoice": "New invoice",
     "exportCsv": "Export CSV",
+    "view": {
+      "list": "List view",
+      "cards": "Card view"
+    },
     "sendReminder": "Send a friendly reminder",
     "overdueLabel": "overdue",
     "subtitle": {

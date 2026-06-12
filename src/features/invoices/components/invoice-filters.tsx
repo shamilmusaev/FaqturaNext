@@ -38,6 +38,16 @@ export function InvoiceFilters() {
     })
   }
 
+  const view = params.get('view') === 'cards' ? 'cards' : 'list'
+  const setView = (v: 'list' | 'cards') => {
+    const next = new URLSearchParams(params)
+    if (v === 'cards') next.set('view', 'cards')
+    else next.delete('view')
+    start(() => {
+      router.replace(`${pathname}?${next.toString()}` as Route)
+    })
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <label className="relative">
@@ -51,7 +61,7 @@ export function InvoiceFilters() {
           className="h-12 rounded-[14px] pl-9 text-sm"
         />
       </label>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {STATUSES.map((s) => (
           <button
             key={s}
@@ -67,7 +77,95 @@ export function InvoiceFilters() {
             {tFilters(s)}
           </button>
         ))}
+        <div className="ml-auto flex gap-1 rounded-full border border-line-1 bg-card p-1">
+          <ViewButton
+            active={view === 'list'}
+            onClick={() => setView('list')}
+            label={t('view.list')}
+          >
+            <ListIcon />
+          </ViewButton>
+          <ViewButton
+            active={view === 'cards'}
+            onClick={() => setView('cards')}
+            label={t('view.cards')}
+          >
+            <CardsIcon />
+          </ViewButton>
+        </div>
       </div>
     </div>
+  )
+}
+
+function ViewButton({
+  active,
+  onClick,
+  label,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  label: string
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      aria-label={label}
+      title={label}
+      className={cn(
+        'flex h-9 w-9 items-center justify-center rounded-full transition-colors',
+        active ? 'bg-ink text-white' : 'text-ink/55 hover:text-ink hover:bg-paper',
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
+function ListIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="8" y1="6" x2="21" y2="6" />
+      <line x1="8" y1="12" x2="21" y2="12" />
+      <line x1="8" y1="18" x2="21" y2="18" />
+      <line x1="3" y1="6" x2="3.01" y2="6" />
+      <line x1="3" y1="12" x2="3.01" y2="12" />
+      <line x1="3" y1="18" x2="3.01" y2="18" />
+    </svg>
+  )
+}
+
+function CardsIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+    </svg>
   )
 }
