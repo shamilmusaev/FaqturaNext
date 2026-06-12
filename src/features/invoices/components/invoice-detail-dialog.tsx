@@ -13,8 +13,10 @@ import type { InvoiceStatus } from '@/features/invoices/schema'
 import { formatMoney } from '@/lib/money'
 import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import * as RadixDialog from '@radix-ui/react-dialog'
+import type { Route } from 'next'
 import { useLocale, useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { type ReactNode, useEffect, useState } from 'react'
 
 // Lazy-loaded so @react-pdf is only fetched when the user opens the preview,
@@ -145,6 +147,14 @@ export function InvoiceDetailDialog({ invoiceId, children }: Props) {
                     {tPreview('open')}
                   </button>
                 </div>
+                {invoice.status === 'draft' && (
+                  <Link
+                    href={`/invoices/${invoiceId}/edit` as Route}
+                    className="inline-flex h-9 items-center rounded-full border border-line-1 bg-card px-3.5 text-sm font-medium hover:bg-paper transition-colors"
+                  >
+                    {t('edit')}
+                  </Link>
+                )}
                 <a
                   href={`/api/invoices/${invoiceId}/pdf`}
                   target="_blank"
