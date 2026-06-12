@@ -30,10 +30,27 @@ export function InvoiceCard({ inv }: { inv: InvoiceCardData }) {
   return (
     <div
       className={cn(
-        'group overflow-hidden rounded-[18px] border bg-card transition-colors',
+        'group relative overflow-hidden rounded-[18px] border bg-card transition-colors',
         selected ? 'border-brand ring-2 ring-brand/40' : 'border-line-1 hover:border-line-2',
       )}
     >
+      {/* Sibling of the body button — a <button> can't nest inside a <button>. */}
+      {selection && (
+        <button
+          type="button"
+          aria-label="select"
+          aria-pressed={selected}
+          onClick={() => selection.toggle(inv.id)}
+          className={cn(
+            'absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-md border text-xs transition-colors',
+            selected
+              ? 'border-brand bg-brand text-white'
+              : 'border-line-1 bg-card/90 text-transparent hover:border-ink/40',
+          )}
+        >
+          ✓
+        </button>
+      )}
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -41,26 +58,6 @@ export function InvoiceCard({ inv }: { inv: InvoiceCardData }) {
       >
         <div className="relative aspect-[1/1.414] overflow-hidden">
           <InvoiceThumb src={inv.thumb} alt={inv.number} />
-          {selection && (
-            <button
-              type="button"
-              aria-label="select"
-              aria-pressed={selected}
-              onClick={(e) => {
-                e.stopPropagation()
-                e.preventDefault()
-                selection.toggle(inv.id)
-              }}
-              className={cn(
-                'absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-md border text-xs transition-colors',
-                selected
-                  ? 'border-brand bg-brand text-white'
-                  : 'border-line-1 bg-card/90 text-transparent hover:border-ink/40',
-              )}
-            >
-              ✓
-            </button>
-          )}
           <div className="absolute right-2 top-2">
             <Chip tone={STATUS_TONE[inv.status]} className="whitespace-nowrap shadow-soft">
               {inv.statusLabel}
