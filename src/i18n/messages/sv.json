@@ -255,7 +255,8 @@
       "lines": "{count, plural, =0 {0 rader} =1 {1 rad} other {# rader}}",
       "copyToNew": "Kopiera till nytt utkast",
       "restore": "Återställ",
-      "noVersions": "Inga versioner ännu."
+      "noVersions": "Inga versioner ännu.",
+      "selectVersion": "Välj en version för att visa dess data."
     }
   },
   "settings": {

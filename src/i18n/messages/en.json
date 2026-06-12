@@ -255,7 +255,8 @@
       "lines": "{count, plural, =0 {0 lines} =1 {1 line} other {# lines}}",
       "copyToNew": "Copy to new draft",
       "restore": "Restore",
-      "noVersions": "No versions yet."
+      "noVersions": "No versions yet.",
+      "selectVersion": "Select a version to view its snapshot."
     }
   },
   "settings": {

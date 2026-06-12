@@ -18,11 +18,10 @@ export function InvoiceVersionsPanel({ invoiceId, open, onClose }: Props) {
   const [selectedVersionId, setSelectedVersionId] = useState<string | null>(null)
 
   return (
-    <RadixDialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+    <RadixDialog.Root open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
       <RadixDialog.Portal>
         <RadixDialog.Overlay
           className="fixed inset-0 z-50 bg-ink/50 backdrop-blur-md data-[state=open]:animate-[overlay-in_240ms_cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:animate-[overlay-out_200ms_ease-in]"
-          onClick={onClose}
         />
         <RadixDialog.Content
           className="fixed right-0 top-0 z-50 h-screen w-full bg-paper overflow-y-auto shadow-2xl focus:outline-none will-change-transform data-[state=open]:animate-[sheet-in-right_340ms_cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:animate-[sheet-out-right_240ms_cubic-bezier(0.55,0,1,0.45)] md:w-[720px]"
@@ -37,25 +36,32 @@ export function InvoiceVersionsPanel({ invoiceId, open, onClose }: Props) {
             <RadixDialog.Close
               className="h-9 w-9 inline-flex items-center justify-center rounded-full border border-line-1 bg-card hover:bg-paper transition-colors"
               aria-label="Close"
-              onClick={onClose}
             >
               <CloseIcon className="h-4 w-4" />
             </RadixDialog.Close>
           </div>
 
           <div className="p-7">
-            <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6">
-              <InvoiceVersionList
-                invoiceId={invoiceId}
-                selectedId={selectedVersionId}
-                onSelect={setSelectedVersionId}
-              />
-              {selectedVersionId && (
-                <InvoiceVersionDiff
-                  versionId={selectedVersionId}
+            <div className="flex flex-col md:flex-row gap-6 md:items-start">
+              <div className="w-full md:w-[280px] md:shrink-0">
+                <InvoiceVersionList
                   invoiceId={invoiceId}
+                  selectedId={selectedVersionId}
+                  onSelect={setSelectedVersionId}
                 />
-              )}
+              </div>
+              <div className="flex-1 min-w-0">
+                {selectedVersionId ? (
+                  <InvoiceVersionDiff
+                    versionId={selectedVersionId}
+                    invoiceId={invoiceId}
+                  />
+                ) : (
+                  <div className="rounded-[16px] border border-line-1 bg-card p-6 text-center">
+                    <p className="text-sm text-ink/60">{t('selectVersion')}</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </RadixDialog.Content>

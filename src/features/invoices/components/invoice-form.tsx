@@ -40,6 +40,8 @@ interface Props {
   onDraftChange?: (draft: FormDraft) => void
   onCancel?: () => void
   onSuccess?: () => void
+  /** Called when the first autosave creates the draft (new invoice only). */
+  onInvoiceIdChange?: (id: string) => void
   /** 'edit' targets an existing draft invoice; defaults to 'create'. */
   mode?: 'create' | 'edit'
   /** The draft invoice id (required in edit mode; tracked internally in create). */
@@ -90,6 +92,7 @@ export function InvoiceForm({
   onDraftChange,
   onCancel,
   onSuccess,
+  onInvoiceIdChange,
   mode = 'create',
   invoiceId,
   initial,
@@ -249,7 +252,10 @@ export function InvoiceForm({
       } else {
         const create = (async () => {
           const res = await createInvoiceAction(input, false)
-          if (res.invoiceId) draftIdRef.current = res.invoiceId
+          if (res.invoiceId) {
+            draftIdRef.current = res.invoiceId
+            onInvoiceIdChange?.(res.invoiceId)
+          }
         })()
         inflightCreateRef.current = create
         try {

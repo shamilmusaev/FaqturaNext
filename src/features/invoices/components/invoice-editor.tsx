@@ -79,6 +79,10 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const [split, setSplit] = useState(50)
   const [versionsOpen, setVersionsOpen] = useState(false)
+  // Track the live invoice id from the form's first autosave so the history
+  // button becomes available as soon as a draft exists.
+  const [liveInvoiceId, setLiveInvoiceId] = useState<string | null>(null)
+  const effectiveInvoiceId = invoiceId ?? liveInvoiceId
 
   // Seed with the form's initial state so the preview renders immediately; the
   // form's onDraftChange syncs it on mount and on every edit thereafter.
@@ -159,7 +163,7 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
             </button>
           ))}
         </div>
-        {invoiceId && (
+        {effectiveInvoiceId && (
           <button
             type="button"
             onClick={() => setVersionsOpen(true)}
@@ -192,6 +196,7 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
             templateId={templateId}
             numberPreview={numberPreview}
             onDraftChange={setDraft}
+            onInvoiceIdChange={setLiveInvoiceId}
             mode={mode}
             invoiceId={invoiceId}
             initial={seeded?.draft}
@@ -250,9 +255,9 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
         </div>
       </div>
 
-      {invoiceId && (
+      {effectiveInvoiceId && (
         <InvoiceVersionsPanel
-          invoiceId={invoiceId}
+          invoiceId={effectiveInvoiceId}
           open={versionsOpen}
           onClose={() => setVersionsOpen(false)}
         />
