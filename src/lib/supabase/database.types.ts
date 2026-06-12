@@ -108,6 +108,7 @@ export type Database = {
           status: Database['public']['Enums']['invoice_status']
           issued_at: string
           due_at: string
+          delivery_date: string | null
           paid_at: string | null
           currency: string
           subtotal_cents: number
@@ -122,6 +123,7 @@ export type Database = {
           updated_at: string
           template: string
           ocr_reference: string | null
+          hide_ocr: boolean
           reverse_vat: boolean
           rot_rut_type: string | null
           rot_rut_cents: number
@@ -138,6 +140,7 @@ export type Database = {
           status?: Database['public']['Enums']['invoice_status']
           issued_at?: string
           due_at: string
+          delivery_date?: string | null
           paid_at?: string | null
           currency?: string
           subtotal_cents?: number
@@ -152,6 +155,7 @@ export type Database = {
           updated_at?: string
           template?: string
           ocr_reference?: string | null
+          hide_ocr?: boolean
           reverse_vat?: boolean
           rot_rut_type?: string | null
           rot_rut_cents?: number
@@ -400,6 +404,8 @@ export type Database = {
           p_notes?: string | null
           p_line_items?: unknown
           p_issued_at?: string | null
+          p_delivery_date?: string | null
+          p_hide_ocr?: boolean
           p_template?: string
           p_reverse_vat?: boolean
           p_rot_rut_type?: string | null
@@ -409,6 +415,29 @@ export type Database = {
           p_order_number?: string | null
           p_payment_terms_days?: number | null
           p_number?: string | null
+        }
+        Returns: Database['public']['Tables']['invoices']['Row']
+      }
+      update_invoice: {
+        Args: {
+          p_invoice_id: string
+          p_client_id: string
+          p_due_at: string
+          p_currency?: string
+          p_notes?: string | null
+          p_line_items?: unknown
+          p_issued_at?: string | null
+          p_template?: string
+          p_reverse_vat?: boolean
+          p_rot_rut_type?: string | null
+          p_rot_rut_cents?: number
+          p_our_reference?: string | null
+          p_their_reference?: string | null
+          p_order_number?: string | null
+          p_payment_terms_days?: number | null
+          p_number?: string | null
+          p_delivery_date?: string | null
+          p_hide_ocr?: boolean
         }
         Returns: Database['public']['Tables']['invoices']['Row']
       }
