@@ -3,10 +3,11 @@ import { formatMoney } from '@/lib/money'
 import { getTranslations } from 'next-intl/server'
 import type { InvoiceListItem } from '../queries'
 import { InvoiceDetailDialog } from './invoice-detail-dialog'
-import { InvoiceRowCheckbox, InvoiceRowMore } from './invoice-row-actions'
+import { InvoiceQuickActions } from './invoice-quick-actions'
+import { InvoiceRowCheckbox } from './invoice-row-actions'
 import { InvoiceStatusChip } from './invoice-status-chip'
 
-const OUTER_COLS = 'grid-cols-[24px_minmax(0,1fr)_40px]'
+const OUTER_COLS = 'grid-cols-[24px_minmax(0,1fr)_auto]'
 const INNER_COLS = 'grid-cols-[150px_260px_150px_150px_120px_120px]'
 
 export async function InvoiceList({ invoices }: { invoices: InvoiceListItem[] }) {
@@ -38,7 +39,7 @@ export async function InvoiceList({ invoices }: { invoices: InvoiceListItem[] })
               key={inv.id}
               className={`grid ${OUTER_COLS} group min-h-[68px] items-center gap-3 border-t border-line-1 px-6 transition-colors hover:bg-paper/60`}
             >
-              <InvoiceRowCheckbox invoiceNumber={inv.number} />
+              <InvoiceRowCheckbox id={inv.id} invoiceNumber={inv.number} />
               <InvoiceDetailDialog invoiceId={inv.id}>
                 <button
                   type="button"
@@ -66,8 +67,10 @@ export async function InvoiceList({ invoices }: { invoices: InvoiceListItem[] })
                   </div>
                 </button>
               </InvoiceDetailDialog>
-              <div className="text-right">
-                <InvoiceRowMore />
+              <div className="flex justify-end opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                <InvoiceQuickActions
+                  invoice={{ id: inv.id, status: inv.status, number: inv.number }}
+                />
               </div>
             </div>
           )

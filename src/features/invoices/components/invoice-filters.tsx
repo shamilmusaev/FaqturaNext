@@ -11,7 +11,7 @@ import { useTransition } from 'react'
 const STATUSES = ['all', 'draft', 'sent', 'paid', 'overdue'] as const
 type StatusKey = (typeof STATUSES)[number]
 
-export function InvoiceFilters() {
+export function InvoiceFilters({ view: viewProp }: { view?: 'list' | 'cards' }) {
   const t = useTranslations('invoices')
   const tFilters = useTranslations('invoices.filters')
   const router = useRouter()
@@ -38,13 +38,17 @@ export function InvoiceFilters() {
     })
   }
 
-  const view = params.get('view') === 'cards' ? 'cards' : 'list'
+  // Cards is the default; the server resolves the effective view (param → cookie
+  // → cards) and passes it in. The toggle persists the choice in a cookie.
+  const view = viewProp ?? (params.get('view') === 'list' ? 'list' : 'cards')
   const setView = (v: 'list' | 'cards') => {
+    document.cookie = `invoiceView=${v}; path=/; max-age=31536000; samesite=lax`
     const next = new URLSearchParams(params)
-    if (v === 'cards') next.set('view', 'cards')
+    if (v === 'list') next.set('view', 'list')
     else next.delete('view')
+    const qs = next.toString()
     start(() => {
-      router.replace(`${pathname}?${next.toString()}` as Route)
+      router.replace((qs ? `${pathname}?${qs}` : pathname) as Route)
     })
   }
 

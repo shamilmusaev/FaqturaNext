@@ -188,11 +188,23 @@
       "save": "Spara utkast",
       "create": "Skapa faktura",
       "duplicate": "Duplicera",
+      "view": "Visa",
+      "delete": "Ta bort",
+      "reminder": "Påminnelse",
       "showPreview": "Visa förhandsvisning",
       "hidePreview": "Dölj förhandsvisning",
       "confirmSend": "Skicka den här fakturan till kunden?",
       "confirmPaid": "Markera den här fakturan som betald?",
-      "confirmCancel": "Avbryt den här fakturan?"
+      "confirmCancel": "Avbryt den här fakturan?",
+      "confirmDelete": "Ta bort det här utkastet? Det går inte att ångra.",
+      "confirmDeleteBulk": "Ta bort {count} valda utkast? Det går inte att ångra.",
+      "confirmCancelBulk": "Avbryt {count} valda fakturor?",
+      "clearSelection": "Rensa val"
+    },
+    "bulk": {
+      "selected": "{count} valda",
+      "deleted": "{deleted} borttagna, {skipped} hoppades över",
+      "cancelled": "{cancelled} avbrutna, {skipped} hoppades över"
     },
     "timeline": {
       "title": "Aktivitet",
@@ -207,7 +219,8 @@
     "toast": {
       "created": "Faktura skapad",
       "reminderSent": "Påminnelse skickad",
-      "duplicated": "Duplicerad som utkast"
+      "duplicated": "Duplicerad som utkast",
+      "deleted": "Utkast borttaget"
     },
     "errors": {
       "pickClient": "Välj en kund",

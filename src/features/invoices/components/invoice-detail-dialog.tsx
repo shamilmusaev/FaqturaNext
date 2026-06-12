@@ -13,11 +13,10 @@ import type { InvoiceStatus } from '@/features/invoices/schema'
 import { formatMoney } from '@/lib/money'
 import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import * as RadixDialog from '@radix-ui/react-dialog'
-import type { Route } from 'next'
 import { useLocale, useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import { type ReactNode, useEffect, useState } from 'react'
+import { InvoiceQuickActions } from './invoice-quick-actions'
 
 // Lazy-loaded so @react-pdf is only fetched when the user opens the preview,
 // keeping it out of the invoice list bundle.
@@ -45,15 +44,27 @@ const EVENT_DOT: Record<string, string> = {
 
 interface Props {
   invoiceId: string
-  children: ReactNode
+  /** Trigger element (uncontrolled mode). Omit when controlling via `open`. */
+  children?: ReactNode
+  /** Controlled open state (e.g. opened by a card's View action). */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 /**
- * Read-only invoice detail in a client-side dialog. Opens over the
- * current page (no URL change), so sidebar context is preserved.
+ * Invoice detail in a client-side dialog. Opens over the current page (no URL
+ * change), so sidebar context is preserved. Read-only content plus a row of
+ * status-aware quick actions in the header.
  */
-export function InvoiceDetailDialog({ invoiceId, children }: Props) {
-  const [open, setOpen] = useState(false)
+export function InvoiceDetailDialog({
+  invoiceId,
+  children,
+  open: controlledOpen,
+  onOpenChange,
+}: Props) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen ?? internalOpen
+  const setOpen = onOpenChange ?? setInternalOpen
   const [invoice, setInvoice] = useState<InvoiceDetail | null>(null)
   const [loading, setLoading] = useState(false)
   const [mode, setMode] = useState<'detail' | 'preview'>('detail')
@@ -107,7 +118,7 @@ export function InvoiceDetailDialog({ invoiceId, children }: Props) {
 
   return (
     <RadixDialog.Root open={open} onOpenChange={setOpen}>
-      <RadixDialog.Trigger asChild>{children}</RadixDialog.Trigger>
+      {children && <RadixDialog.Trigger asChild>{children}</RadixDialog.Trigger>}
       <RadixDialog.Portal>
         <RadixDialog.Overlay className="fixed inset-0 z-50 bg-ink/50 backdrop-blur-md data-[state=open]:animate-[overlay-in_240ms_cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:animate-[overlay-out_200ms_ease-in]" />
         <RadixDialog.Content className="fixed right-0 top-0 z-50 h-screen w-full bg-paper overflow-y-auto shadow-2xl focus:outline-none will-change-transform data-[state=open]:animate-[sheet-in-right_340ms_cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:animate-[sheet-out-right_240ms_cubic-bezier(0.55,0,1,0.45)] md:w-[720px]">
@@ -147,14 +158,11 @@ export function InvoiceDetailDialog({ invoiceId, children }: Props) {
                     {tPreview('open')}
                   </button>
                 </div>
-                {invoice.status === 'draft' && (
-                  <Link
-                    href={`/invoices/${invoiceId}/edit` as Route}
-                    className="inline-flex h-9 items-center rounded-full border border-line-1 bg-card px-3.5 text-sm font-medium hover:bg-paper transition-colors"
-                  >
-                    {t('edit')}
-                  </Link>
-                )}
+                <InvoiceQuickActions
+                  invoice={{ id: invoice.id, status: invoice.status, number: invoice.number }}
+                  showView={false}
+                  onDone={() => setOpen(false)}
+                />
                 <a
                   href={`/api/invoices/${invoiceId}/pdf`}
                   target="_blank"

@@ -16,6 +16,8 @@ export {
   Send as SendIcon,
   Mail as MailIcon,
   Download as DownloadIcon,
+  Trash2 as TrashIcon,
+  Ban as BanIcon,
   Eye as EyeIcon,
   AlertCircle as AlertIcon,
   Calendar as CalendarIcon,

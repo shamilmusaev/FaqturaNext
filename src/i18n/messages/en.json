@@ -188,11 +188,23 @@
       "save": "Save draft",
       "create": "Create invoice",
       "duplicate": "Duplicate",
+      "view": "View",
+      "delete": "Delete",
+      "reminder": "Reminder",
       "showPreview": "Show preview",
       "hidePreview": "Hide preview",
       "confirmSend": "Send this invoice to the client?",
       "confirmPaid": "Mark this invoice as paid?",
-      "confirmCancel": "Cancel this invoice?"
+      "confirmCancel": "Cancel this invoice?",
+      "confirmDelete": "Delete this draft? This can't be undone.",
+      "confirmDeleteBulk": "Delete {count} selected drafts? This can't be undone.",
+      "confirmCancelBulk": "Cancel {count} selected invoices?",
+      "clearSelection": "Clear selection"
+    },
+    "bulk": {
+      "selected": "{count} selected",
+      "deleted": "{deleted} deleted, {skipped} skipped",
+      "cancelled": "{cancelled} cancelled, {skipped} skipped"
     },
     "timeline": {
       "title": "Activity",
@@ -207,7 +219,8 @@
     "toast": {
       "created": "Invoice created",
       "reminderSent": "Reminder sent",
-      "duplicated": "Duplicated as draft"
+      "duplicated": "Duplicated as draft",
+      "deleted": "Draft deleted"
     },
     "errors": {
       "pickClient": "Pick a client",

@@ -3,6 +3,7 @@
 import { requireUser } from '@/lib/auth'
 import type { InvoicePdfData } from '@/lib/pdf/templates'
 import { DEFAULT_TEMPLATE_ID, type TemplateId, isTemplateId } from '@/lib/pdf/templates/ids'
+import { THUMBNAIL_BUCKET } from '@/lib/pdf/thumbnail-key'
 import { createServerClient } from '@/lib/supabase/server'
 import type { Route } from 'next'
 import { revalidatePath } from 'next/cache'
@@ -13,6 +14,21 @@ import { type InvoiceInput, InvoiceInputSchema } from './schema'
 
 export async function fetchInvoiceForDialog(id: string): Promise<InvoiceDetail | null> {
   return await getInvoice(id)
+}
+
+type Supabase = Awaited<ReturnType<typeof createServerClient>>
+
+/** Best-effort removal of cached PNG thumbnails for the given invoice ids. */
+async function removeThumbnails(supabase: Supabase, orgId: string, invoiceIds: string[]) {
+  if (invoiceIds.length === 0) return
+  const { data: files } = await supabase.storage.from(THUMBNAIL_BUCKET).list(orgId)
+  if (!files) return
+  // Keys are "<invoiceId>-<version>.png"; invoiceId is a UUID (has dashes), so
+  // match by prefix rather than splitting on '-'.
+  const remove = files
+    .filter((f) => invoiceIds.some((id) => f.name.startsWith(`${id}-`)))
+    .map((f) => `${orgId}/${f.name}`)
+  if (remove.length > 0) await supabase.storage.from(THUMBNAIL_BUCKET).remove(remove)
 }
 
 export interface InvoicePreviewPayload {
@@ -343,4 +359,79 @@ export async function cancelInvoiceAction(id: string): Promise<InvoiceActionResu
   revalidatePath('/invoices')
   revalidatePath(`/invoices/${id}`)
   return {}
+}
+
+/** Permanently delete a DRAFT invoice (RLS blocks non-drafts). */
+export async function deleteInvoiceAction(id: string): Promise<InvoiceActionResult> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data: deleted, error } = await supabase
+    .from('invoices')
+    .delete()
+    .eq('id', id)
+    .eq('organization_id', organizationId)
+    .eq('status', 'draft')
+    .select('id')
+  if (error) return { error: error.message }
+  if (!deleted || deleted.length === 0) return { error: 'only drafts can be deleted' }
+
+  await removeThumbnails(supabase, organizationId, [id])
+  revalidatePath('/invoices')
+  return {}
+}
+
+/** Bulk-delete drafts; returns how many were removed vs skipped (non-drafts). */
+export async function deleteDraftsAction(
+  ids: string[],
+): Promise<{ deleted: number; skipped: number; error?: string }> {
+  if (ids.length === 0) return { deleted: 0, skipped: 0 }
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data: deleted, error } = await supabase
+    .from('invoices')
+    .delete()
+    .eq('organization_id', organizationId)
+    .eq('status', 'draft')
+    .in('id', ids)
+    .select('id')
+  if (error) return { deleted: 0, skipped: ids.length, error: error.message }
+
+  const deletedIds = (deleted ?? []).map((r) => r.id)
+  await removeThumbnails(supabase, organizationId, deletedIds)
+  revalidatePath('/invoices')
+  return { deleted: deletedIds.length, skipped: ids.length - deletedIds.length }
+}
+
+/** Bulk-cancel invoices (draft/sent/overdue → cancelled). */
+export async function cancelInvoicesAction(
+  ids: string[],
+): Promise<{ cancelled: number; skipped: number; error?: string }> {
+  if (ids.length === 0) return { cancelled: 0, skipped: 0 }
+  const { organizationId, userId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data: updated, error } = await supabase
+    .from('invoices')
+    .update({ status: 'cancelled' })
+    .eq('organization_id', organizationId)
+    .in('status', ['draft', 'sent', 'overdue'])
+    .in('id', ids)
+    .select('id')
+  if (error) return { cancelled: 0, skipped: ids.length, error: error.message }
+
+  const cancelledIds = (updated ?? []).map((r) => r.id)
+  if (cancelledIds.length > 0) {
+    await supabase.from('invoice_events').insert(
+      cancelledIds.map((invoiceId) => ({
+        invoice_id: invoiceId,
+        organization_id: organizationId,
+        type: 'cancelled' as const,
+        actor_user_id: userId,
+      })),
+    )
+  }
+  revalidatePath('/invoices')
+  return { cancelled: cancelledIds.length, skipped: ids.length - cancelledIds.length }
 }

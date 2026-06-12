@@ -3,11 +3,13 @@ import { DownloadIcon, PlusIcon } from '@/components/ui/icons'
 import { InvoiceCards } from '@/features/invoices/components/invoice-cards'
 import { InvoiceFilters } from '@/features/invoices/components/invoice-filters'
 import { InvoiceList } from '@/features/invoices/components/invoice-list'
+import { InvoiceSelection } from '@/features/invoices/components/invoice-selection'
 import { NewInvoiceDialogButton } from '@/features/invoices/components/new-invoice-dialog'
 import { listInvoices } from '@/features/invoices/queries'
 import { formatMoney } from '@/lib/money'
 import type { Route } from 'next'
 import { getTranslations } from 'next-intl/server'
+import { cookies } from 'next/headers'
 import Link from 'next/link'
 
 interface PageProps {
@@ -19,7 +21,11 @@ const VALID_STATUSES = new Set(['draft', 'sent', 'paid', 'overdue', 'all'])
 export default async function InvoicesPage({ searchParams }: PageProps) {
   const { status, q, view } = await searchParams
   const normalised = status && VALID_STATUSES.has(status) ? status : 'all'
-  const cardsView = view === 'cards'
+  // Cards is the default view; the URL param wins, falling back to the saved
+  // cookie preference, then cards.
+  const savedView = (await cookies()).get('invoiceView')?.value
+  const resolvedView = view ?? savedView ?? 'cards'
+  const listView = resolvedView === 'list'
 
   const [t, invoices] = await Promise.all([
     getTranslations('invoices'),
@@ -56,7 +62,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
           <NewInvoiceDialogButton label={t('newInvoice')} />
         </div>
       </div>
-      <InvoiceFilters />
+      <InvoiceFilters view={listView ? 'list' : 'cards'} />
       {invoices.length === 0 ? (
         <div className="rounded-[24px] border border-dashed border-line-2 bg-card p-12 text-center">
           <h2 className="text-lg font-semibold tracking-tight">{t('empty')}</h2>
@@ -70,10 +76,10 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
             </Link>
           </div>
         </div>
-      ) : cardsView ? (
-        <InvoiceCards invoices={invoices} />
       ) : (
-        <InvoiceList invoices={invoices} />
+        <InvoiceSelection>
+          {listView ? <InvoiceList invoices={invoices} /> : <InvoiceCards invoices={invoices} />}
+        </InvoiceSelection>
       )}
     </div>
   )
