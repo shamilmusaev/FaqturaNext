@@ -145,6 +145,7 @@
       "client": "Client",
       "issuedAt": "Issued",
       "dueAt": "Due",
+      "deliveryAt": "Delivery date",
       "number": "Number",
       "currency": "Currency",
       "notes": "Notes",
@@ -168,6 +169,7 @@
     "options": {
       "title": "Options",
       "reverseVat": "Reverse charge (omvänd moms)",
+      "hideOcr": "Hide OCR number",
       "rotRut": "ROT/RUT deduction",
       "rotRutAmount": "Deduction amount",
       "none": "None"

@@ -22,6 +22,7 @@ export const InvoiceInputSchema = z.object({
   clientId: z.string().uuid(),
   issuedAt: z.string().date().optional(),
   dueAt: z.string().date(),
+  deliveryAt: z.string().date().optional(),
   currency: z
     .string()
     .regex(/^[A-Z]{3}$/, 'Currency must be 3 uppercase ASCII letters (ISO 4217)')
@@ -32,6 +33,7 @@ export const InvoiceInputSchema = z.object({
     .string()
     .refine(isTemplateId, 'Unknown invoice template')
     .default(DEFAULT_TEMPLATE_ID),
+  hideOcr: z.boolean().default(false),
   // Swedish invoice fields (Phase 2).
   reverseVat: z.boolean().default(false),
   rotRutType: RotRutTypeEnum.nullish(),

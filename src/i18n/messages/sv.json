@@ -145,6 +145,7 @@
       "client": "Kund",
       "issuedAt": "Utfärdad",
       "dueAt": "Förfaller",
+      "deliveryAt": "Leveransdatum",
       "number": "Nummer",
       "currency": "Valuta",
       "notes": "Anteckningar",
@@ -168,6 +169,7 @@
     "options": {
       "title": "Alternativ",
       "reverseVat": "Omvänd skattskyldighet",
+      "hideOcr": "Dölj OCR-nummer",
       "rotRut": "ROT/RUT-avdrag",
       "rotRutAmount": "Avdragsbelopp",
       "none": "Ingen"

@@ -26,8 +26,10 @@ function draft(lines: DraftLine[], overrides: Partial<InvoiceDraft> = {}): Invoi
   return {
     issuedAt: '2026-06-01',
     dueAt: '2026-07-01',
+    deliveryAt: '',
     currency: 'SEK',
     notes: '',
+    hideOcr: false,
     number: '',
     lines,
     reverseVat: false,
@@ -53,6 +55,42 @@ describe('buildPreviewData', () => {
     expect(data.totalCents).toBe(25000n)
     expect(data.lineItems).toHaveLength(1)
     expect(data.lineItems[0]?.amountCents).toBe(20000n)
+  })
+
+  it('passes a set delivery date through and nulls a blank one', () => {
+    const withDate = buildPreviewData(
+      draft([line({ description: 'Work', unitPriceCents: 5000n })], { deliveryAt: '2026-06-15' }),
+      org,
+      client,
+      '—',
+    )
+    expect(withDate.deliveryAt).toBe('2026-06-15')
+
+    const blank = buildPreviewData(
+      draft([line({ description: 'Work', unitPriceCents: 5000n })], { deliveryAt: '  ' }),
+      org,
+      client,
+      '—',
+    )
+    expect(blank.deliveryAt).toBeNull()
+  })
+
+  it('omits the OCR reference when hideOcr is set', () => {
+    const shown = buildPreviewData(
+      draft([line({ description: 'Work', unitPriceCents: 5000n })]),
+      org,
+      client,
+      'INV-2026-0001',
+    )
+    expect(shown.ocrReference).toBeTruthy()
+
+    const hidden = buildPreviewData(
+      draft([line({ description: 'Work', unitPriceCents: 5000n })], { hideOcr: true }),
+      org,
+      client,
+      'INV-2026-0001',
+    )
+    expect(hidden.ocrReference).toBeNull()
   })
 
   it('drops empty lines (no description and zero price)', () => {

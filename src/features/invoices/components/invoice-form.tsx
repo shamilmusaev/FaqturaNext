@@ -17,8 +17,8 @@ import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useState, useTransition } from 'react'
-import { createInvoiceAction } from '../actions'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { createInvoiceAction, updateInvoiceAction } from '../actions'
 import type { DraftLine, FormDraft } from '../preview-data'
 import type { InvoiceInput, LineItemInput, RotRutType } from '../schema'
 import { type SwedishVatRate, calcInvoiceTotals } from '../vat'
@@ -40,6 +40,12 @@ interface Props {
   onDraftChange?: (draft: FormDraft) => void
   onCancel?: () => void
   onSuccess?: () => void
+  /** 'edit' targets an existing draft invoice; defaults to 'create'. */
+  mode?: 'create' | 'edit'
+  /** The draft invoice id (required in edit mode; tracked internally in create). */
+  invoiceId?: string
+  /** Seed values for edit mode (existing invoice). */
+  initial?: FormDraft
 }
 
 const VAT_RATES: SwedishVatRate[] = [25, 12, 6, 0]
@@ -55,7 +61,7 @@ function emptyLine(): DraftLine {
   }
 }
 
-const PAYMENT_TERMS = [10, 14, 30, 45, 60] as const
+const PAYMENT_TERMS = [10, 14, 20, 30, 45, 60] as const
 
 // Shared <select> styling: custom chevron with comfortable right padding so the
 // arrow never crowds the border or the text.
@@ -84,6 +90,9 @@ export function InvoiceForm({
   onDraftChange,
   onCancel,
   onSuccess,
+  mode = 'create',
+  invoiceId,
+  initial,
 }: Props) {
   const t = useTranslations('invoices')
   const tFields = useTranslations('invoices.fields')
@@ -92,22 +101,33 @@ export function InvoiceForm({
   const tToast = useTranslations('invoices.toast')
   const router = useRouter()
   const [pending, start] = useTransition()
-  const [clientId, setClientId] = useState(clients[0]?.id ?? '')
-  const [issuedAt, setIssuedAt] = useState(todayPlusDays(0))
-  const [dueAt, setDueAt] = useState(todayPlusDays(30))
-  const [currency, setCurrency] = useState(defaultCurrency)
-  const [notes, setNotes] = useState('')
-  const [number, setNumber] = useState('')
-  const [lines, setLines] = useState<DraftLine[]>(() => Array.from({ length: 5 }, emptyLine))
+  const [clientId, setClientId] = useState(initial?.clientId || clients[0]?.id || '')
+  const [issuedAt, setIssuedAt] = useState(initial?.issuedAt ?? todayPlusDays(0))
+  const [dueAt, setDueAt] = useState(initial?.dueAt ?? todayPlusDays(30))
+  const [deliveryAt, setDeliveryAt] = useState(initial?.deliveryAt ?? '')
+  const [currency, setCurrency] = useState(initial?.currency ?? defaultCurrency)
+  const [notes, setNotes] = useState(initial?.notes ?? '')
+  const [number, setNumber] = useState(initial?.number ?? '')
+  const [lines, setLines] = useState<DraftLine[]>(
+    () => initial?.lines ?? Array.from({ length: 5 }, emptyLine),
+  )
   const [serverError, setServerError] = useState<string | null>(null)
   // Swedish invoice fields (Phase 2).
   const [paymentTermsDays, setPaymentTermsDays] = useState(30)
-  const [reverseVat, setReverseVat] = useState(false)
-  const [rotRutType, setRotRutType] = useState<RotRutType | ''>('')
-  const [rotRutCents, setRotRutCents] = useState(0n)
-  const [ourReference, setOurReference] = useState('')
-  const [theirReference, setTheirReference] = useState('')
-  const [orderNumber, setOrderNumber] = useState('')
+  const [hideOcr, setHideOcr] = useState(initial?.hideOcr ?? false)
+  const [reverseVat, setReverseVat] = useState(initial?.reverseVat ?? false)
+  const [rotRutType, setRotRutType] = useState<RotRutType | ''>(initial?.rotRutType ?? '')
+  const [rotRutCents, setRotRutCents] = useState(initial?.rotRutCents ?? 0n)
+  const [ourReference, setOurReference] = useState(initial?.ourReference ?? '')
+  const [theirReference, setTheirReference] = useState(initial?.theirReference ?? '')
+  const [orderNumber, setOrderNumber] = useState(initial?.orderNumber ?? '')
+  // Autosave bookkeeping: the draft id we write into (known up front in edit mode).
+  const draftIdRef = useRef<string | null>(invoiceId ?? null)
+  const savingRef = useRef(false)
+  const pendingInputRef = useRef<InvoiceInput | null>(null)
+  // Skip the very first autosave pass (mount) so seeded/empty state doesn't
+  // trigger a redundant write before the user changes anything.
+  const autosaveReadyRef = useRef(false)
   // Bumped by fillMockData to remount the uncontrolled MoneyInputs so they pick
   // up the new defaultValueCents.
   const [seedVersion, setSeedVersion] = useState(0)
@@ -146,10 +166,12 @@ export function InvoiceForm({
       clientId,
       issuedAt,
       dueAt,
+      deliveryAt,
       currency,
       notes,
       number,
       lines,
+      hideOcr,
       reverseVat,
       rotRutType: rotRutType || null,
       rotRutCents: rotRutActive ? rotRutCents : 0n,
@@ -162,10 +184,12 @@ export function InvoiceForm({
     clientId,
     issuedAt,
     dueAt,
+    deliveryAt,
     currency,
     notes,
     number,
     lines,
+    hideOcr,
     reverseVat,
     rotRutType,
     rotRutActive,
@@ -173,6 +197,101 @@ export function InvoiceForm({
     ourReference,
     theirReference,
     orderNumber,
+  ])
+
+  // Build the validated invoice payload from current state, or null when there
+  // isn't enough yet (no client / no usable line) to save.
+  const buildInput = (): InvoiceInput | null => {
+    const validLines: LineItemInput[] = lines
+      .filter((l) => l.description.trim() && l.quantity > 0)
+      .map((l) => ({
+        description: l.description.trim(),
+        quantity: l.quantity,
+        unit: l.unit.trim() || undefined,
+        unitPriceCents: l.unitPriceCents,
+        vatRate: l.vatRate as 0 | 6 | 12 | 25,
+        discountPercent: l.discountPercent || 0,
+      }))
+    if (!clientId || !dueAt || validLines.length === 0) return null
+    return {
+      clientId,
+      issuedAt,
+      dueAt,
+      deliveryAt: deliveryAt || undefined,
+      currency,
+      notes: notes.trim() || undefined,
+      number: number.trim() || undefined,
+      template: templateId,
+      hideOcr,
+      reverseVat,
+      rotRutType: rotRutType || null,
+      rotRutCents: rotRutActive ? rotRutCents : 0n,
+      ourReference: ourReference.trim() || undefined,
+      theirReference: theirReference.trim() || undefined,
+      orderNumber: orderNumber.trim() || undefined,
+      paymentTermsDays,
+      lineItems: validLines,
+    }
+  }
+
+  // Persist a background autosave: create the draft on first save, update it
+  // afterwards. Serialized via savingRef so overlapping edits coalesce.
+  const runAutosave = async (input: InvoiceInput) => {
+    if (savingRef.current) {
+      pendingInputRef.current = input
+      return
+    }
+    savingRef.current = true
+    try {
+      if (draftIdRef.current) {
+        await updateInvoiceAction(draftIdRef.current, input, false)
+      } else {
+        const res = await createInvoiceAction(input, false)
+        if (res.invoiceId) draftIdRef.current = res.invoiceId
+      }
+    } catch {
+      /* autosave is best-effort; the explicit Save surfaces errors */
+    } finally {
+      savingRef.current = false
+      if (pendingInputRef.current) {
+        const next = pendingInputRef.current
+        pendingInputRef.current = null
+        void runAutosave(next)
+      }
+    }
+  }
+
+  // Debounced autosave: each edit resets a 1.2s timer; once idle we persist.
+  // Skips the first (mount) pass so seeded/empty state doesn't write.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: keyed on form fields; buildInput/runAutosave intentionally excluded.
+  useEffect(() => {
+    if (!autosaveReadyRef.current) {
+      autosaveReadyRef.current = true
+      return
+    }
+    const input = buildInput()
+    if (!input) return
+    const timer = setTimeout(() => void runAutosave(input), 1200)
+    return () => clearTimeout(timer)
+  }, [
+    clientId,
+    issuedAt,
+    dueAt,
+    deliveryAt,
+    currency,
+    notes,
+    number,
+    lines,
+    hideOcr,
+    reverseVat,
+    rotRutType,
+    rotRutActive,
+    rotRutCents,
+    ourReference,
+    theirReference,
+    orderNumber,
+    paymentTermsDays,
+    templateId,
   ])
 
   // Keep the due date in step with the payment-terms shortcut.
@@ -224,7 +343,9 @@ export function InvoiceForm({
     setDueAt(todayPlusDays(30))
     setPaymentTermsDays(30)
     setCurrency('SEK')
-    setNotes('Tack för förtroendet! Betalning inom 30 dagar.')
+    // Payment terms live in the Betalningsvillkor field; don't hardcode days
+    // here or the note contradicts the chosen term.
+    setNotes('Tack för förtroendet!')
     setOurReference('Anna Lind')
     setTheirReference('Erik Svensson')
     setOrderNumber('PO-2026-077')
@@ -301,41 +422,21 @@ export function InvoiceForm({
       setServerError(tErrors('pickClient'))
       return
     }
-    const validLines: LineItemInput[] = lines
-      .filter((l) => l.description.trim() && l.quantity > 0)
-      .map((l) => ({
-        description: l.description.trim(),
-        quantity: l.quantity,
-        unit: l.unit.trim() || undefined,
-        unitPriceCents: l.unitPriceCents,
-        vatRate: l.vatRate as 0 | 6 | 12 | 25,
-        discountPercent: l.discountPercent || 0,
-      }))
-    if (validLines.length === 0) {
+    const input = buildInput()
+    if (!input) {
       setServerError(tErrors('atLeastOneLine'))
       return
     }
 
-    const input: InvoiceInput = {
-      clientId,
-      issuedAt,
-      dueAt,
-      currency,
-      notes: notes.trim() || undefined,
-      number: number.trim() || undefined,
-      template: templateId,
-      reverseVat,
-      rotRutType: rotRutType || null,
-      rotRutCents: rotRutActive ? rotRutCents : 0n,
-      ourReference: ourReference.trim() || undefined,
-      theirReference: theirReference.trim() || undefined,
-      orderNumber: orderNumber.trim() || undefined,
-      paymentTermsDays,
-      lineItems: validLines,
-    }
+    // Finalize into the autosaved draft if one exists, otherwise create fresh.
+    // Both redirect to the detail page on success, so code after the await only
+    // runs on failure.
+    const id = draftIdRef.current
 
     start(async () => {
-      const res = await createInvoiceAction(input)
+      const res = id
+        ? await updateInvoiceAction(id, input, 'detail')
+        : await createInvoiceAction(input, 'detail')
       if (res.error) {
         setServerError(res.error)
         return
@@ -396,6 +497,10 @@ export function InvoiceForm({
         <label className="flex flex-col gap-1.5 text-sm">
           <span className="text-ink/80">{tFields('dueAt')}</span>
           <Input type="date" value={dueAt} onChange={(e) => setDueAt(e.target.value)} required />
+        </label>
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="text-ink/80">{tFields('deliveryAt')}</span>
+          <Input type="date" value={deliveryAt} onChange={(e) => setDeliveryAt(e.target.value)} />
         </label>
         <label className="flex flex-col gap-1.5 text-sm">
           <span className="text-ink/80">{tFields('paymentTerms')}</span>
@@ -584,6 +689,15 @@ export function InvoiceForm({
             />
             {t('options.reverseVat')}
           </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={hideOcr}
+              onChange={(e) => setHideOcr(e.target.checked)}
+              className="h-4 w-4 accent-brand"
+            />
+            {t('options.hideOcr')}
+          </label>
           <div className="grid grid-cols-2 gap-3 items-end">
             <label className="flex flex-col gap-1.5 text-xs text-ink/60">
               {t('options.rotRut')}
@@ -657,7 +771,7 @@ export function InvoiceForm({
 
       <div className="flex items-center gap-3">
         <Button type="submit" disabled={pending}>
-          {tActions('create')}
+          {tActions(mode === 'edit' ? 'save' : 'create')}
         </Button>
         {onCancel ? (
           <button type="button" onClick={onCancel} className="text-sm text-ink/60 hover:text-ink">

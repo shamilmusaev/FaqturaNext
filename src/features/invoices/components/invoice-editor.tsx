@@ -8,10 +8,12 @@ import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useMemo, useState } from 'react'
 import {
+  type EditInvoiceInitial,
   type EditorClient,
   type FormDraft,
   type PreviewOrganization,
   buildPreviewData,
+  initialToFormDraft,
 } from '../preview-data'
 import { InvoiceForm } from './invoice-form'
 
@@ -25,6 +27,10 @@ interface Props {
   clients: EditorClient[]
   org: PreviewOrganization
   cancelHref: Route
+  /** 'edit' loads an existing draft; defaults to 'create'. */
+  mode?: 'create' | 'edit'
+  /** Serializable snapshot of the existing invoice (edit mode). */
+  initial?: EditInvoiceInitial
 }
 
 function todayPlusDays(days: number): string {
@@ -57,30 +63,41 @@ function previewNumber(tpl?: string | null): string {
 
 type MobileTab = 'form' | 'preview'
 
-export function InvoiceEditor({ clients, org, cancelHref }: Props) {
+export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initial }: Props) {
   const tTabs = useTranslations('invoices.tabs')
   const tActions = useTranslations('invoices.actions')
-  const [templateId, setTemplateId] = useState<TemplateId>(DEFAULT_TEMPLATE_ID)
+  // Revive the serializable snapshot into the form's bigint shape (client-side,
+  // since bigint can't cross the RSC boundary).
+  const seeded = useMemo(() => (initial ? initialToFormDraft(initial) : null), [initial])
+  const invoiceId = initial?.invoiceId
+  const [templateId, setTemplateId] = useState<TemplateId>(
+    seeded?.templateId ?? DEFAULT_TEMPLATE_ID,
+  )
   const [tab, setTab] = useState<MobileTab>('form')
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
 
   // Seed with the form's initial state so the preview renders immediately; the
   // form's onDraftChange syncs it on mount and on every edit thereafter.
-  const [draft, setDraft] = useState<FormDraft>(() => ({
-    clientId: clients[0]?.id ?? '',
-    issuedAt: todayPlusDays(0),
-    dueAt: todayPlusDays(30),
-    currency: org.currency_default ?? 'SEK',
-    notes: '',
-    number: '',
-    lines: Array.from({ length: DEFAULT_LINE_COUNT }, emptyDraftLine),
-    reverseVat: false,
-    rotRutType: null,
-    rotRutCents: 0n,
-    ourReference: '',
-    theirReference: '',
-    orderNumber: '',
-  }))
+  const [draft, setDraft] = useState<FormDraft>(
+    () =>
+      seeded?.draft ?? {
+        clientId: clients[0]?.id ?? '',
+        issuedAt: todayPlusDays(0),
+        dueAt: todayPlusDays(30),
+        deliveryAt: '',
+        currency: org.currency_default ?? 'SEK',
+        notes: '',
+        number: '',
+        lines: Array.from({ length: DEFAULT_LINE_COUNT }, emptyDraftLine),
+        hideOcr: false,
+        reverseVat: false,
+        rotRutType: null,
+        rotRutCents: 0n,
+        ourReference: '',
+        theirReference: '',
+        orderNumber: '',
+      },
+  )
 
   const selectedClient = useMemo(
     () => clients.find((c) => c.id === draft.clientId) ?? null,
@@ -131,6 +148,9 @@ export function InvoiceEditor({ clients, org, cancelHref }: Props) {
             templateId={templateId}
             numberPreview={numberPreview}
             onDraftChange={setDraft}
+            mode={mode}
+            invoiceId={invoiceId}
+            initial={seeded?.draft}
           />
         </div>
 

@@ -32,12 +32,13 @@ export function invoiceToPdfData(invoice: InvoiceDetail, org: PdfOrgRow): Invoic
     number: invoice.number,
     issuedAt: invoice.issued_at,
     dueAt: invoice.due_at,
+    deliveryAt: invoice.delivery_date,
     currency: invoice.currency,
     subtotalCents: BigInt(invoice.subtotal_cents),
     vatCents: BigInt(invoice.vat_cents),
     totalCents: BigInt(invoice.total_cents),
     notes: invoice.notes,
-    ocrReference: invoice.ocr_reference,
+    ocrReference: invoice.hide_ocr ? null : invoice.ocr_reference,
     reverseVat: invoice.reverse_vat,
     rotRut:
       invoice.rot_rut_type && BigInt(invoice.rot_rut_cents) > 0n

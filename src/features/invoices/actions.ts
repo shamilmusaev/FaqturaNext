@@ -51,6 +51,7 @@ function flattenErrors(issues: import('zod').ZodIssue[]): Record<string, string>
 
 export async function createInvoiceAction(
   input: InvoiceInput,
+  redirectTo: 'detail' | false = 'detail',
 ): Promise<InvoiceActionResult & { invoiceId?: string }> {
   const { organizationId, userId } = await requireUser()
   const parsed = InvoiceInputSchema.safeParse(input)
@@ -62,6 +63,8 @@ export async function createInvoiceAction(
     p_client_id: parsed.data.clientId,
     p_due_at: parsed.data.dueAt,
     p_issued_at: parsed.data.issuedAt ?? null,
+    p_delivery_date: parsed.data.deliveryAt ?? null,
+    p_hide_ocr: parsed.data.hideOcr,
     p_currency: parsed.data.currency,
     p_notes: parsed.data.notes ?? null,
     p_number: parsed.data.number ?? null,
@@ -88,7 +91,58 @@ export async function createInvoiceAction(
   if (!data) return { error: 'invoice creation returned no row' }
 
   revalidatePath('/invoices')
-  redirect(`/invoices/${data.id}` as Route)
+  if (redirectTo === 'detail') redirect(`/invoices/${data.id}` as Route)
+  return { invoiceId: data.id }
+}
+
+/**
+ * Persist edits to an existing DRAFT invoice. `redirectTo` controls navigation:
+ * pass false for background autosave (returns the result instead of redirecting).
+ */
+export async function updateInvoiceAction(
+  invoiceId: string,
+  input: InvoiceInput,
+  redirectTo: 'detail' | false = 'detail',
+): Promise<InvoiceActionResult & { invoiceId?: string }> {
+  await requireUser()
+  const parsed = InvoiceInputSchema.safeParse(input)
+  if (!parsed.success) return { fieldErrors: flattenErrors(parsed.error.issues) }
+
+  const supabase = await createServerClient()
+  const { data, error } = await supabase.rpc('update_invoice', {
+    p_invoice_id: invoiceId,
+    p_client_id: parsed.data.clientId,
+    p_due_at: parsed.data.dueAt,
+    p_issued_at: parsed.data.issuedAt ?? null,
+    p_delivery_date: parsed.data.deliveryAt ?? null,
+    p_hide_ocr: parsed.data.hideOcr,
+    p_currency: parsed.data.currency,
+    p_notes: parsed.data.notes ?? null,
+    p_number: parsed.data.number ?? null,
+    p_template: parsed.data.template,
+    p_reverse_vat: parsed.data.reverseVat,
+    p_rot_rut_type: parsed.data.rotRutType ?? null,
+    p_rot_rut_cents: Number(parsed.data.rotRutCents),
+    p_our_reference: parsed.data.ourReference ?? null,
+    p_their_reference: parsed.data.theirReference ?? null,
+    p_order_number: parsed.data.orderNumber ?? null,
+    p_payment_terms_days: parsed.data.paymentTermsDays ?? null,
+    p_line_items: parsed.data.lineItems.map((li) => ({
+      description: li.description,
+      quantity: li.quantity,
+      unit: li.unit ?? null,
+      unit_price_cents: li.unitPriceCents.toString(),
+      vat_rate: li.vatRate,
+      discount_percent: li.discountPercent,
+    })),
+  })
+  if (error) return { error: error.message }
+  if (!data) return { error: 'invoice update returned no row' }
+
+  revalidatePath('/invoices')
+  revalidatePath(`/invoices/${invoiceId}`)
+  if (redirectTo === 'detail') redirect(`/invoices/${invoiceId}` as Route)
+  return { invoiceId }
 }
 
 export async function duplicateInvoiceAction(

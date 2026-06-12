@@ -1,4 +1,5 @@
 import type { InvoicePdfData } from '@/lib/pdf/templates'
+import { DEFAULT_TEMPLATE_ID, type TemplateId, isTemplateId } from '@/lib/pdf/templates/ids'
 import { generateOcrReference } from './ocr'
 import type { RotRutType } from './schema'
 import { type SwedishVatRate, calcInvoiceTotals, calcLineTotal } from './vat'
@@ -19,11 +20,15 @@ export interface DraftLine {
 export interface InvoiceDraft {
   issuedAt: string
   dueAt: string
+  /** Delivery date (leveransdatum); blank means not specified. */
+  deliveryAt: string
   currency: string
   notes: string
   lines: DraftLine[]
   /** Manual invoice number; blank means auto-generated on save. */
   number: string
+  /** Hide the OCR reference from the preview and the PDF. */
+  hideOcr: boolean
   // Swedish invoice fields (Phase 2).
   reverseVat: boolean
   rotRutType: RotRutType | null
@@ -36,6 +41,79 @@ export interface InvoiceDraft {
 /** Draft emitted by the form, including the selected client id. */
 export interface FormDraft extends InvoiceDraft {
   clientId: string
+}
+
+/**
+ * Serializable snapshot of a saved draft invoice, passed from the (server) edit
+ * page to the (client) editor. Money is plain numbers here — bigint can't cross
+ * the RSC boundary — and is revived into the form's bigint shape by
+ * `initialToFormDraft` on the client.
+ */
+export interface EditInvoiceInitial {
+  invoiceId: string
+  clientId: string
+  issuedAt: string
+  dueAt: string
+  deliveryAt: string | null
+  currency: string
+  notes: string | null
+  number: string
+  template: string
+  hideOcr: boolean
+  reverseVat: boolean
+  rotRutType: string | null
+  rotRutCents: number
+  ourReference: string | null
+  theirReference: string | null
+  orderNumber: string | null
+  lines: {
+    description: string
+    quantity: number
+    unit: string | null
+    unitPriceCents: number
+    vatRate: number
+    discountPercent: number
+  }[]
+}
+
+function asVatRate(v: number): SwedishVatRate {
+  return v === 0 || v === 6 || v === 12 || v === 25 ? v : 25
+}
+
+export function initialToFormDraft(init: EditInvoiceInitial): {
+  draft: FormDraft
+  templateId: TemplateId
+} {
+  return {
+    draft: {
+      clientId: init.clientId,
+      issuedAt: init.issuedAt,
+      dueAt: init.dueAt,
+      deliveryAt: init.deliveryAt ?? '',
+      currency: init.currency,
+      notes: init.notes ?? '',
+      number: init.number,
+      lines: init.lines.map((l) => ({
+        description: l.description,
+        quantity: l.quantity,
+        unit: l.unit ?? '',
+        unitPriceCents: BigInt(l.unitPriceCents),
+        vatRate: asVatRate(l.vatRate),
+        discountPercent: l.discountPercent,
+      })),
+      hideOcr: init.hideOcr,
+      reverseVat: init.reverseVat,
+      rotRutType:
+        init.rotRutType === 'ROT' || init.rotRutType === 'RUT'
+          ? (init.rotRutType as RotRutType)
+          : null,
+      rotRutCents: BigInt(init.rotRutCents),
+      ourReference: init.ourReference ?? '',
+      theirReference: init.theirReference ?? '',
+      orderNumber: init.orderNumber ?? '',
+    },
+    templateId: isTemplateId(init.template) ? init.template : DEFAULT_TEMPLATE_ID,
+  }
 }
 
 type Address = { street?: string; postal?: string; city?: string; country?: string } | null
@@ -98,6 +176,7 @@ export function buildPreviewData(
     number: num,
     issuedAt: draft.issuedAt,
     dueAt: draft.dueAt,
+    deliveryAt: draft.deliveryAt.trim() || null,
     currency: draft.currency,
     subtotalCents: totals.subtotalCents,
     vatCents: totals.vatCents,
@@ -105,7 +184,7 @@ export function buildPreviewData(
     notes: draft.notes.trim() || null,
     // OCR is assigned server-side from the final number; in the live preview we
     // derive it from the (placeholder) label, which yields null until saved.
-    ocrReference: generateOcrReference(num),
+    ocrReference: draft.hideOcr ? null : generateOcrReference(num),
     reverseVat: draft.reverseVat,
     rotRut:
       draft.rotRutType && draft.rotRutCents > 0n
