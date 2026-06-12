@@ -23,8 +23,24 @@ const ORG_BRANDING_FIELDS = [
   'logo_url',
 ] as const
 
+// Canonical JSON (object keys sorted, recursively) so a value like the address
+// jsonb hashes identically regardless of key order across different queries.
+function canonical(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonical)
+  if (value && typeof value === 'object') {
+    const o = value as Record<string, unknown>
+    return Object.keys(o)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, k) => {
+        acc[k] = canonical(o[k])
+        return acc
+      }, {})
+  }
+  return value
+}
+
 export function orgBrandingVersion(org: Record<string, unknown>): string {
-  const subset = ORG_BRANDING_FIELDS.map((f) => org[f] ?? null)
+  const subset = ORG_BRANDING_FIELDS.map((f) => canonical(org[f] ?? null))
   return createHash('sha1').update(JSON.stringify(subset)).digest('hex').slice(0, 8)
 }
 
