@@ -31,7 +31,7 @@
         "recommended": true,
         "noLabelWithoutControl": {
           "level": "error",
-          "options": { "inputComponents": ["Input", "MoneyInput"] }
+          "options": { "inputComponents": ["Input", "MoneyInput", "LineDescriptionField"] }
         }
       }
     }

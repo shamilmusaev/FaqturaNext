@@ -553,5 +553,44 @@
       "title": "Budgetvarningar",
       "empty": "Inga varningar. Du är inom budget."
     }
+  },
+  "ai": {
+    "magicFill": {
+      "button": "Magisk ifyllning",
+      "title": "Magisk ifyllning",
+      "description": "Klistra in dina anteckningar — uppgifter, timmar, material, priser — på valfritt språk. AI gör om dem till fakturarader.",
+      "placeholder": "t.ex. 3h konsultation à 950/h, materialleverans 320 kr, målning 8h à 600...",
+      "generate": "Generera",
+      "regenerate": "Generera igen",
+      "generating": "Genererar rader...",
+      "apply": "Lägg till ({count})",
+      "stop": "Stoppa",
+      "empty": "Hittade inga fakturarader i texten.",
+      "error": "Genereringen misslyckades. Försök igen.",
+      "applied": "{count} rader tillagda",
+      "clear": "Rensa",
+      "draftBadge": "Utkast",
+      "help": {
+        "toggle": "Så här skriver du",
+        "intro": "Skriv dina anteckningar precis som du vill — på valfritt språk. AI gör om dem till tydliga fakturarader.",
+        "tipTime": "Både timmar och minuter funkar: \"6h\", \"50 min\", \"1h 30\" — de räknas om till timmar.",
+        "tipPrice": "Lägg till pris om du har det: \"950/h\", \"320 kr\". Inget pris? Raden läggs till med 0 att fylla i.",
+        "tipGroup": "Klistra in en hel tidslogg över flera dagar — samma uppgift slås ihop till en rad med summerade timmar.",
+        "tipVat": "Momsen sätts till 25 % om inte dina anteckningar säger annat.",
+        "tipLang": "Blanda svenska, engelska eller ryska fritt — beskrivningarna skrivs på fakturans språk.",
+        "exampleTitle": "Exempel",
+        "example": "8 juni\n- Möte 50 min\n- Lucra frontend 6h, 950/h\n9 juni\n- Lucra frontend 6h\n- Lucra landning 1h"
+      }
+    },
+    "polish": {
+      "button": "Förbättra text",
+      "polished": "Texten förbättrad",
+      "undo": "Ångra",
+      "error": "Kunde inte förbättra texten.",
+      "notConfigured": "AI-funktioner är inte konfigurerade.",
+      "polishAll": "Förbättra alla",
+      "polishedAll": "{count} rader förbättrade",
+      "rateLimited": "För många förfrågningar — vänta en stund."
+    }
   }
 }

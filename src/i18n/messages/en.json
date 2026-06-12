@@ -553,5 +553,44 @@
       "title": "Budget alerts",
       "empty": "No alerts. You are within budget."
     }
+  },
+  "ai": {
+    "magicFill": {
+      "button": "Magic fill",
+      "title": "Magic fill",
+      "description": "Paste your notes — tasks, hours, materials, prices — in any language. AI turns them into invoice lines.",
+      "placeholder": "e.g. 3h consulting at 950/h, material delivery 320 kr, painting 8h à 600...",
+      "generate": "Generate",
+      "regenerate": "Regenerate",
+      "generating": "Generating lines...",
+      "apply": "Apply ({count})",
+      "stop": "Stop",
+      "empty": "Couldn't find any line items in the text.",
+      "error": "Generation failed. Please try again.",
+      "applied": "{count} lines added",
+      "clear": "Clear",
+      "draftBadge": "Draft",
+      "help": {
+        "toggle": "How to write",
+        "intro": "Write your notes however you like — in any language. The AI turns them into clean invoice lines.",
+        "tipTime": "Hours or minutes both work: \"6h\", \"50 min\", \"1h 30\" — they're converted to hours.",
+        "tipPrice": "Add a price if you have one: \"950/h\", \"320 kr\". No price? The line is added at 0 for you to fill in.",
+        "tipGroup": "Paste a whole time log across days — the same task is merged into one line with the hours summed.",
+        "tipVat": "VAT is set to 25% unless your notes say otherwise.",
+        "tipLang": "Mix Swedish, English or Russian freely — descriptions come out in the invoice language.",
+        "exampleTitle": "Example",
+        "example": "8 June\n- Meeting 50 min\n- Lucra frontend 6h, 950/h\n9 June\n- Lucra frontend 6h\n- Lucra landing 1h"
+      }
+    },
+    "polish": {
+      "button": "Improve text",
+      "polished": "Text improved",
+      "undo": "Undo",
+      "error": "Couldn't improve the text.",
+      "notConfigured": "AI features are not configured.",
+      "polishAll": "Polish all",
+      "polishedAll": "{count} lines improved",
+      "rateLimited": "Too many requests — please wait a moment."
+    }
   }
 }

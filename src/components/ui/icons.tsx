@@ -34,4 +34,7 @@ export {
   Clock as TimeIcon,
   KanbanSquare as BoardIcon,
   ArrowUpRight,
+  Wand2 as WandIcon,
+  PenLine as PenLineIcon,
+  Loader2 as SpinnerIcon,
 } from 'lucide-react'

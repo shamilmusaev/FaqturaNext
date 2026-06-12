@@ -60,6 +60,68 @@ export async function listInvoices(opts: ListInvoicesOptions = {}): Promise<Invo
   return (data as unknown as InvoiceListItem[]) ?? []
 }
 
+export type LineItemHistoryEntry = {
+  description: string
+  unitPriceCents: bigint
+  unit: string | null
+  vatRate: number
+}
+
+/**
+ * Distinct past line items for the org, most recent priced entry per
+ * description, used as a "usual rate" reference for AI Magic Fill. Items the
+ * user invoiced for the given client are preferred (listed first). Zero-priced
+ * lines are dropped — they carry no rate to remember.
+ */
+export async function listLineItemHistory(opts: {
+  clientId?: string | null
+  limit?: number
+}): Promise<LineItemHistoryEntry[]> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+  const limit = opts.limit ?? 40
+
+  // !inner makes the join a filter so RLS + org scoping apply through the
+  // parent invoice. Pull a generous window, then dedupe in JS.
+  const { data, error } = await supabase
+    .from('invoice_line_items')
+    .select(
+      'description, unit, unit_price_cents, vat_rate, created_at, invoices!inner(organization_id, client_id)',
+    )
+    .eq('invoices.organization_id', organizationId)
+    .gt('unit_price_cents', 0)
+    .order('created_at', { ascending: false })
+    .limit(400)
+  if (error) throw error
+
+  type Row = {
+    description: string
+    unit: string | null
+    unit_price_cents: number | string
+    vat_rate: number
+    invoices: { client_id: string | null } | { client_id: string | null }[]
+  }
+
+  const seen = new Map<string, LineItemHistoryEntry & { forClient: boolean }>()
+  for (const row of (data ?? []) as unknown as Row[]) {
+    const key = row.description.trim().toLowerCase()
+    if (!key || seen.has(key)) continue // rows are newest-first, so keep the first
+    const inv = Array.isArray(row.invoices) ? row.invoices[0] : row.invoices
+    seen.set(key, {
+      description: row.description.trim(),
+      unitPriceCents: BigInt(row.unit_price_cents),
+      unit: row.unit,
+      vatRate: Number(row.vat_rate),
+      forClient: Boolean(opts.clientId && inv?.client_id === opts.clientId),
+    })
+  }
+
+  return [...seen.values()]
+    .sort((a, b) => Number(b.forClient) - Number(a.forClient))
+    .slice(0, limit)
+    .map(({ forClient: _forClient, ...entry }) => entry)
+}
+
 export async function getInvoice(id: string): Promise<InvoiceDetail | null> {
   const { organizationId } = await requireUser()
   const supabase = await createServerClient()

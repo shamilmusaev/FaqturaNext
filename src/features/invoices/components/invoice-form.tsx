@@ -5,6 +5,12 @@ import { CloseIcon, PlusIcon } from '@/components/ui/icons'
 import { Input } from '@/components/ui/input'
 import { MoneyInput } from '@/components/ui/money-input'
 import { toast } from '@/components/ui/toast'
+import { type LineSuggestion, lineSuggestionsAction } from '@/features/ai/actions'
+import { LineDescriptionField } from '@/features/ai/components/line-description-field'
+import { MagicFillPanel } from '@/features/ai/components/magic-fill-panel'
+import { PolishAllButton } from '@/features/ai/components/polish-all-button'
+import { PolishButton } from '@/features/ai/components/polish-button'
+import { MAX_APPLIED_LINES } from '@/features/ai/convert'
 import { addCents, formatMoney } from '@/lib/money'
 import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import type { Route } from 'next'
@@ -105,6 +111,19 @@ export function InvoiceForm({
   // Bumped by fillMockData to remount the uncontrolled MoneyInputs so they pick
   // up the new defaultValueCents.
   const [seedVersion, setSeedVersion] = useState(0)
+  // Past line items for ghost autocomplete; refetched when the client changes
+  // so rates invoiced to that client are preferred.
+  const [suggestions, setSuggestions] = useState<LineSuggestion[]>([])
+
+  useEffect(() => {
+    let active = true
+    lineSuggestionsAction({ clientId: clientId || undefined }).then((s) => {
+      if (active) setSuggestions(s)
+    })
+    return () => {
+      active = false
+    }
+  }, [clientId])
 
   const rotRutActive = rotRutType !== '' && rotRutCents > 0n
 
@@ -172,6 +191,29 @@ export function InvoiceForm({
 
   const removeLine = (idx: number) => {
     setLines((prev) => prev.filter((_, i) => i !== idx))
+  }
+
+  // Accept a ghost-text suggestion: fill the whole row from the past line item.
+  // Bump seedVersion so the uncontrolled MoneyInput shows the recalled price.
+  const acceptSuggestion = (idx: number, s: LineSuggestion) => {
+    updateLine(idx, {
+      description: s.description,
+      unitPriceCents: BigInt(s.unitPriceCents),
+      unit: s.unit ?? '',
+      vatRate: s.vatRate as SwedishVatRate,
+    })
+    setSeedVersion((v) => v + 1)
+  }
+
+  // Magic Fill: replace the empty pre-seeded rows and append the AI-generated
+  // lines after any the user already filled in. Bump seedVersion to remount the
+  // uncontrolled MoneyInputs onto the new prices (same trick as fillMockData).
+  const applyGeneratedLines = (generated: DraftLine[]) => {
+    setLines((prev) => {
+      const kept = prev.filter((l) => l.description.trim() !== '')
+      return [...kept, ...generated].slice(0, MAX_APPLIED_LINES)
+    })
+    setSeedVersion((v) => v + 1)
   }
 
   // Dev convenience: fill every field with realistic sample data so the preview
@@ -315,6 +357,7 @@ export function InvoiceForm({
           {tActions('fillMock')}
         </Button>
       </div>
+      <MagicFillPanel currency={currency} clientId={clientId} onApply={applyGeneratedLines} />
       <div className="grid md:grid-cols-2 gap-5">
         <label className="flex flex-col gap-1.5 text-sm">
           <span className="text-ink/80">{tFields('client')}</span>
@@ -383,14 +426,24 @@ export function InvoiceForm({
       <section className="flex flex-col gap-3">
         <header className="flex items-center justify-between">
           <h2 className="text-lg font-semibold tracking-tight">{t('lineItems')}</h2>
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={() => setLines((p) => [...p, emptyLine()])}
-          >
-            <PlusIcon className="h-4 w-4" /> {tActions('addLine')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <PolishAllButton
+              items={lines
+                .map((l, idx) => ({ idx, description: l.description }))
+                .filter((i) => i.description.trim())}
+              onApply={(results) => {
+                for (const r of results) updateLine(r.idx, { description: r.text })
+              }}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setLines((p) => [...p, emptyLine()])}
+            >
+              <PlusIcon className="h-4 w-4" /> {tActions('addLine')}
+            </Button>
+          </div>
         </header>
         <div className="flex flex-col gap-3">
           {lines.map((line, idx) => (
@@ -402,9 +455,12 @@ export function InvoiceForm({
               <div className="grid grid-cols-1 md:grid-cols-[1.7fr_0.6fr_0.6fr_1.2fr_0.7fr_0.95fr_auto] gap-2 items-end">
                 <label className="flex flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('description')}
-                  <Input
+                  <LineDescriptionField
                     value={line.description}
-                    onChange={(e) => updateLine(idx, { description: e.target.value })}
+                    onChange={(text) => updateLine(idx, { description: text })}
+                    onAccept={(s) => acceptSuggestion(idx, s)}
+                    suggestions={suggestions}
+                    siblings={lines.filter((_, i) => i !== idx).map((l) => l.description)}
                     required
                   />
                 </label>
@@ -584,7 +640,10 @@ export function InvoiceForm({
       </section>
 
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="text-ink/80">{tFields('notes')}</span>
+        <span className="flex items-center justify-between text-ink/80">
+          {tFields('notes')}
+          <PolishButton value={notes} context="notes" onReplace={setNotes} />
+        </span>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
