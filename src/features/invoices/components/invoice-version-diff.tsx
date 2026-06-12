@@ -5,7 +5,7 @@ import { getInvoiceVersionAction } from '../actions'
 import { useTranslations } from 'next-intl'
 import { formatMoney } from '@/lib/money'
 import { Button } from '@/components/ui/button'
-import { createInvoiceFromVersionAction } from '../actions'
+import { createInvoiceFromVersionAction, restoreInvoiceFromVersionAction } from '../actions'
 import { useRouter } from 'next/navigation'
 import type { Route } from 'next'
 import { toast } from '@/components/ui/toast'
@@ -33,7 +33,7 @@ export function InvoiceVersionDiff({ versionId, invoiceId }: Props) {
   const [version, setVersion] = useState<Awaited<ReturnType<typeof getInvoiceVersionAction>>['version'] | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [restoring, setRestoring] = useState(false)
+  const [restoring, setRestoring] = useState<'copy' | 'restore' | null>(null)
 
   useEffect(() => {
     let active = true
@@ -69,15 +69,30 @@ export function InvoiceVersionDiff({ versionId, invoiceId }: Props) {
   const vatCents = Number(header?.vat_cents ?? 0)
 
   const handleDuplicate = async () => {
-    setRestoring(true)
+    setRestoring('copy')
     const res = await createInvoiceFromVersionAction(versionId)
-    setRestoring(false)
+    setRestoring(null)
     if (res.error) {
       toast.error(res.error)
       return
     }
     if (res.invoiceId) {
       toast.success(tToast('created'))
+      router.push(`/invoices/${res.invoiceId}` as Route)
+    }
+  }
+
+  const handleRestore = async () => {
+    if (!window.confirm(t('restoreConfirm'))) return
+    setRestoring('restore')
+    const res = await restoreInvoiceFromVersionAction(versionId, invoiceId)
+    setRestoring(null)
+    if (res.error) {
+      toast.error(res.error)
+      return
+    }
+    if (res.invoiceId) {
+      toast.success(tToast('restored'))
       router.push(`/invoices/${res.invoiceId}` as Route)
     }
   }
@@ -110,10 +125,19 @@ export function InvoiceVersionDiff({ versionId, invoiceId }: Props) {
             type="button"
             variant="secondary"
             size="sm"
-            onClick={handleDuplicate}
-            disabled={restoring}
+            onClick={handleRestore}
+            disabled={restoring !== null}
           >
-            {t('copyToNew')}
+            {restoring === 'restore' ? t('restoring') : t('restore')}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={handleDuplicate}
+            disabled={restoring !== null}
+          >
+            {restoring === 'copy' ? t('restoring') : t('copyToNew')}
           </Button>
         </div>
       </div>
@@ -135,30 +159,30 @@ export function InvoiceVersionDiff({ versionId, invoiceId }: Props) {
       </section>
 
       {/* Line items */}
-      <section className="rounded-[16px] border border-line-1 bg-card overflow-hidden">
-        <table className="w-full text-sm">
+      <section className="rounded-[16px] border border-line-1 bg-card overflow-x-auto">
+        <table className="w-full text-sm whitespace-nowrap min-w-[480px]">
           <thead className="text-ink/60 text-xs uppercase tracking-wide">
             <tr className="border-b border-line-1">
-              <th className="text-left font-medium px-4 py-3">{tFields('description')}</th>
-              <th className="text-right font-medium px-4 py-3">{tFields('quantity')}</th>
-              <th className="text-right font-medium px-4 py-3">{tFields('unitPrice')}</th>
-              <th className="text-right font-medium px-4 py-3">{tFields('vat')}</th>
-              <th className="text-right font-medium px-4 py-3">{tFields('amount')}</th>
+              <th className="text-left font-medium px-3 py-2.5 w-auto min-w-[120px]">{tFields('description')}</th>
+              <th className="text-right font-medium px-3 py-2.5">{tFields('quantity')}</th>
+              <th className="text-right font-medium px-3 py-2.5">{tFields('unitPrice')}</th>
+              <th className="text-right font-medium px-3 py-2.5">{tFields('vat')}</th>
+              <th className="text-right font-medium px-3 py-2.5">{tFields('amount')}</th>
             </tr>
           </thead>
           <tbody>
             {lineItems.map((li, idx) => (
               <tr key={idx} className="border-b border-line-1 last:border-0">
-                <td className="px-4 py-3">{li.description}</td>
-                <td className="px-4 py-3 text-right tnum font-mono">
+                <td className="px-3 py-2.5 whitespace-normal min-w-[120px]">{li.description}</td>
+                <td className="px-3 py-2.5 text-right tnum font-mono">
                   {li.quantity}
                   {li.unit && <span className="text-ink/50 ml-1">{li.unit}</span>}
                 </td>
-                <td className="px-4 py-3 text-right tnum font-mono">
+                <td className="px-3 py-2.5 text-right tnum font-mono">
                   {formatMoney(BigInt(li.unit_price_cents), currency as 'SEK')}
                 </td>
-                <td className="px-4 py-3 text-right">{li.vat_rate}%</td>
-                <td className="px-4 py-3 text-right tnum font-mono">
+                <td className="px-3 py-2.5 text-right">{li.vat_rate}%</td>
+                <td className="px-3 py-2.5 text-right tnum font-mono">
                   {formatMoney(BigInt(li.amount_cents), currency as 'SEK')}
                 </td>
               </tr>

@@ -498,3 +498,30 @@ export async function createInvoiceFromVersionAction(
   revalidatePath('/invoices')
   return { invoiceId: data.id }
 }
+
+export async function restoreInvoiceFromVersionAction(
+  versionId: string,
+  currentInvoiceId: string,
+): Promise<InvoiceActionResult & { invoiceId?: string }> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data: created, error: createErr } = await supabase.rpc('create_invoice_from_version', {
+    p_version_id: versionId,
+    p_org: organizationId,
+  })
+  if (createErr) return { error: createErr.message }
+  if (!created) return { error: 'version restore returned no row' }
+
+  if (currentInvoiceId && currentInvoiceId !== created.id) {
+    await supabase
+      .from('invoices')
+      .delete()
+      .eq('id', currentInvoiceId)
+      .eq('organization_id', organizationId)
+      .eq('status', 'draft')
+  }
+
+  revalidatePath('/invoices')
+  return { invoiceId: created.id }
+}

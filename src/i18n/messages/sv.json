@@ -220,7 +220,8 @@
       "created": "Faktura skapad",
       "reminderSent": "Påminnelse skickad",
       "duplicated": "Duplicerad som utkast",
-      "deleted": "Utkast borttaget"
+      "deleted": "Utkast borttaget",
+      "restored": "Version applicerad"
     },
     "errors": {
       "pickClient": "Välj en kund",
@@ -254,7 +255,9 @@
       "version": "Version {number}",
       "lines": "{count, plural, =0 {0 rader} =1 {1 rad} other {# rader}}",
       "copyToNew": "Kopiera till nytt utkast",
-      "restore": "Återställ",
+      "restore": "Applicera version",
+      "restoring": "Applicerar…",
+      "restoreConfirm": "Ersätt nuvarande utkast med denna version? Nuvarande utkast tas bort.",
       "noVersions": "Inga versioner ännu.",
       "selectVersion": "Välj en version för att visa dess data."
     }

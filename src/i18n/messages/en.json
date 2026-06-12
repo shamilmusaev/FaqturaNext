@@ -220,7 +220,8 @@
       "created": "Invoice created",
       "reminderSent": "Reminder sent",
       "duplicated": "Duplicated as draft",
-      "deleted": "Draft deleted"
+      "deleted": "Draft deleted",
+      "restored": "Version applied"
     },
     "errors": {
       "pickClient": "Pick a client",
@@ -254,7 +255,9 @@
       "version": "Version {number}",
       "lines": "{count, plural, =0 {0 lines} =1 {1 line} other {# lines}}",
       "copyToNew": "Copy to new draft",
-      "restore": "Restore",
+      "restore": "Apply version",
+      "restoring": "Applying…",
+      "restoreConfirm": "Replace the current draft with this version? The current draft will be deleted.",
       "noVersions": "No versions yet.",
       "selectVersion": "Select a version to view its snapshot."
     }
