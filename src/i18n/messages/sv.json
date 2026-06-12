@@ -192,6 +192,7 @@
       "reminder": "Påminnelse",
       "showPreview": "Visa förhandsvisning",
       "hidePreview": "Dölj förhandsvisning",
+      "history": "Historik",
       "confirmSend": "Skicka den här fakturan till kunden?",
       "confirmPaid": "Markera den här fakturan som betald?",
       "confirmCancel": "Avbryt den här fakturan?",
@@ -246,6 +247,15 @@
       "form": "Formulär",
       "preview": "Förhandsvisning",
       "detail": "Detaljer"
+    },
+    "versions": {
+      "title": "Versionshistorik",
+      "versionHistory": "Versioner",
+      "version": "Version {number}",
+      "lines": "{count, plural, =0 {0 rader} =1 {1 rad} other {# rader}}",
+      "copyToNew": "Kopiera till nytt utkast",
+      "restore": "Återställ",
+      "noVersions": "Inga versioner ännu."
     }
   },
   "settings": {

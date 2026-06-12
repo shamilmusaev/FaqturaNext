@@ -34,6 +34,7 @@ export {
   Receipt as ExpensesIcon,
   LineChart as ReportsIcon,
   Clock as TimeIcon,
+  History as HistoryIcon,
   KanbanSquare as BoardIcon,
   ArrowUpRight,
   Wand2 as WandIcon,

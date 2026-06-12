@@ -192,6 +192,7 @@
       "reminder": "Reminder",
       "showPreview": "Show preview",
       "hidePreview": "Hide preview",
+      "history": "History",
       "confirmSend": "Send this invoice to the client?",
       "confirmPaid": "Mark this invoice as paid?",
       "confirmCancel": "Cancel this invoice?",
@@ -246,6 +247,15 @@
       "form": "Form",
       "preview": "Preview",
       "detail": "Details"
+    },
+    "versions": {
+      "title": "Version history",
+      "versionHistory": "Versions",
+      "version": "Version {number}",
+      "lines": "{count, plural, =0 {0 lines} =1 {1 line} other {# lines}}",
+      "copyToNew": "Copy to new draft",
+      "restore": "Restore",
+      "noVersions": "No versions yet."
     }
   },
   "settings": {

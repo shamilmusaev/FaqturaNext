@@ -166,3 +166,72 @@ export async function getInvoice(id: string): Promise<InvoiceDetail | null> {
     events: events ?? [],
   } as unknown as InvoiceDetail
 }
+
+export interface InvoiceVersionListItem {
+  id: string
+  version_number: number
+  created_at: string
+  created_by: string | null
+  line_count: number
+}
+
+export async function listInvoiceVersions(
+  invoiceId: string,
+): Promise<InvoiceVersionListItem[]> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data, error } = await supabase
+    .from('invoice_versions')
+    .select('id, version_number, created_at, created_by, snapshot->lineItems as line_items')
+    .eq('invoice_id', invoiceId)
+    .eq('organization_id', organizationId)
+    .order('version_number', { ascending: false })
+    .limit(100)
+
+  if (error) throw error
+  type Row = { id: string; version_number: number; created_at: string; created_by: string | null; line_items: unknown[] | null }
+  return ((data as unknown) as Row[] ?? []).map((row) => ({
+    id: row.id,
+    version_number: row.version_number,
+    created_at: row.created_at,
+    created_by: row.created_by,
+    line_count: Array.isArray(row.line_items) ? row.line_items.length : 0,
+  }))
+}
+
+export interface InvoiceVersionDetail {
+  id: string
+  version_number: number
+  created_at: string
+  created_by: string | null
+  snapshot: {
+    header: Record<string, unknown>
+    lineItems: Array<Record<string, unknown>>
+  }
+}
+
+export async function getInvoiceVersion(versionId: string): Promise<InvoiceVersionDetail | null> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data, error } = await supabase
+    .from('invoice_versions')
+    .select('id, version_number, created_at, created_by, snapshot')
+    .eq('id', versionId)
+    .eq('organization_id', organizationId)
+    .maybeSingle()
+
+  if (error) throw error
+  if (!data) return null
+  type Row = { id: string; version_number: number; created_at: string; created_by: string | null; snapshot: unknown }
+  const row = (data as unknown) as Row
+
+  return {
+    id: row.id,
+    version_number: row.version_number,
+    created_at: row.created_at,
+    created_by: row.created_by,
+    snapshot: row.snapshot as InvoiceVersionDetail['snapshot'],
+  }
+}

@@ -225,6 +225,30 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['invoice_number_sequences']['Insert']>
         Relationships: []
       }
+      invoice_versions: {
+        Row: {
+          id: string
+          invoice_id: string
+          organization_id: string
+          version_number: number
+          created_at: string
+          created_by: string | null
+          snapshot: Record<string, unknown>
+          snapshot_hash: string
+        }
+        Insert: {
+          id?: string
+          invoice_id: string
+          organization_id: string
+          version_number: number
+          created_at?: string
+          created_by?: string | null
+          snapshot: Record<string, unknown>
+          snapshot_hash: string
+        }
+        Update: Partial<Database['public']['Tables']['invoice_versions']['Insert']>
+        Relationships: []
+      }
       projects: {
         Row: {
           client_id: string
@@ -465,6 +489,14 @@ export type Database = {
           p_bank_name?: string | null
         }
         Returns: Database['public']['Tables']['organizations']['Row']
+      }
+      save_invoice_version: {
+        Args: { p_invoice_id: string }
+        Returns: Database['public']['Tables']['invoice_versions']['Row'] | null
+      }
+      create_invoice_from_version: {
+        Args: { p_version_id: string; p_org: string }
+        Returns: Database['public']['Tables']['invoices']['Row']
       }
     }
     Enums: {

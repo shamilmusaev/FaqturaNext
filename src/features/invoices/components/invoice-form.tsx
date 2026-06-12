@@ -568,7 +568,7 @@ export function InvoiceForm({
               key={idx}
               className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3 overflow-hidden"
             >
-              <div className="grid grid-cols-2 gap-2 items-end lg:grid-cols-[4rem_3.5rem_minmax(5.75rem,1fr)_4.25rem_5.5rem_2.5rem]">
+              <div className="grid grid-cols-2 gap-2 items-end lg:grid-cols-[5.5rem_4rem_minmax(5.75rem,1fr)_4.25rem_5.5rem_2.5rem]">
                 <label className="col-span-2 flex min-w-0 flex-col gap-1.5 text-xs text-ink/60 lg:col-span-full">
                   {tFields('description')}
                   <LineDescriptionField
@@ -586,7 +586,7 @@ export function InvoiceForm({
                     type="number"
                     step="0.001"
                     min="0"
-                    className="px-2 text-right tnum font-mono"
+                    className="px-2 text-right tnum font-mono appearance-none"
                     value={line.quantity}
                     onChange={(e) => updateLine(idx, { quantity: Number(e.target.value) || 0 })}
                   />
@@ -616,7 +616,7 @@ export function InvoiceForm({
                     step="1"
                     min="0"
                     max="100"
-                    className="px-2 text-right tnum font-mono"
+                    className="px-2 text-right tnum font-mono appearance-none"
                     value={line.discountPercent}
                     onChange={(e) =>
                       updateLine(idx, {
@@ -735,7 +735,6 @@ export function InvoiceForm({
             </label>
           </div>
         </div>
-
       </section>
 
       <label className="flex flex-col gap-1.5 text-sm">

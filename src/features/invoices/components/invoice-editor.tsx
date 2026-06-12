@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronLeft } from '@/components/ui/icons'
+import { ChevronLeft, HistoryIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/cn'
 import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import type { Route } from 'next'
@@ -17,6 +17,7 @@ import {
   initialToFormDraft,
 } from '../preview-data'
 import { InvoiceForm } from './invoice-form'
+import { InvoiceVersionsPanel } from './invoice-versions-panel'
 
 // @react-pdf's usePDF is a web-only API that throws during SSR, so the preview
 // must render client-side only.
@@ -77,6 +78,7 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
   const [tab, setTab] = useState<MobileTab>('form')
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const [split, setSplit] = useState(50)
+  const [versionsOpen, setVersionsOpen] = useState(false)
 
   // Seed with the form's initial state so the preview renders immediately; the
   // form's onDraftChange syncs it on mount and on every edit thereafter.
@@ -140,21 +142,35 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
   return (
     <div className="relative flex flex-col gap-4 lg:h-[calc(100vh-7rem)] lg:min-h-0">
       {/* Mobile tab switch: form and preview don't fit side-by-side on phones. */}
-      <div className="flex gap-1 rounded-full bg-paper-2 p-1 lg:hidden">
-        {(['form', 'preview'] as const).map((key) => (
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex gap-1 rounded-full bg-paper-2 p-1 lg:hidden">
+          {(['form', 'preview'] as const).map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setTab(key)}
+              aria-pressed={tab === key}
+              className={cn(
+                'flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                tab === key ? 'bg-card text-ink shadow-soft' : 'text-ink/55',
+              )}
+            >
+              {tTabs(key)}
+            </button>
+          ))}
+        </div>
+        {invoiceId && (
           <button
-            key={key}
             type="button"
-            onClick={() => setTab(key)}
-            aria-pressed={tab === key}
-            className={cn(
-              'flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-              tab === key ? 'bg-card text-ink shadow-soft' : 'text-ink/55',
-            )}
+            onClick={() => setVersionsOpen(true)}
+            aria-label={tActions('history')}
+            title={tActions('history')}
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-line-1 bg-card px-3.5 text-sm font-medium hover:bg-paper transition-colors"
           >
-            {tTabs(key)}
+            <HistoryIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">{tActions('history')}</span>
           </button>
-        ))}
+        )}
       </div>
 
       <div
@@ -233,6 +249,14 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
           </div>
         </div>
       </div>
+
+      {invoiceId && (
+        <InvoiceVersionsPanel
+          invoiceId={invoiceId}
+          open={versionsOpen}
+          onClose={() => setVersionsOpen(false)}
+        />
+      )}
     </div>
   )
 }

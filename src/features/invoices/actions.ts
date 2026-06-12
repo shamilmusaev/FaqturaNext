@@ -9,7 +9,7 @@ import type { Route } from 'next'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { PDF_ORG_COLUMNS, invoiceToPdfData } from './pdf-data'
-import { type InvoiceDetail, getInvoice } from './queries'
+import { type InvoiceDetail, getInvoice, type InvoiceVersionDetail, type InvoiceVersionListItem } from './queries'
 import { type InvoiceInput, InvoiceInputSchema } from './schema'
 
 export async function fetchInvoiceForDialog(id: string): Promise<InvoiceDetail | null> {
@@ -424,4 +424,77 @@ export async function cancelInvoicesAction(
   }
   revalidatePath('/invoices')
   return { cancelled: cancelledIds.length, skipped: ids.length - cancelledIds.length }
+}
+
+export async function listInvoiceVersionsAction(
+  invoiceId: string,
+): Promise<{ versions?: InvoiceVersionListItem[]; error?: string }> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data, error } = await supabase
+    .from('invoice_versions')
+    .select('id, version_number, created_at, created_by, snapshot->lineItems as line_items')
+    .eq('invoice_id', invoiceId)
+    .eq('organization_id', organizationId)
+    .order('version_number', { ascending: false })
+    .limit(100)
+
+  if (error) return { error: error.message }
+  type Row = { id: string; version_number: number; created_at: string; created_by: string | null; line_items: unknown[] | null }
+  return {
+    versions: ((data as unknown) as Row[] ?? []).map((row) => ({
+      id: row.id,
+      version_number: row.version_number,
+      created_at: row.created_at,
+      created_by: row.created_by,
+      line_count: Array.isArray(row.line_items) ? row.line_items.length : 0,
+    })),
+  }
+}
+
+export async function getInvoiceVersionAction(
+  versionId: string,
+): Promise<{ version?: InvoiceVersionDetail; error?: string }> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data, error } = await supabase
+    .from('invoice_versions')
+    .select('id, version_number, created_at, created_by, snapshot')
+    .eq('id', versionId)
+    .eq('organization_id', organizationId)
+    .maybeSingle()
+
+  if (error) return { error: error.message }
+  if (!data) return { error: 'version not found' }
+  type Row = { id: string; version_number: number; created_at: string; created_by: string | null; snapshot: unknown }
+  const row = (data as unknown) as Row
+  return {
+    version: {
+      id: row.id,
+      version_number: row.version_number,
+      created_at: row.created_at,
+      created_by: row.created_by,
+      snapshot: row.snapshot as InvoiceVersionDetail['snapshot'],
+    },
+  }
+}
+
+export async function createInvoiceFromVersionAction(
+  versionId: string,
+): Promise<InvoiceActionResult & { invoiceId?: string }> {
+  const { organizationId } = await requireUser()
+  const supabase = await createServerClient()
+
+  const { data, error } = await supabase.rpc('create_invoice_from_version', {
+    p_version_id: versionId,
+    p_org: organizationId,
+  })
+
+  if (error) return { error: error.message }
+  if (!data) return { error: 'version restore returned no row' }
+
+  revalidatePath('/invoices')
+  return { invoiceId: data.id }
 }
