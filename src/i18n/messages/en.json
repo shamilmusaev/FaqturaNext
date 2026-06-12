@@ -136,7 +136,6 @@
     "cancel": "Cancel invoice",
     "edit": "Edit",
     "back": "Back to invoices",
-    "editPlaceholder": "Inline editing of invoice line items will land in a follow-up. For now, cancel this draft and create a new invoice if you need to make changes.",
     "lineItems": "Line items",
     "filters": {
       "all": "All",

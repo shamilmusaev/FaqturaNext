@@ -85,6 +85,21 @@ export function InvoiceQuickActions({
     })
   }
 
+  const runDuplicate = () => {
+    start(async () => {
+      const res = await duplicateInvoiceAction(id)
+      if (res.error) {
+        toast.error(res.error)
+        return
+      }
+      toast.success(tToast('duplicated'))
+      onDone?.()
+      // Open the freshly created draft so it isn't lost in the list.
+      if (res.invoiceId) router.push(`/invoices/${res.invoiceId}/edit` as Route)
+      else router.refresh()
+    })
+  }
+
   const items: Item[] = []
   if (showView) {
     items.push({
@@ -147,7 +162,7 @@ export function InvoiceQuickActions({
       key: 'duplicate',
       label: tActions('duplicate'),
       icon: <CopyIcon className="h-4 w-4" />,
-      onClick: () => mutate(() => duplicateInvoiceAction(id), tToast('duplicated')),
+      onClick: runDuplicate,
     })
   }
 

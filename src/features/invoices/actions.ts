@@ -21,7 +21,11 @@ type Supabase = Awaited<ReturnType<typeof createServerClient>>
 /** Best-effort removal of cached PNG thumbnails for the given invoice ids. */
 async function removeThumbnails(supabase: Supabase, orgId: string, invoiceIds: string[]) {
   if (invoiceIds.length === 0) return
-  const { data: files } = await supabase.storage.from(THUMBNAIL_BUCKET).list(orgId)
+  // list() defaults to 100 objects; bump the cap so large orgs don't leak
+  // thumbnails. Best-effort cleanup, so we don't paginate beyond this.
+  const { data: files } = await supabase.storage
+    .from(THUMBNAIL_BUCKET)
+    .list(orgId, { limit: 10000 })
   if (!files) return
   // Keys are "<invoiceId>-<version>.png"; invoiceId is a UUID (has dashes), so
   // match by prefix rather than splitting on '-'.

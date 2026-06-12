@@ -5,7 +5,12 @@ import { getTemplate } from '@/lib/pdf/templates'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { pdf } from 'pdf-to-img'
 
-export { THUMBNAIL_BUCKET, thumbnailKey, thumbnailVersion } from './thumbnail-key'
+export {
+  THUMBNAIL_BUCKET,
+  orgBrandingVersion,
+  thumbnailKey,
+  thumbnailVersion,
+} from './thumbnail-key'
 
 /** Render the invoice to a PDF and rasterize its first page to a PNG buffer. */
 export async function renderInvoiceThumbnail(

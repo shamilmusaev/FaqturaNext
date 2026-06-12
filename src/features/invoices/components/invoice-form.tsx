@@ -125,6 +125,9 @@ export function InvoiceForm({
   const draftIdRef = useRef<string | null>(invoiceId ?? null)
   const savingRef = useRef(false)
   const pendingInputRef = useRef<InvoiceInput | null>(null)
+  // The in-flight autosave *create* (if any). Submit awaits it so it can't
+  // create a second invoice while a create is still resolving draftIdRef.
+  const inflightCreateRef = useRef<Promise<void> | null>(null)
   // Skip the very first autosave pass (mount) so seeded/empty state doesn't
   // trigger a redundant write before the user changes anything.
   const autosaveReadyRef = useRef(false)
@@ -244,10 +247,22 @@ export function InvoiceForm({
     savingRef.current = true
     try {
       if (draftIdRef.current) {
-        await updateInvoiceAction(draftIdRef.current, input, false)
+        const res = await updateInvoiceAction(draftIdRef.current, input, false)
+        // Surface a failure (e.g. the draft was sent/cancelled elsewhere) so the
+        // user knows their edits aren't being saved, instead of failing silently.
+        if (res?.error) setServerError(res.error)
+        else setServerError(null)
       } else {
-        const res = await createInvoiceAction(input, false)
-        if (res.invoiceId) draftIdRef.current = res.invoiceId
+        const create = (async () => {
+          const res = await createInvoiceAction(input, false)
+          if (res.invoiceId) draftIdRef.current = res.invoiceId
+        })()
+        inflightCreateRef.current = create
+        try {
+          await create
+        } finally {
+          inflightCreateRef.current = null
+        }
       }
     } catch {
       /* autosave is best-effort; the explicit Save surfaces errors */
@@ -431,9 +446,17 @@ export function InvoiceForm({
     // Finalize into the autosaved draft if one exists, otherwise create fresh.
     // Both redirect to the detail page on success, so code after the await only
     // runs on failure.
-    const id = draftIdRef.current
-
     start(async () => {
+      // Let any in-flight autosave create finish first so we update that draft
+      // instead of creating a duplicate.
+      if (inflightCreateRef.current) {
+        try {
+          await inflightCreateRef.current
+        } catch {
+          /* fall through; we'll create fresh below */
+        }
+      }
+      const id = draftIdRef.current
       const res = id
         ? await updateInvoiceAction(id, input, 'detail')
         : await createInvoiceAction(input, 'detail')

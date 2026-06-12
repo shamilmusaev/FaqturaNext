@@ -3,6 +3,7 @@ import { getInvoice } from '@/features/invoices/queries'
 import { requireUser } from '@/lib/auth'
 import {
   THUMBNAIL_BUCKET,
+  orgBrandingVersion,
   renderInvoiceThumbnail,
   thumbnailKey,
   thumbnailVersion,
@@ -33,19 +34,24 @@ export async function GET(req: NextRequest, ctx: Context) {
   const { id } = await ctx.params
   const { organizationId } = await requireUser()
   const versioned = req.nextUrl.searchParams.has('v')
-
-  const invoice = await getInvoice(id)
-  if (!invoice) return new NextResponse('Invoice not found', { status: 404 })
-
   const supabase = await createServerClient()
-  const { data: org } = await supabase
-    .from('organizations')
-    .select(PDF_ORG_COLUMNS)
-    .eq('id', organizationId)
-    .maybeSingle()
+
+  // Lightweight fetches for the cache key — avoid the full getInvoice (line
+  // items + events) on the common cache-hit path.
+  const [{ data: head }, { data: org }] = await Promise.all([
+    supabase
+      .from('invoices')
+      .select('updated_at, template')
+      .eq('id', id)
+      .eq('organization_id', organizationId)
+      .maybeSingle(),
+    supabase.from('organizations').select(PDF_ORG_COLUMNS).eq('id', organizationId).maybeSingle(),
+  ])
+  if (!head) return new NextResponse('Invoice not found', { status: 404 })
   if (!org) return new NextResponse('Organization not found', { status: 404 })
 
-  const key = thumbnailKey(organizationId, id, thumbnailVersion(invoice))
+  const version = thumbnailVersion(head, orgBrandingVersion(org as Record<string, unknown>))
+  const key = thumbnailKey(organizationId, id, version)
 
   // Cache hit: serve the stored PNG without re-rasterizing.
   const cached = await supabase.storage.from(THUMBNAIL_BUCKET).download(key)
@@ -53,7 +59,9 @@ export async function GET(req: NextRequest, ctx: Context) {
     return png(new Uint8Array(await cached.data.arrayBuffer()), versioned)
   }
 
-  // Miss: render, cache, serve.
+  // Miss: load the full invoice, render, cache, serve.
+  const invoice = await getInvoice(id)
+  if (!invoice) return new NextResponse('Invoice not found', { status: 404 })
   const buffer = await renderInvoiceThumbnail(invoice, org)
   await supabase.storage
     .from(THUMBNAIL_BUCKET)
