@@ -32,6 +32,7 @@ export interface InvoicePdfData {
     bankgiro?: string | null
     plusgiro?: string | null
     swish_number?: string | null
+    bank_name?: string | null
     logo_url?: string | null
   }
   client: {

@@ -244,6 +244,7 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
         <View style={styles.footer}>
           <View style={{ width: '55%' }}>
             <Text style={styles.micro}>BANK INFO</Text>
+            {org.bank_name && <Text style={styles.bankLine}>Bank: {org.bank_name}</Text>}
             {org.bankgiro && <Text style={styles.bankLine}>Bankgiro: {org.bankgiro}</Text>}
             {org.plusgiro && <Text style={styles.bankLine}>Plusgiro: {org.plusgiro}</Text>}
             {org.iban && <Text style={styles.bankLine}>IBAN: {org.iban}</Text>}

@@ -12,6 +12,7 @@ export type Database = {
           bankgiro: string | null
           plusgiro: string | null
           swish_number: string | null
+          bank_name: string | null
           default_vat_rate: number
           default_payment_terms_days: number
           locale: string
@@ -31,6 +32,7 @@ export type Database = {
           bankgiro?: string | null
           plusgiro?: string | null
           swish_number?: string | null
+          bank_name?: string | null
           default_vat_rate?: number
           default_payment_terms_days?: number
           locale?: string
@@ -427,6 +429,7 @@ export type Database = {
           p_currency?: string | null
           p_invoice_number_template?: string | null
           p_logo_url?: string | null
+          p_bank_name?: string | null
         }
         Returns: Database['public']['Tables']['organizations']['Row']
       }

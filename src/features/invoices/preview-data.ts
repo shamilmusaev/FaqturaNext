@@ -49,6 +49,7 @@ export interface PreviewOrganization {
   bankgiro?: string | null
   plusgiro?: string | null
   swish_number?: string | null
+  bank_name?: string | null
   logo_url?: string | null
   /** Org's default invoice currency, used to seed the form. */
   currency_default?: string | null
@@ -122,6 +123,7 @@ export function buildPreviewData(
       bankgiro: org.bankgiro ?? null,
       plusgiro: org.plusgiro ?? null,
       swish_number: org.swish_number ?? null,
+      bank_name: org.bank_name ?? null,
       logo_url: org.logo_url ?? null,
     },
     client: {

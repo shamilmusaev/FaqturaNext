@@ -211,6 +211,7 @@ export function ModernTemplate({ invoice }: InvoiceTemplateProps) {
 
         <View style={styles.footer} fixed>
           <Text>{invoice.organization.name}</Text>
+          {invoice.organization.bank_name && <Text>Bank {invoice.organization.bank_name}</Text>}
           {invoice.organization.bankgiro && <Text>Bankgiro {invoice.organization.bankgiro}</Text>}
           {invoice.organization.iban && <Text>IBAN {invoice.organization.iban}</Text>}
         </View>

@@ -32,6 +32,7 @@ export default async function NewInvoicePage() {
     bankgiro: org.bankgiro,
     plusgiro: org.plusgiro,
     swish_number: org.swish_number,
+    bank_name: org.bank_name,
     logo_url: org.logo_url,
     currency_default: org.currency,
     invoice_number_template: org.invoice_number_template,

@@ -17,6 +17,7 @@ export const CompanyInputSchema = z.object({
 })
 
 export const PaymentInputSchema = z.object({
+  bank_name: z.preprocess(blankToUndefined, z.string().max(100).optional()),
   iban: z.preprocess(blankToUndefined, z.string().max(50).optional()),
   bankgiro: z.preprocess(blankToUndefined, z.string().max(20).optional()),
   plusgiro: z.preprocess(blankToUndefined, z.string().max(20).optional()),

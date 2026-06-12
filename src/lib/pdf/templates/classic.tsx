@@ -248,6 +248,9 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
         <View style={styles.payInfo}>
           <View style={styles.payCol}>
             <Text style={styles.partyTitle}>Betalning</Text>
+            {invoice.organization.bank_name && (
+              <Text style={styles.partyLine}>Bank {invoice.organization.bank_name}</Text>
+            )}
             {invoice.organization.bankgiro && (
               <Text style={styles.partyLine}>Bankgiro {invoice.organization.bankgiro}</Text>
             )}

@@ -13,11 +13,12 @@ export type PdfOrgRow = Pick<
   | 'bankgiro'
   | 'plusgiro'
   | 'swish_number'
+  | 'bank_name'
   | 'logo_url'
 >
 
 export const PDF_ORG_COLUMNS =
-  'name, org_number, vat_number, address, iban, bankgiro, plusgiro, swish_number, logo_url'
+  'name, org_number, vat_number, address, iban, bankgiro, plusgiro, swish_number, bank_name, logo_url'
 
 type Address = InvoicePdfData['organization']['address']
 
@@ -57,6 +58,7 @@ export function invoiceToPdfData(invoice: InvoiceDetail, org: PdfOrgRow): Invoic
       bankgiro: org.bankgiro,
       plusgiro: org.plusgiro,
       swish_number: org.swish_number,
+      bank_name: org.bank_name,
       logo_url: org.logo_url,
     },
     client: {

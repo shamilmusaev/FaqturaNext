@@ -70,8 +70,9 @@ export async function updateCompanyAction(
   const { error } = await supabase.rpc('update_organization', {
     p_org_id: organizationId,
     p_name: parsed.data.name,
-    p_org_number: parsed.data.org_number ?? null,
-    p_vat_number: parsed.data.vat_number ?? null,
+    // '' clears the field (the RPC treats null as "keep old value").
+    p_org_number: parsed.data.org_number ?? '',
+    p_vat_number: parsed.data.vat_number ?? '',
     p_address: parsed.data.address ?? null,
   })
   if (error) return { error: error.message }
@@ -111,6 +112,7 @@ export async function updatePaymentAction(
   if (block) return block
 
   const parsed = PaymentInputSchema.safeParse({
+    bank_name: String(formData.get('bank_name') ?? ''),
     iban: String(formData.get('iban') ?? ''),
     bankgiro: String(formData.get('bankgiro') ?? ''),
     plusgiro: String(formData.get('plusgiro') ?? ''),
@@ -121,10 +123,13 @@ export async function updatePaymentAction(
   const supabase = await createServerClient()
   const { error } = await supabase.rpc('update_organization', {
     p_org_id: organizationId,
-    p_iban: parsed.data.iban ?? null,
-    p_bankgiro: parsed.data.bankgiro ?? null,
-    p_plusgiro: parsed.data.plusgiro ?? null,
-    p_swish_number: parsed.data.swish_number ?? null,
+    // Send '' (not null) for cleared fields: the RPC coalesces nulls as
+    // "keep old value", so a null would make clearing impossible.
+    p_bank_name: parsed.data.bank_name ?? '',
+    p_iban: parsed.data.iban ?? '',
+    p_bankgiro: parsed.data.bankgiro ?? '',
+    p_plusgiro: parsed.data.plusgiro ?? '',
+    p_swish_number: parsed.data.swish_number ?? '',
   })
   if (error) return { error: error.message }
 

@@ -387,6 +387,12 @@ function BoldTemplate({ invoice, scheme }: InvoiceTemplateProps & { scheme: Sche
             <View style={[styles.sectionTag, { backgroundColor: scheme.headerBg }]}>
               <Text style={styles.sectionTagText}>Betalningsinformation</Text>
             </View>
+            {org.bank_name && (
+              <View style={styles.payGrid}>
+                <Text style={styles.payKey}>Bank:</Text>
+                <Text style={styles.payVal}>{org.bank_name}</Text>
+              </View>
+            )}
             {org.bankgiro && (
               <View style={styles.payGrid}>
                 <Text style={styles.payKey}>Bankgiro:</Text>

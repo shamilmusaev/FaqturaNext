@@ -12,6 +12,7 @@ export type Organization = {
   bankgiro: string | null
   plusgiro: string | null
   swish_number: string | null
+  bank_name: string | null
   default_vat_rate: number
   default_payment_terms_days: number
   locale: string
@@ -26,7 +27,7 @@ export async function getCurrentOrganization(): Promise<Organization> {
   const { data, error } = await supabase
     .from('organizations')
     .select(
-      'id,name,org_number,vat_number,address,iban,bankgiro,plusgiro,swish_number,default_vat_rate,default_payment_terms_days,locale,currency,invoice_number_template,logo_url',
+      'id,name,org_number,vat_number,address,iban,bankgiro,plusgiro,swish_number,bank_name,default_vat_rate,default_payment_terms_days,locale,currency,invoice_number_template,logo_url',
     )
     .eq('id', organizationId)
     .single()
