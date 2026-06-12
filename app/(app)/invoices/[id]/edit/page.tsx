@@ -63,7 +63,7 @@ export default async function EditInvoicePage({ params }: Props) {
     deliveryAt: invoice.delivery_date,
     currency: invoice.currency,
     notes: invoice.notes,
-    number: invoice.number,
+    number: invoice.number ?? '',
     template: invoice.template,
     hideOcr: invoice.hide_ocr,
     reverseVat: invoice.reverse_vat,

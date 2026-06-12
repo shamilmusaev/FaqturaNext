@@ -34,7 +34,7 @@ export async function GET(_req: NextRequest, ctx: Context) {
     status: 200,
     headers: {
       'content-type': 'application/pdf',
-      'content-disposition': `inline; filename="${invoice.number}.pdf"`,
+      'content-disposition': `inline; filename="${invoice.number ?? 'utkast'}.pdf"`,
       'cache-control': 'private, no-store',
     },
   })

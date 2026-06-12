@@ -39,13 +39,13 @@ export async function InvoiceList({ invoices }: { invoices: InvoiceListItem[] })
               key={inv.id}
               className={`grid ${OUTER_COLS} group min-h-[68px] items-center gap-3 border-t border-line-1 px-6 transition-colors hover:bg-paper/60`}
             >
-              <InvoiceRowCheckbox id={inv.id} invoiceNumber={inv.number} />
+              <InvoiceRowCheckbox id={inv.id} invoiceNumber={inv.number ?? ''} />
               <InvoiceDetailDialog invoiceId={inv.id}>
                 <button
                   type="button"
                   className={`grid ${INNER_COLS} min-h-[68px] items-center justify-between rounded-sm text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand`}
                 >
-                  <div className="text-[13px] font-normal text-ink/55">{inv.number}</div>
+                  <div className="text-[13px] font-normal text-ink/55">{inv.number ?? '—'}</div>
                   <div className="flex min-w-0 items-center gap-3">
                     <Avatar name={client?.name ?? 'N/A'} className="h-7 w-7 shrink-0 text-[11px]" />
                     <div className="min-w-0">
@@ -89,7 +89,7 @@ export async function InvoiceList({ invoices }: { invoices: InvoiceListItem[] })
                 <div className="flex min-w-0 items-center gap-3">
                   <Avatar name={inv.client?.name ?? 'N/A'} className="h-9 w-9 shrink-0" />
                   <div className="min-w-0">
-                    <div className="text-xs font-normal text-ink/55">{inv.number}</div>
+                    <div className="text-xs font-normal text-ink/55">{inv.number ?? '—'}</div>
                     <div className="truncate font-medium">{inv.client?.name ?? 'N/A'}</div>
                     <div className="mt-0.5 text-sm text-ink/60">{inv.due_at}</div>
                   </div>

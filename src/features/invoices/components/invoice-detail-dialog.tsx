@@ -131,7 +131,9 @@ export function InvoiceDetailDialog({
                 <CloseIcon className="h-4 w-4" />
               </RadixDialog.Close>
               <RadixDialog.Title className="text-base font-semibold">
-                {invoice ? `${invoice.number} · ${invoice.client?.name ?? 'N/A'}` : t('newInvoice')}
+                {invoice
+                  ? `${invoice.number ?? '—'} · ${invoice.client?.name ?? 'N/A'}`
+                  : t('newInvoice')}
               </RadixDialog.Title>
             </div>
             {invoice && (

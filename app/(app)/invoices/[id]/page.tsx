@@ -34,7 +34,7 @@ export default async function InvoiceDetailPage({ params }: Props) {
       </div>
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-sm text-ink/55">{invoice.number}</div>
+          <div className="text-sm text-ink/55">{invoice.number ?? '—'}</div>
           <h1 className="text-3xl font-semibold tracking-tight">{invoice.client?.name ?? 'N/A'}</h1>
         </div>
         <div className="flex flex-col items-end gap-3">

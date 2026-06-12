@@ -16,6 +16,18 @@ interface Context {
   params: Promise<{ id: string }>
 }
 
+// Coalesce concurrent renders for the same cache key within this instance, so a
+// cold cards page firing N requests for the same invoice rasterizes it once.
+const inFlight = new Map<string, Promise<Buffer>>()
+
+function renderOnce(key: string, render: () => Promise<Buffer>): Promise<Buffer> {
+  const existing = inFlight.get(key)
+  if (existing) return existing
+  const p = render().finally(() => inFlight.delete(key))
+  inFlight.set(key, p)
+  return p
+}
+
 function png(body: Uint8Array, versioned: boolean): NextResponse {
   return new NextResponse(body as BodyInit, {
     status: 200,
@@ -59,13 +71,21 @@ export async function GET(req: NextRequest, ctx: Context) {
     return png(new Uint8Array(await cached.data.arrayBuffer()), versioned)
   }
 
-  // Miss: load the full invoice, render, cache, serve.
-  const invoice = await getInvoice(id)
-  if (!invoice) return new NextResponse('Invoice not found', { status: 404 })
-  const buffer = await renderInvoiceThumbnail(invoice, org)
-  await supabase.storage
-    .from(THUMBNAIL_BUCKET)
-    .upload(key, buffer, { contentType: 'image/png', upsert: true })
+  // Miss: render once per key (coalescing concurrent requests), cache, serve.
+  let buffer: Buffer
+  try {
+    buffer = await renderOnce(key, async () => {
+      const invoice = await getInvoice(id)
+      if (!invoice) throw new Error('invoice not found')
+      const buf = await renderInvoiceThumbnail(invoice, org)
+      await supabase.storage
+        .from(THUMBNAIL_BUCKET)
+        .upload(key, buf, { contentType: 'image/png', upsert: true })
+      return buf
+    })
+  } catch {
+    return new NextResponse('Thumbnail unavailable', { status: 404 })
+  }
   return png(new Uint8Array(buffer), versioned)
 }
 

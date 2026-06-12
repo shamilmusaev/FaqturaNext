@@ -104,7 +104,7 @@ export type Database = {
           id: string
           organization_id: string
           client_id: string
-          number: string
+          number: string | null
           status: Database['public']['Enums']['invoice_status']
           issued_at: string
           due_at: string
@@ -136,7 +136,7 @@ export type Database = {
           id?: string
           organization_id: string
           client_id: string
-          number: string
+          number?: string | null
           status?: Database['public']['Enums']['invoice_status']
           issued_at?: string
           due_at: string
@@ -439,6 +439,10 @@ export type Database = {
           p_delivery_date?: string | null
           p_hide_ocr?: boolean
         }
+        Returns: Database['public']['Tables']['invoices']['Row']
+      }
+      send_invoice: {
+        Args: { p_invoice_id: string }
         Returns: Database['public']['Tables']['invoices']['Row']
       }
       update_organization: {

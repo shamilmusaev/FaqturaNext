@@ -162,7 +162,7 @@ export async function getOverviewData(months = 6, activityLimit = 8): Promise<Ov
     .sort((a, b) => a.due_at.localeCompare(b.due_at))
   const dueItems = dueRows.slice(0, 3).map((r) => ({
     id: r.id,
-    number: r.number,
+    number: r.number ?? '—',
     totalCents: BigInt(r.total_cents),
     currency: r.currency,
     status: r.status,
@@ -358,7 +358,7 @@ export async function getDueThisWeek(): Promise<DueThisWeekSummary> {
 
   const items = (data ?? []).map((r) => ({
     id: r.id,
-    number: r.number,
+    number: r.number ?? '—',
     totalCents: BigInt(r.total_cents),
     currency: r.currency,
     status: r.status,

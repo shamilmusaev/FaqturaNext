@@ -29,7 +29,8 @@ type Address = InvoicePdfData['organization']['address']
  */
 export function invoiceToPdfData(invoice: InvoiceDetail, org: PdfOrgRow): InvoicePdfData {
   return {
-    number: invoice.number,
+    // Drafts have no assigned number until sent; show a placeholder on the PDF.
+    number: invoice.number ?? '—',
     issuedAt: invoice.issued_at,
     dueAt: invoice.due_at,
     deliveryAt: invoice.delivery_date,

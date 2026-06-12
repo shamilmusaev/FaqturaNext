@@ -244,27 +244,13 @@ export async function setInvoiceTemplateAction(
 }
 
 export async function sendInvoiceAction(id: string): Promise<InvoiceActionResult> {
-  const { organizationId, userId } = await requireUser()
+  await requireUser()
   const supabase = await createServerClient()
 
-  const { data: updated, error: updateError } = await supabase
-    .from('invoices')
-    .update({ status: 'sent', sent_at: new Date().toISOString() })
-    .eq('id', id)
-    .eq('organization_id', organizationId)
-    .eq('status', 'draft')
-    .select('id')
-  if (updateError) return { error: updateError.message }
-  if (!updated || updated.length === 0) {
-    return { error: 'invalid status transition' }
-  }
-
-  await supabase.from('invoice_events').insert({
-    invoice_id: id,
-    organization_id: organizationId,
-    type: 'sent',
-    actor_user_id: userId,
-  })
+  // Assigns the auto invoice number + OCR (if not already set) and flips the
+  // status to sent, atomically — drafts have no number until this point.
+  const { error } = await supabase.rpc('send_invoice', { p_invoice_id: id })
+  if (error) return { error: error.message }
 
   revalidatePath('/invoices')
   revalidatePath(`/invoices/${id}`)

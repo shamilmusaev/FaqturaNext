@@ -22,7 +22,7 @@ export async function InvoiceCards({ invoices }: { invoices: InvoiceListItem[] }
             key={inv.id}
             inv={{
               id: inv.id,
-              number: inv.number,
+              number: inv.number ?? '—',
               status: inv.status,
               statusLabel: tStatus(inv.status),
               clientName: inv.client?.name ?? 'N/A',

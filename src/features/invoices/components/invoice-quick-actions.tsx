@@ -29,7 +29,7 @@ import type { InvoiceStatus } from '../schema'
 export interface InvoiceLite {
   id: string
   status: InvoiceStatus
-  number: string
+  number: string | null
 }
 
 interface Item {
