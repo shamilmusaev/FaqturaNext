@@ -245,8 +245,8 @@ export function ProfessionalTemplate({ invoice }: InvoiceTemplateProps) {
           <View style={styles.payCols}>
             <View style={styles.payCol}>
               {org.bank_name && <Text style={styles.payLine}>Bank: {org.bank_name}</Text>}
-              {org.bankgiro && <Text style={styles.payLine}>Bankgiro: {org.bankgiro}</Text>}
-              {org.plusgiro && <Text style={styles.payLine}>Plusgiro: {org.plusgiro}</Text>}
+              {org.bankgiro && <Text style={styles.payLine}>Clearing: {org.bankgiro}</Text>}
+              {org.plusgiro && <Text style={styles.payLine}>Konto: {org.plusgiro}</Text>}
               {org.iban && <Text style={styles.payLine}>IBAN: {org.iban}</Text>}
             </View>
             <View style={styles.payCol}>

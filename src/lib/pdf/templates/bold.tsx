@@ -405,13 +405,13 @@ function BoldTemplate({ invoice, scheme }: InvoiceTemplateProps & { scheme: Sche
             )}
             {org.bankgiro && (
               <View style={styles.payGrid}>
-                <Text style={styles.payKey}>Bankgiro:</Text>
+                <Text style={styles.payKey}>Clearing:</Text>
                 <Text style={styles.payVal}>{org.bankgiro}</Text>
               </View>
             )}
             {org.plusgiro && (
               <View style={styles.payGrid}>
-                <Text style={styles.payKey}>Plusgiro:</Text>
+                <Text style={styles.payKey}>Konto:</Text>
                 <Text style={styles.payVal}>{org.plusgiro}</Text>
               </View>
             )}

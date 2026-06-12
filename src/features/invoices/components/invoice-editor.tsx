@@ -6,7 +6,8 @@ import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
-import { useMemo, useState } from 'react'
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   type EditInvoiceInitial,
   type EditorClient,
@@ -75,6 +76,7 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
   )
   const [tab, setTab] = useState<MobileTab>('form')
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
+  const [split, setSplit] = useState(50)
 
   // Seed with the form's initial state so the preview renders immediately; the
   // form's onDraftChange syncs it on mount and on every edit thereafter.
@@ -89,7 +91,7 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
         notes: '',
         number: '',
         lines: Array.from({ length: DEFAULT_LINE_COUNT }, emptyDraftLine),
-        hideOcr: false,
+        hideOcr: true,
         reverseVat: false,
         rotRutType: null,
         rotRutCents: 0n,
@@ -111,9 +113,32 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
 
   const clientOptions = useMemo(() => clients.map((c) => ({ id: c.id, name: c.name })), [clients])
   const numberPreview = useMemo(() => previewNumber(org.invoice_number_template), [org])
+  const gridColumns = previewCollapsed
+    ? 'minmax(0,1fr) 0 3rem'
+    : `minmax(24rem,${split}fr) 0.75rem minmax(24rem,${100 - split}fr)`
+  const startResize = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    const grid = event.currentTarget.parentElement
+    if (!grid) return
+    const rect = grid.getBoundingClientRect()
+    const onMove = (moveEvent: PointerEvent) => {
+      const next = ((moveEvent.clientX - rect.left) / rect.width) * 100
+      setSplit(Math.min(64, Math.max(36, next)))
+    }
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp, { once: true })
+  }, [])
 
   return (
-    <div className="relative flex flex-col gap-4">
+    <div className="relative flex flex-col gap-4 lg:h-[calc(100vh-7rem)] lg:min-h-0">
       {/* Mobile tab switch: form and preview don't fit side-by-side on phones. */}
       <div className="flex gap-1 rounded-full bg-paper-2 p-1 lg:hidden">
         {(['form', 'preview'] as const).map((key) => (
@@ -134,13 +159,16 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
 
       <div
         className={cn(
-          'grid gap-6 transition-[grid-template-columns] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
-          previewCollapsed
-            ? 'lg:grid-cols-[minmax(0,1fr)_3rem]'
-            : 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+          'grid gap-4 transition-[grid-template-columns] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:h-full lg:min-h-0 lg:grid-cols-[var(--invoice-editor-cols)] lg:items-start',
         )}
+        style={{ '--invoice-editor-cols': gridColumns } as CSSProperties}
       >
-        <div className={cn(tab !== 'form' && 'hidden', 'lg:block')}>
+        <div
+          className={cn(
+            tab !== 'form' && 'hidden',
+            'lg:block lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-2 lg:pb-6 lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden',
+          )}
+        >
           <InvoiceForm
             clients={clientOptions}
             cancelHref={cancelHref}
@@ -154,8 +182,23 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
           />
         </div>
 
-        <div className={cn(tab !== 'preview' && 'hidden', 'lg:block')}>
-          <div className="relative lg:sticky lg:top-6 lg:overflow-hidden">
+        <button
+          type="button"
+          aria-label="Resize preview"
+          onPointerDown={startResize}
+          className={cn(
+            'hidden h-full cursor-col-resize rounded-full bg-card/70 transition-colors hover:bg-line-2 active:bg-brand/35 lg:block',
+            previewCollapsed && 'pointer-events-none opacity-0',
+          )}
+        />
+
+        <div
+          className={cn(
+            tab !== 'preview' && 'hidden',
+            'lg:sticky lg:top-24 lg:block lg:h-full lg:min-h-0 lg:overflow-hidden',
+          )}
+        >
+          <div className="relative lg:h-full lg:min-h-0 lg:overflow-hidden">
             {/* Reopen control: sits at the top of the thin rail (sticky, always
                 in view), fades in once the panel is collapsed. */}
             <button
@@ -184,7 +227,7 @@ export function InvoiceEditor({ clients, org, cancelHref, mode = 'create', initi
                 templateId={templateId}
                 onTemplateChange={setTemplateId}
                 onToggleCollapsed={() => setPreviewCollapsed(true)}
-                className="lg:h-[calc(100vh-7rem)]"
+                className="lg:h-full"
               />
             </div>
           </div>

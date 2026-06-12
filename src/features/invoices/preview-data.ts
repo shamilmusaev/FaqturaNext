@@ -108,9 +108,9 @@ export function initialToFormDraft(init: EditInvoiceInitial): {
           ? (init.rotRutType as RotRutType)
           : null,
       rotRutCents: BigInt(init.rotRutCents),
-      ourReference: init.ourReference ?? '',
-      theirReference: init.theirReference ?? '',
-      orderNumber: init.orderNumber ?? '',
+      ourReference: '',
+      theirReference: '',
+      orderNumber: '',
     },
     templateId: isTemplateId(init.template) ? init.template : DEFAULT_TEMPLATE_ID,
   }
@@ -190,9 +190,9 @@ export function buildPreviewData(
       draft.rotRutType && draft.rotRutCents > 0n
         ? { type: draft.rotRutType, cents: draft.rotRutCents }
         : null,
-    ourReference: draft.ourReference.trim() || null,
-    theirReference: draft.theirReference.trim() || null,
-    orderNumber: draft.orderNumber.trim() || null,
+    ourReference: null,
+    theirReference: null,
+    orderNumber: null,
     organization: {
       name: org.name,
       org_number: org.org_number ?? null,

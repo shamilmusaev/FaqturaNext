@@ -54,6 +54,7 @@ const MAX_DEVICE_SCALE = 2
 const MIN_ZOOM = 70
 const MAX_ZOOM = 150
 const ZOOM_STEP = 10
+const DEFAULT_ZOOM = 80
 
 export function InvoicePreview({
   data,
@@ -66,7 +67,7 @@ export function InvoicePreview({
 }: Props) {
   const t = useTranslations('invoices.preview')
   const [font, setFont] = useState<FontId>('sans')
-  const [zoom, setZoom] = useState(100)
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM)
   const { Component } = getTemplate(templateId)
 
   const doc = useMemo(() => <Component invoice={{ ...data, font }} />, [Component, data, font])
@@ -221,7 +222,7 @@ export function InvoicePreview({
             </button>
             <button
               type="button"
-              onClick={() => setZoom(100)}
+              onClick={() => setZoom(DEFAULT_ZOOM)}
               title={t('resetZoom')}
               aria-label={t('resetZoom')}
               className="inline-flex h-8 min-w-12 items-center justify-center rounded-full px-2 text-xs font-medium tabular-nums text-ink/65 transition-colors hover:bg-card hover:text-ink"

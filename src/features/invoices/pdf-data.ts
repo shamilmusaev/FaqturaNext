@@ -48,9 +48,9 @@ export function invoiceToPdfData(invoice: InvoiceDetail, org: PdfOrgRow): Invoic
             cents: BigInt(invoice.rot_rut_cents),
           }
         : null,
-    ourReference: invoice.our_reference,
-    theirReference: invoice.their_reference,
-    orderNumber: invoice.order_number,
+    ourReference: null,
+    theirReference: null,
+    orderNumber: null,
     organization: {
       name: org.name,
       org_number: org.org_number,

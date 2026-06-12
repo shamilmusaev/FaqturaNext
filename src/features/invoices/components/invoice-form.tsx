@@ -114,13 +114,10 @@ export function InvoiceForm({
   const [serverError, setServerError] = useState<string | null>(null)
   // Swedish invoice fields (Phase 2).
   const [paymentTermsDays, setPaymentTermsDays] = useState(30)
-  const [hideOcr, setHideOcr] = useState(initial?.hideOcr ?? false)
+  const [hideOcr, setHideOcr] = useState(initial?.hideOcr ?? true)
   const [reverseVat, setReverseVat] = useState(initial?.reverseVat ?? false)
   const [rotRutType, setRotRutType] = useState<RotRutType | ''>(initial?.rotRutType ?? '')
   const [rotRutCents, setRotRutCents] = useState(initial?.rotRutCents ?? 0n)
-  const [ourReference, setOurReference] = useState(initial?.ourReference ?? '')
-  const [theirReference, setTheirReference] = useState(initial?.theirReference ?? '')
-  const [orderNumber, setOrderNumber] = useState(initial?.orderNumber ?? '')
   // Autosave bookkeeping: the draft id we write into (known up front in edit mode).
   const draftIdRef = useRef<string | null>(invoiceId ?? null)
   const savingRef = useRef(false)
@@ -178,9 +175,9 @@ export function InvoiceForm({
       reverseVat,
       rotRutType: rotRutType || null,
       rotRutCents: rotRutActive ? rotRutCents : 0n,
-      ourReference,
-      theirReference,
-      orderNumber,
+      ourReference: '',
+      theirReference: '',
+      orderNumber: '',
     })
   }, [
     onDraftChange,
@@ -197,9 +194,6 @@ export function InvoiceForm({
     rotRutType,
     rotRutActive,
     rotRutCents,
-    ourReference,
-    theirReference,
-    orderNumber,
   ])
 
   // Build the validated invoice payload from current state, or null when there
@@ -229,9 +223,9 @@ export function InvoiceForm({
       reverseVat,
       rotRutType: rotRutType || null,
       rotRutCents: rotRutActive ? rotRutCents : 0n,
-      ourReference: ourReference.trim() || undefined,
-      theirReference: theirReference.trim() || undefined,
-      orderNumber: orderNumber.trim() || undefined,
+      ourReference: undefined,
+      theirReference: undefined,
+      orderNumber: undefined,
       paymentTermsDays,
       lineItems: validLines,
     }
@@ -302,9 +296,6 @@ export function InvoiceForm({
     rotRutType,
     rotRutActive,
     rotRutCents,
-    ourReference,
-    theirReference,
-    orderNumber,
     paymentTermsDays,
     templateId,
   ])
@@ -361,9 +352,6 @@ export function InvoiceForm({
     // Payment terms live in the Betalningsvillkor field; don't hardcode days
     // here or the note contradicts the chosen term.
     setNotes('Tack för förtroendet!')
-    setOurReference('Anna Lind')
-    setTheirReference('Erik Svensson')
-    setOrderNumber('PO-2026-077')
     setReverseVat(false)
     setRotRutType('')
     setRotRutCents(0n)
@@ -552,7 +540,7 @@ export function InvoiceForm({
       </div>
 
       <section className="flex flex-col gap-3">
-        <header className="flex items-center justify-between">
+        <header className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-semibold tracking-tight">{t('lineItems')}</h2>
           <div className="flex items-center gap-2">
             <PolishAllButton
@@ -578,10 +566,10 @@ export function InvoiceForm({
             <div
               // biome-ignore lint/suspicious/noArrayIndexKey: lines reorder only on add/remove; index is stable per render.
               key={idx}
-              className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3"
+              className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3 overflow-hidden"
             >
-              <div className="grid grid-cols-1 md:grid-cols-[1.7fr_0.6fr_0.6fr_1.2fr_0.7fr_0.95fr_auto] gap-2 items-end">
-                <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+              <div className="grid grid-cols-2 gap-2 items-end lg:grid-cols-[4rem_3.5rem_minmax(5.75rem,1fr)_4.25rem_5.5rem_2.5rem]">
+                <label className="col-span-2 flex min-w-0 flex-col gap-1.5 text-xs text-ink/60 lg:col-span-full">
                   {tFields('description')}
                   <LineDescriptionField
                     value={line.description}
@@ -592,18 +580,18 @@ export function InvoiceForm({
                     required
                   />
                 </label>
-                <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+                <label className="flex min-w-0 flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('quantity')}
                   <Input
                     type="number"
                     step="0.001"
                     min="0"
-                    className="px-2"
+                    className="px-2 text-right tnum font-mono"
                     value={line.quantity}
                     onChange={(e) => updateLine(idx, { quantity: Number(e.target.value) || 0 })}
                   />
                 </label>
-                <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+                <label className="flex min-w-0 flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('unit')}
                   <Input
                     value={line.unit}
@@ -612,7 +600,7 @@ export function InvoiceForm({
                     maxLength={20}
                   />
                 </label>
-                <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+                <label className="flex min-w-0 flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('unitPrice')}
                   <MoneyInput
                     key={`price-${idx}-${seedVersion}`}
@@ -621,14 +609,14 @@ export function InvoiceForm({
                     onValueChange={(v) => updateLine(idx, { unitPriceCents: v })}
                   />
                 </label>
-                <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+                <label className="flex min-w-0 flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('discount')}
                   <Input
                     type="number"
                     step="1"
                     min="0"
                     max="100"
-                    className="px-2"
+                    className="px-2 text-right tnum font-mono"
                     value={line.discountPercent}
                     onChange={(e) =>
                       updateLine(idx, {
@@ -637,7 +625,7 @@ export function InvoiceForm({
                     }
                   />
                 </label>
-                <label className="flex flex-col gap-1.5 text-xs text-ink/60">
+                <label className="flex min-w-0 flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('vat')}
                   <select
                     value={line.vatRate}
@@ -660,6 +648,7 @@ export function InvoiceForm({
                   size="sm"
                   onClick={() => removeLine(idx)}
                   aria-label={tActions('removeLine')}
+                  className="self-end justify-self-end"
                 >
                   <CloseIcon className="h-4 w-4" />
                 </Button>
@@ -747,33 +736,6 @@ export function InvoiceForm({
           </div>
         </div>
 
-        <div className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3">
-          <h3 className="text-sm font-semibold">{t('references.title')}</h3>
-          <label className="flex flex-col gap-1.5 text-xs text-ink/60">
-            {tFields('ourReference')}
-            <Input
-              value={ourReference}
-              onChange={(e) => setOurReference(e.target.value)}
-              maxLength={200}
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-xs text-ink/60">
-            {tFields('theirReference')}
-            <Input
-              value={theirReference}
-              onChange={(e) => setTheirReference(e.target.value)}
-              maxLength={200}
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-xs text-ink/60">
-            {tFields('orderNumber')}
-            <Input
-              value={orderNumber}
-              onChange={(e) => setOrderNumber(e.target.value)}
-              maxLength={100}
-            />
-          </label>
-        </div>
       </section>
 
       <label className="flex flex-col gap-1.5 text-sm">

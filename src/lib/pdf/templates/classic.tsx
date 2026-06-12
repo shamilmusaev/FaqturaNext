@@ -275,10 +275,10 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
               <Text style={styles.partyLine}>Bank {invoice.organization.bank_name}</Text>
             )}
             {invoice.organization.bankgiro && (
-              <Text style={styles.partyLine}>Bankgiro {invoice.organization.bankgiro}</Text>
+              <Text style={styles.partyLine}>Clearing {invoice.organization.bankgiro}</Text>
             )}
             {invoice.organization.plusgiro && (
-              <Text style={styles.partyLine}>Plusgiro {invoice.organization.plusgiro}</Text>
+              <Text style={styles.partyLine}>Konto {invoice.organization.plusgiro}</Text>
             )}
             {invoice.organization.iban && (
               <Text style={styles.partyLine}>IBAN {invoice.organization.iban}</Text>
