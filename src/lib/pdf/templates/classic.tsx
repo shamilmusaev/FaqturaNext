@@ -1,6 +1,6 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import { type FontStack, fontStack } from './fonts'
-import { COLOR, addressLines, formatMoney } from './shared'
+import { COLOR, addressLines, daysBetween, formatMoney } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
 // Classic template: strict, neutral Swedish invoice. Bordered boxes, a ruled
@@ -93,6 +93,7 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
   const styles = makeStyles(fontStack(invoice.font))
   const orgAddr = addressLines(invoice.organization.address)
   const clientAddr = addressLines(invoice.client.address)
+  const terms = daysBetween(invoice.issuedAt, invoice.dueAt)
   return (
     <Document title={`Faktura ${invoice.number}`}>
       <Page size="A4" style={styles.page}>
@@ -126,6 +127,18 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
                 <Text style={styles.metaLabel}>Förfaller</Text>
                 <Text style={styles.metaValue}>{invoice.dueAt}</Text>
               </View>
+              {terms != null && (
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Betalningsvillkor</Text>
+                  <Text style={styles.metaValue}>{terms} dagar</Text>
+                </View>
+              )}
+              {invoice.deliveryAt && (
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Leveransdatum</Text>
+                  <Text style={styles.metaValue}>{invoice.deliveryAt}</Text>
+                </View>
+              )}
               {invoice.ocrReference && (
                 <View style={styles.metaRow}>
                   <Text style={styles.metaLabel}>OCR</Text>
@@ -153,6 +166,12 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
             ))}
             {invoice.ourReference && (
               <Text style={styles.partyLine}>Vår referens: {invoice.ourReference}</Text>
+            )}
+            {invoice.organization.vat_number && (
+              <>
+                <Text style={[styles.partyLine, { marginTop: 6 }]}>Godkänd för F-skatt.</Text>
+                <Text style={styles.partyLine}>Registrerad för moms</Text>
+              </>
             )}
           </View>
           <View style={styles.partyBox}>
@@ -244,6 +263,10 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
             Omvänd skattskyldighet — moms redovisas av köparen.
           </Text>
         )}
+
+        {/* Spacer keeps the payment block anchored to the bottom of the page
+            regardless of how many line rows were entered. */}
+        <View style={{ flexGrow: 1, minHeight: 16 }} />
 
         <View style={styles.payInfo}>
           <View style={styles.payCol}>

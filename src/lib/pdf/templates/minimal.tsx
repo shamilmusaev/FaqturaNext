@@ -1,6 +1,6 @@
 import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import { type FontStack, fontStack } from './fonts'
-import { addressLines } from './shared'
+import { addressLines, daysBetween } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
 // Minimal template — recreation of the user's own freelance invoice (clean,
@@ -33,14 +33,14 @@ const makeStyles = (f: FontStack) =>
     cols: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
     // paddingTop matches the Från box's inner padding so "Kund:" and "Från:" sit
     // on the same baseline.
-    colLeft: { width: '50%', paddingTop: 13 },
-    colRight: { width: '44%' },
+    colLeft: { width: '52%', paddingTop: 13 },
+    colRight: { width: '40%' },
     fromBox: { backgroundColor: BEIGE, borderRadius: 10, padding: 13 },
     label: { color: MUTED },
     strong: { color: INK },
     gap: { height: 7 },
     table: {},
-    thRow: { flexDirection: 'row', paddingBottom: 6, borderBottom: `1pt solid ${LINE}` },
+    thRow: { flexDirection: 'row', paddingBottom: 4, borderBottom: `1pt solid ${LINE}` },
     th: { color: MUTED, fontSize: 8 },
     row: { flexDirection: 'row', borderBottom: `1pt solid ${LINE}`, alignItems: 'flex-start' },
     totRow: { flexDirection: 'row' },
@@ -96,13 +96,6 @@ function addrTwoLines(a: Addr): [string, string] {
   return [l1, l2]
 }
 
-function daysBetween(a: string, b: string): number | null {
-  const d1 = new Date(a)
-  const d2 = new Date(b)
-  if (Number.isNaN(d1.getTime()) || Number.isNaN(d2.getTime())) return null
-  return Math.round((d2.getTime() - d1.getTime()) / 86_400_000)
-}
-
 export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
   const styles = makeStyles(fontStack(invoice.font))
   const org = invoice.organization
@@ -128,7 +121,7 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
   // Keep the whole invoice on one A4 page: tighten row spacing as the item
   // count grows.
   const n = invoice.lineItems.length
-  const rowPad = n > 9 ? 3 : n > 6 ? 5 : n > 4 ? 7 : 10
+  const rowPad = n > 9 ? 3 : n > 6 ? 4 : n > 4 ? 6 : 7
   const hasNumber = Boolean(invoice.number && invoice.number !== '—')
 
   return (
@@ -163,6 +156,7 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
             <View style={styles.gap} />
             {terms != null && <Text>Betalningsvillkor: {terms} dagar</Text>}
             <Text>Förfallodatum: {invoice.dueAt}</Text>
+            {invoice.deliveryAt && <Text>Leveransdatum: {invoice.deliveryAt}</Text>}
             {invoice.ocrReference && <Text>OCR: {invoice.ocrReference}</Text>}
           </View>
 
@@ -240,6 +234,14 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
           )}
         </View>
 
+        {invoice.notes && (
+          <Text style={{ marginTop: 24, color: MUTED, fontSize: 9 }}>{invoice.notes}</Text>
+        )}
+
+        {/* Spacer pushes the footer to the bottom of the page regardless of how
+            many line rows were entered (short invoices no longer float it up). */}
+        <View style={{ flexGrow: 1, minHeight: 22 }} />
+
         {/* Footer: bank info + big total */}
         <View style={styles.footer}>
           <View style={{ width: '55%' }}>
@@ -256,10 +258,6 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
             <Text style={styles.bigTotal}>{kr(invoice.totalCents)}</Text>
           </View>
         </View>
-
-        {invoice.notes && (
-          <Text style={{ marginTop: 24, color: MUTED, fontSize: 9 }}>{invoice.notes}</Text>
-        )}
 
         {(org.org_number || org.vat_number) && (
           <Text style={styles.contact} fixed>

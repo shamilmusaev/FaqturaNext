@@ -300,6 +300,16 @@ function BoldTemplate({ invoice, scheme }: InvoiceTemplateProps & { scheme: Sche
                 FÖRFALLDATUM:
               </Text>
               <Text style={[styles.rLine, { color: scheme.headerMuted }]}>{invoice.dueAt}</Text>
+              {invoice.deliveryAt && (
+                <>
+                  <Text style={[styles.capLabel, { color: scheme.headerInk, marginTop: 8 }]}>
+                    LEVERANSDATUM:
+                  </Text>
+                  <Text style={[styles.rLine, { color: scheme.headerMuted }]}>
+                    {invoice.deliveryAt}
+                  </Text>
+                </>
+              )}
               {invoice.ocrReference && (
                 <>
                   <Text style={[styles.capLabel, { color: scheme.headerInk, marginTop: 8 }]}>

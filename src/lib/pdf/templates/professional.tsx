@@ -159,6 +159,12 @@ export function ProfessionalTemplate({ invoice }: InvoiceTemplateProps) {
             <Text style={styles.infoLabel}>FÖRFALLER</Text>
             <Text style={styles.infoValue}>{invoice.dueAt}</Text>
           </View>
+          {invoice.deliveryAt && (
+            <View style={styles.infoCell}>
+              <Text style={styles.infoLabel}>LEVERANSDATUM</Text>
+              <Text style={styles.infoValue}>{invoice.deliveryAt}</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.client}>

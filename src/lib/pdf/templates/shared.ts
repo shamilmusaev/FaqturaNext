@@ -36,3 +36,11 @@ export function addressLines(addr: InvoicePdfData['organization']['address']): s
     (l): l is string => Boolean(l && l.length > 0),
   )
 }
+
+/** Whole days between two ISO date strings; null if either is unparseable. */
+export function daysBetween(a: string, b: string): number | null {
+  const d1 = new Date(a)
+  const d2 = new Date(b)
+  if (Number.isNaN(d1.getTime()) || Number.isNaN(d2.getTime())) return null
+  return Math.round((d2.getTime() - d1.getTime()) / 86_400_000)
+}

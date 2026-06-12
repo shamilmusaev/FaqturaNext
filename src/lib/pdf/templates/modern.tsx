@@ -1,6 +1,6 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import { type FontStack, fontStack } from './fonts'
-import { COLOR, addressLines, formatMoney } from './shared'
+import { COLOR, addressLines, daysBetween, formatMoney } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
 // Modern template: Faqtura's default. Orange brand accent on a clean A4 sheet.
@@ -78,6 +78,7 @@ export function ModernTemplate({ invoice }: InvoiceTemplateProps) {
   const styles = makeStyles(fontStack(invoice.font))
   const orgAddr = addressLines(invoice.organization.address)
   const clientAddr = addressLines(invoice.client.address)
+  const terms = daysBetween(invoice.issuedAt, invoice.dueAt)
   return (
     <Document title={`Faktura ${invoice.number}`}>
       <Page size="A4" style={styles.page}>
@@ -99,6 +100,18 @@ export function ModernTemplate({ invoice }: InvoiceTemplateProps) {
             <Text style={styles.metaValue}>{invoice.issuedAt}</Text>
             <Text style={[styles.metaLabel, { marginTop: 8 }]}>Förfaller</Text>
             <Text style={styles.metaValue}>{invoice.dueAt}</Text>
+            {terms != null && (
+              <>
+                <Text style={[styles.metaLabel, { marginTop: 8 }]}>Betalningsvillkor</Text>
+                <Text style={styles.metaValue}>{terms} dagar</Text>
+              </>
+            )}
+            {invoice.deliveryAt && (
+              <>
+                <Text style={[styles.metaLabel, { marginTop: 8 }]}>Leveransdatum</Text>
+                <Text style={styles.metaValue}>{invoice.deliveryAt}</Text>
+              </>
+            )}
             {invoice.ocrReference && (
               <>
                 <Text style={[styles.metaLabel, { marginTop: 8 }]}>OCR</Text>
@@ -124,6 +137,12 @@ export function ModernTemplate({ invoice }: InvoiceTemplateProps) {
             ))}
             {invoice.ourReference && (
               <Text style={styles.partyLine}>Vår ref: {invoice.ourReference}</Text>
+            )}
+            {invoice.organization.vat_number && (
+              <>
+                <Text style={[styles.partyLine, { marginTop: 6 }]}>Godkänd för F-skatt.</Text>
+                <Text style={styles.partyLine}>Registrerad för moms</Text>
+              </>
             )}
           </View>
           <View>
@@ -213,7 +232,11 @@ export function ModernTemplate({ invoice }: InvoiceTemplateProps) {
           <Text>{invoice.organization.name}</Text>
           {invoice.organization.bank_name && <Text>Bank {invoice.organization.bank_name}</Text>}
           {invoice.organization.bankgiro && <Text>Bankgiro {invoice.organization.bankgiro}</Text>}
+          {invoice.organization.plusgiro && <Text>Plusgiro {invoice.organization.plusgiro}</Text>}
           {invoice.organization.iban && <Text>IBAN {invoice.organization.iban}</Text>}
+          {invoice.organization.swish_number && (
+            <Text>Swish {invoice.organization.swish_number}</Text>
+          )}
         </View>
       </Page>
     </Document>

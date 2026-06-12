@@ -11,6 +11,8 @@ export interface InvoicePdfData {
   number: string
   issuedAt: string
   dueAt: string
+  /** Delivery date (leveransdatum); null/absent hides it on the PDF. */
+  deliveryAt?: string | null
   currency: string
   subtotalCents: bigint | number
   vatCents: bigint | number
