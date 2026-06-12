@@ -212,7 +212,7 @@ begin
     v_org, v_client_id, 'draft',
     coalesce((v_header->>'issued_at')::date, current_date),
     coalesce((v_header->>'due_at')::date, current_date + 30),
-    nullif(v_header->>'delivery_date', ''),
+    nullif(v_header->>'delivery_date', '')::date,
     coalesce(nullif(v_header->>'currency', ''), 'SEK'),
     nullif(v_header->>'notes', ''),
     v_template,
