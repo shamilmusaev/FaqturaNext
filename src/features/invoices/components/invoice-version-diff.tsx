@@ -78,7 +78,7 @@ export function InvoiceVersionDiff({ versionId, invoiceId }: Props) {
     }
     if (res.invoiceId) {
       toast.success(tToast('created'))
-      router.push(`/invoices/${res.invoiceId}` as Route)
+      router.push(`/invoices/${res.invoiceId}/edit` as Route)
     }
   }
 
@@ -93,7 +93,7 @@ export function InvoiceVersionDiff({ versionId, invoiceId }: Props) {
     }
     if (res.invoiceId) {
       toast.success(tToast('restored'))
-      router.push(`/invoices/${res.invoiceId}` as Route)
+      router.push(`/invoices/${res.invoiceId}/edit` as Route)
     }
   }
 
