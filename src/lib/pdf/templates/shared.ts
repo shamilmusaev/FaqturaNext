@@ -30,6 +30,17 @@ export function formatMoney(value: bigint | number, currency: string): string {
   return `${sign}${wholeStr},${frac} ${currency}`
 }
 
+/**
+ * Line-item quantity (hours, pieces, ...) for display. Hours+minutes values
+ * (e.g. 83 + 5/60) are irrational in binary floating point, so the raw
+ * number renders as "83.08333333333333" — round to 2 decimals, strip
+ * trailing zeros, and use a comma decimal separator (Swedish).
+ */
+export function formatQty(quantity: number): string {
+  const rounded = Math.round(quantity * 100) / 100
+  return rounded.toFixed(2).replace(/\.?0+$/, '').replace('.', ',')
+}
+
 export function addressLines(addr: InvoicePdfData['organization']['address']): string[] {
   if (!addr) return []
   return [addr.street, [addr.postal, addr.city].filter(Boolean).join(' '), addr.country].filter(

@@ -154,6 +154,8 @@
       "notes": "Anteckningar",
       "description": "Beskrivning",
       "quantity": "Antal",
+      "hours": "Timmar",
+      "minutes": "Minuter",
       "unit": "Enhet",
       "unitPrice": "À-pris",
       "vat": "Moms %",

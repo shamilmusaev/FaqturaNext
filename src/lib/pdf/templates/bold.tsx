@@ -10,7 +10,7 @@ import {
   View,
 } from '@react-pdf/renderer'
 import { type FontStack, fontStack } from './fonts'
-import { addressLines, formatMoney } from './shared'
+import { addressLines, formatMoney, formatQty } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
 // "Bold" template — recreation of the faktura3 mockup: a dark full-bleed header
@@ -372,7 +372,7 @@ function BoldTemplate({ invoice, scheme }: InvoiceTemplateProps & { scheme: Sche
                 <Text style={[styles.cPrice, { color: scheme.rowText }]}>
                   {money(li.unitPriceCents, cur)}
                 </Text>
-                <Text style={[styles.cQty, { color: scheme.rowText }]}>{li.quantity}</Text>
+                <Text style={[styles.cQty, { color: scheme.rowText }]}>{formatQty(li.quantity)}</Text>
                 <Text style={[styles.cDisc, { color: scheme.rowText }]}>
                   {li.discountPercent ?? 0}%
                 </Text>

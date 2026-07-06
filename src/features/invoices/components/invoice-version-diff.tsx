@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getInvoiceVersionAction } from '../actions'
 import { useTranslations } from 'next-intl'
-import { formatMoney } from '@/lib/money'
+import { formatMoney, formatQty } from '@/lib/money'
 import { Button } from '@/components/ui/button'
 import { createInvoiceFromVersionAction, restoreInvoiceFromVersionAction } from '../actions'
 import { useRouter } from 'next/navigation'
@@ -175,7 +175,7 @@ export function InvoiceVersionDiff({ versionId, invoiceId }: Props) {
               <tr key={idx} className="border-b border-line-1 last:border-0">
                 <td className="px-3 py-2.5 whitespace-normal min-w-[120px]">{li.description}</td>
                 <td className="px-3 py-2.5 text-right tnum font-mono">
-                  {li.quantity}
+                  {formatQty(li.quantity)}
                   {li.unit && <span className="text-ink/50 ml-1">{li.unit}</span>}
                 </td>
                 <td className="px-3 py-2.5 text-right tnum font-mono">

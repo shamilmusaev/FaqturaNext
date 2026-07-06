@@ -10,7 +10,7 @@ import {
 } from '@/features/invoices/actions'
 import type { InvoiceDetail } from '@/features/invoices/queries'
 import type { InvoiceStatus } from '@/features/invoices/schema'
-import { formatMoney } from '@/lib/money'
+import { formatMoney, formatQty } from '@/lib/money'
 import { DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/pdf/templates/ids'
 import * as RadixDialog from '@radix-ui/react-dialog'
 import { useLocale, useTranslations } from 'next-intl'
@@ -231,7 +231,9 @@ export function InvoiceDetailDialog({
                       {invoice.line_items.map((li) => (
                         <tr key={li.id} className="border-b border-line-1 last:border-0">
                           <td className="px-4 py-3">{li.description}</td>
-                          <td className="px-4 py-3 text-right tnum font-mono">{li.quantity}</td>
+                          <td className="px-4 py-3 text-right tnum font-mono">
+                            {formatQty(li.quantity)}
+                          </td>
                           <td className="px-4 py-3 text-right tnum font-mono">
                             {formatMoney(BigInt(li.unit_price_cents), currency)}
                           </td>

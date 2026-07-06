@@ -1,6 +1,6 @@
 import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import { type FontStack, fontStack } from './fonts'
-import { addressLines, daysBetween } from './shared'
+import { addressLines, daysBetween, formatQty } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
 // Minimal template — recreation of the user's own freelance invoice (clean,
@@ -197,7 +197,7 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
                 {li.discountPercent ? `  (−${li.discountPercent}%)` : ''}
               </Text>
               <Text style={styles.cQty}>
-                {li.quantity}
+                {formatQty(li.quantity)}
                 {li.unit ? ` ${li.unit}` : ''}
               </Text>
               <Text style={styles.cPrice}>{kronor(li.unitPriceCents)}</Text>
@@ -206,7 +206,7 @@ export function MinimalTemplate({ invoice }: InvoiceTemplateProps) {
           ))}
           <View style={[styles.totRow, { paddingVertical: rowPad }]}>
             <Text style={[styles.cSpec, styles.strong]}>Totalt</Text>
-            <Text style={[styles.cQty, styles.strong]}>{totalQty}</Text>
+            <Text style={[styles.cQty, styles.strong]}>{formatQty(totalQty)}</Text>
             <Text style={styles.cPrice} />
             <Text style={[styles.cSum, styles.sumValue]}>{kronor(subtotal)}</Text>
           </View>

@@ -1,6 +1,6 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import { type FontStack, fontStack } from './fonts'
-import { COLOR, addressLines, daysBetween, formatMoney } from './shared'
+import { COLOR, addressLines, daysBetween, formatMoney, formatQty } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
 // Modern template: Faqtura's default. Orange brand accent on a clean A4 sheet.
@@ -178,7 +178,7 @@ export function ModernTemplate({ invoice }: InvoiceTemplateProps) {
                 {li.unit ? ` (${li.unit})` : ''}
                 {li.discountPercent ? ` −${li.discountPercent}%` : ''}
               </Text>
-              <Text style={styles.colQty}>{li.quantity}</Text>
+              <Text style={styles.colQty}>{formatQty(li.quantity)}</Text>
               <Text style={styles.colPrice}>
                 {formatMoney(li.unitPriceCents, invoice.currency)}
               </Text>

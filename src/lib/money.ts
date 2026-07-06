@@ -55,3 +55,13 @@ export function parseMoney(input: string, locale = 'sv-SE'): bigint {
 export function addCents(values: Array<bigint | number>): bigint {
   return values.reduce<bigint>((sum, v) => sum + toBigIntCents(v), 0n)
 }
+
+/**
+ * Formats a line-item quantity (hours, pieces, ...) for display. Quantities
+ * like hours+minutes (e.g. 83 + 5/60) are irrational in binary floating
+ * point, so raw values render as "83.08333333333333" — round to 2 decimals
+ * and drop trailing zeros.
+ */
+export function formatQty(quantity: number, locale = 'sv-SE'): string {
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(quantity)
+}

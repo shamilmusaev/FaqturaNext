@@ -154,6 +154,8 @@
       "notes": "Notes",
       "description": "Description",
       "quantity": "Qty",
+      "hours": "Hours",
+      "minutes": "Minutes",
       "unit": "Unit",
       "unitPrice": "Unit price",
       "vat": "VAT %",

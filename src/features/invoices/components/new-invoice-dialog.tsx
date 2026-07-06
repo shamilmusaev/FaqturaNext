@@ -57,6 +57,7 @@ export function NewInvoiceDialog({ clients, children }: DialogProps) {
                 cancelHref={'/invoices' as Route}
                 onCancel={() => setOpen(false)}
                 onSuccess={() => setOpen(false)}
+                lineItemsStickyTop={77}
               />
             )}
           </div>

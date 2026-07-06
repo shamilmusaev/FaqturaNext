@@ -48,9 +48,92 @@ interface Props {
   invoiceId?: string
   /** Seed values for edit mode (existing invoice). */
   initial?: FormDraft
+  /** Distance in px from the top of this form's own scroll container to stick
+   * the "Rader" header under — e.g. the height of a dialog's own sticky title
+   * bar. Defaults to 0 (form has no competing sticky header above it, as in
+   * the full-page editor). */
+  lineItemsStickyTop?: number
 }
 
 const VAT_RATES: SwedishVatRate[] = [25, 12, 6, 0]
+
+/**
+ * Hours + minutes editor for a line item's decimal-hours quantity.
+ *
+ * Uses local string buffers (not `type="number"`) because controlled number
+ * inputs in the browser can get stuck showing a stale leading zero: setting
+ * `.value` to a number that's already numerically equal to the DOM's current
+ * parsed value (e.g. "08" -> 8) doesn't always reformat the visible text.
+ * Free-form text avoids that entirely; digits get clamped on commit/blur.
+ */
+function HoursMinutesInput({
+  quantity,
+  onQuantityChange,
+}: {
+  quantity: number
+  onQuantityChange: (quantity: number) => void
+}) {
+  const tFields = useTranslations('invoices.fields')
+  const committedHours = Math.floor(quantity)
+  const committedMinutes = Math.round((quantity - committedHours) * 60)
+  const [hoursText, setHoursText] = useState(String(committedHours))
+  const [minutesText, setMinutesText] = useState(String(committedMinutes))
+
+  useEffect(() => {
+    setHoursText(String(committedHours))
+    // biome-ignore lint/correctness/useExhaustiveDependencies: only resync when the committed value itself changes.
+  }, [committedHours])
+  useEffect(() => {
+    setMinutesText(String(committedMinutes))
+    // biome-ignore lint/correctness/useExhaustiveDependencies: only resync when the committed value itself changes.
+  }, [committedMinutes])
+
+  const commit = (hours: string, minutes: string) => {
+    const hoursNum = Math.max(0, Math.floor(Number(hours) || 0))
+    const minutesNum = Math.min(59, Math.max(0, Math.floor(Number(minutes) || 0)))
+    onQuantityChange(hoursNum + minutesNum / 60)
+  }
+
+  return (
+    <div className="flex min-w-0 gap-1">
+      <label className="flex min-w-0 flex-1 flex-col gap-1.5 text-xs text-ink/60">
+        {tFields('hours')}
+        <Input
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          className="w-full px-2 text-right tnum font-mono"
+          value={hoursText}
+          onChange={(e) => {
+            const digits = e.target.value.replace(/[^0-9]/g, '')
+            setHoursText(digits)
+            commit(digits, minutesText)
+          }}
+          onBlur={() => setHoursText(String(Math.max(0, Math.floor(Number(hoursText) || 0))))}
+        />
+      </label>
+      <label className="flex w-16 shrink-0 flex-col gap-1.5 whitespace-nowrap text-xs text-ink/60">
+        {tFields('minutes')}
+        <Input
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          className="w-16 px-2 text-right tnum font-mono"
+          value={minutesText}
+          onChange={(e) => {
+            const digits = e.target.value.replace(/[^0-9]/g, '').slice(0, 2)
+            const clamped = digits === '' ? '' : String(Math.min(59, Number(digits)))
+            setMinutesText(clamped)
+            commit(hoursText, clamped)
+          }}
+          onBlur={() =>
+            setMinutesText(String(Math.min(59, Math.max(0, Math.floor(Number(minutesText) || 0)))))
+          }
+        />
+      </label>
+    </div>
+  )
+}
 
 function emptyLine(): DraftLine {
   return {
@@ -96,6 +179,7 @@ export function InvoiceForm({
   mode = 'create',
   invoiceId,
   initial,
+  lineItemsStickyTop = 0,
 }: Props) {
   const t = useTranslations('invoices')
   const tFields = useTranslations('invoices.fields')
@@ -546,7 +630,10 @@ export function InvoiceForm({
       </div>
 
       <section className="flex flex-col gap-3">
-        <header className="flex flex-wrap items-center justify-between gap-3">
+        <header
+          className="sticky z-10 flex flex-wrap items-center justify-between gap-3 border-b border-line-1 bg-paper py-3"
+          style={{ top: lineItemsStickyTop }}
+        >
           <h2 className="text-lg font-semibold tracking-tight">{t('lineItems')}</h2>
           <div className="flex items-center gap-2">
             <PolishAllButton
@@ -574,7 +661,7 @@ export function InvoiceForm({
               key={idx}
               className="rounded-[24px] border border-line-1 bg-card p-4 flex flex-col gap-3 overflow-hidden"
             >
-              <div className="grid grid-cols-2 gap-2 items-end lg:grid-cols-[5.5rem_4rem_minmax(5.75rem,1fr)_4.25rem_5.5rem_2.5rem]">
+              <div className="grid grid-cols-2 gap-2 items-end lg:grid-cols-[12rem_4rem_minmax(5.75rem,1fr)_4.25rem_5.5rem_2.5rem]">
                 <label className="col-span-2 flex min-w-0 flex-col gap-1.5 text-xs text-ink/60 lg:col-span-full">
                   {tFields('description')}
                   <LineDescriptionField
@@ -586,17 +673,10 @@ export function InvoiceForm({
                     required
                   />
                 </label>
-                <label className="flex min-w-0 flex-col gap-1.5 text-xs text-ink/60">
-                  {tFields('quantity')}
-                  <Input
-                    type="number"
-                    step="0.001"
-                    min="0"
-                    className="px-2 text-right tnum font-mono appearance-none"
-                    value={line.quantity}
-                    onChange={(e) => updateLine(idx, { quantity: Number(e.target.value) || 0 })}
-                  />
-                </label>
+                <HoursMinutesInput
+                  quantity={line.quantity}
+                  onQuantityChange={(q) => updateLine(idx, { quantity: q })}
+                />
                 <label className="flex min-w-0 flex-col gap-1.5 text-xs text-ink/60">
                   {tFields('unit')}
                   <Input

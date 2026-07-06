@@ -1,6 +1,6 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import { type FontStack, fontStack } from './fonts'
-import { COLOR, addressLines, daysBetween, formatMoney } from './shared'
+import { COLOR, addressLines, daysBetween, formatMoney, formatQty } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
 // Classic template: strict, neutral Swedish invoice. Bordered boxes, a ruled
@@ -210,7 +210,7 @@ export function ClassicTemplate({ invoice }: InvoiceTemplateProps) {
                 {li.unit ? ` (${li.unit})` : ''}
                 {li.discountPercent ? ` −${li.discountPercent}%` : ''}
               </Text>
-              <Text style={styles.colQty}>{li.quantity}</Text>
+              <Text style={styles.colQty}>{formatQty(li.quantity)}</Text>
               <Text style={styles.colPrice}>
                 {formatMoney(li.unitPriceCents, invoice.currency)}
               </Text>

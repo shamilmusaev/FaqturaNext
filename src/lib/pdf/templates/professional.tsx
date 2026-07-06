@@ -1,6 +1,6 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import { type FontStack, fontStack } from './fonts'
-import { addressLines, formatMoney } from './shared'
+import { addressLines, formatMoney, formatQty } from './shared'
 import type { InvoiceTemplateProps } from './types'
 
 // Professional template ported from the legacy HTML/Tailwind design: a teal
@@ -199,7 +199,7 @@ export function ProfessionalTemplate({ invoice }: InvoiceTemplateProps) {
                 {li.unit ? ` (${li.unit})` : ''}
                 {li.discountPercent ? ` −${li.discountPercent}%` : ''}
               </Text>
-              <Text style={styles.colQty}>{li.quantity}</Text>
+              <Text style={styles.colQty}>{formatQty(li.quantity)}</Text>
               <Text style={styles.colPrice}>
                 {formatMoney(li.unitPriceCents, invoice.currency)}
               </Text>
